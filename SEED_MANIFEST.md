@@ -40,6 +40,8 @@
 
 **Target Envelope:** 8-core ARM64 + NPU, strict 6GB VRAM, preserve all topological invariants at 4-5-8 bit mixed precision.
 
+**History Fidelity Note (Task 1):** Commit `9824aeb` bundled the full Phase 9 "Execution Complete" section + version bump (1.7→1.8) + restructuring with the Phase 11 header (deviating from the narrow "add the Phase 11 header after a pre-existing Phase 9 entry" in Step 1.2). The final manifest state (Phase 11 block correctly after Phase 9) is as required. This explanatory note was inserted via minimal follow-up commit to document the history for Task 1 fidelity.
+
 ## Final Status
 
 **Phase 9 is complete.**
