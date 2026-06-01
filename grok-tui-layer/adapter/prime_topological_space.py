@@ -1,15 +1,18 @@
 """
 WORMHOLE-PATH1 | OMEGA-CLASS | prime-crystal-grok/grok-tui-layer/adapter/prime_topological_space.py
-PrimeTopologicalSpace — The Sheaf Laplacian Engine (Phase 4.3 Deepened)
+PrimeTopologicalSpace — The Sheaf Laplacian Engine (Phase 4.3 Deepened + Phase 11 NPU Wiring)
 
 Now includes:
 - True dim H⁰ via sparse nullspace (svds on smallest singular values)
 - Basic holonomy detection on the sparse graph (cycle tracing via adjacency)
+- Phase 11: optional NPUKernelRouter injection for offloading compute_sheaf_laplacian/eigsh paths
+  (and by extension SurfaceEnclosure hot paths that use this space for Δλ₁ / K(S)).
+  Router enforces UMA zero-copy, surfaces salient_info / frsqrte etc. for KV governor + Claude Code Oracle.
 Strictly sparse. No dense matrices on hot paths.
 """
 
 from __future__ import annotations
-from typing import Dict, Any, Tuple
+from typing import Dict, Any, Tuple, Optional
 import numpy as np
 from scipy.sparse import csr_matrix, identity
 from scipy.sparse.linalg import eigsh, svds
@@ -30,7 +33,13 @@ class PrimeTopologicalSpace:
     Computes L_F, λ₁, dim H⁰, and holonomy signature from sparse data.
     """
 
-    def __init__(self, event: Dict[str, Any]):
+    def __init__(self, event: Dict[str, Any], npu_router: Optional["NPUKernelRouter"] = None):
+        """
+        Phase 11 wiring point: pass an NPUKernelRouter (from edge_compute) to enable
+        delegation of eigsh (and future L_F ops) to NPU when available (QNN/CoreML or sim).
+        The router is the single authority for UMA contract + metadata (salient_info, frsqrte_contract_exercised, etc.).
+        Default None preserves all prior call sites unchanged.
+        """
         self.event = event
         self.n = len(event["node_data"])
         self.restriction_map: csr_matrix = event["restriction_map_sparse"]
@@ -40,8 +49,18 @@ class PrimeTopologicalSpace:
         self.holonomy_signature: str = "unknown"
         self.eigenvectors: np.ndarray | None = None
 
+        # Phase 11 NPU offload + metadata surfacing (for governor/oracle)
+        self.npu_router: Optional["NPUKernelRouter"] = npu_router
+        self.last_npu_result: Optional[Dict[str, Any]] = None
+
     def compute_sheaf_laplacian(self) -> csr_matrix:
-        """L_F = δ^T δ (strictly sparse)."""
+        """L_F = δ^T δ (strictly sparse).
+
+        Phase 11: L_F construction (the sparse matmul) remains on CPU — it is cheap and
+        keeps the csr_matrix in the exact form the NPUKernelRouter expects for zero-copy
+        handoff (IOSurface / QNN buffer). The heavy eigsh (and internal normalizations) are
+        offloaded when an npu_router is injected (see compute_spectral_gap).
+        """
         if self.restriction_map.shape[0] != self.n:
             self.restriction_map = self.restriction_map[:self.n, :self.n]
 
@@ -51,10 +70,40 @@ class PrimeTopologicalSpace:
         return self.laplacian
 
     def compute_spectral_gap(self, k: int = 4) -> Tuple[float, np.ndarray]:
-        """Extract λ₁ via eigsh (smallest magnitude)."""
+        """Extract λ₁ via eigsh (smallest magnitude).
+
+        Phase 11 wiring: if an npu_router was injected at construction, delegate the
+        eigsh (and any FRSQRTE normalizations inside the kernel) to it. This routes
+        through the single authority for zero-copy UMA contract, asymmetric precision,
+        and the full salient_info / frsqrte_contract_exercised / memory_envelope_notes
+        metadata contract required by the future TopologicalKVCacheGovernor (Task 4)
+        and by claude_code_oracle.py (agent-optimized CodeRabbit path + zero-VRAM swap prep).
+
+        The router may be real (QNN/CoreML on ARM64) or sim_cpu (TDD / non-ARM). Numeric
+        result is validated identical (within tol) so all topological invariants are preserved.
+        """
         if self.laplacian is None:
             self.compute_sheaf_laplacian()
 
+        # === PRIMARY WIRING POINT: delegate eigsh to router when provided ===
+        if self.npu_router is not None:
+            try:
+                router_res = self.npu_router.compute_laplacian_eigsh(
+                    delta=self.laplacian,
+                    k=min(k, self.n - 1),
+                    quantized_model_ref=None,  # normal (non-quantized-ref) path; router supplies defaults
+                )
+                self.lambda_1 = float(router_res.get("lambda_1", 1e-6))
+                ev = router_res.get("eigenvectors")
+                self.eigenvectors = ev if ev is not None else np.zeros((self.n, 2))
+                self.last_npu_result = router_res  # <-- surfaces the full metadata contract for governor/oracle
+                # Router has already exercised _hardware_normalize (FRSQRTE contract) and zero-copy logging.
+                return self.lambda_1, self.eigenvectors
+            except Exception as e:
+                print(f"[PrimeTopologicalSpace] NPU router eigsh delegation failed — falling back to local: {e}")
+                self.last_npu_result = {"error": str(e), "delegation": "failed", "backend": getattr(self.npu_router, "backend", None)}
+
+        # Local scipy path (original behavior, or fallback)
         try:
             eigenvalues, eigenvectors = eigsh(
                 self.laplacian,
@@ -66,10 +115,14 @@ class PrimeTopologicalSpace:
             eigenvalues = np.sort(np.abs(eigenvalues))
             self.lambda_1 = float(eigenvalues[1]) if len(eigenvalues) > 1 else 0.0
             self.eigenvectors = eigenvectors
+            if self.last_npu_result is None:
+                self.last_npu_result = {"method": "local_scipy_eigsh", "backend": "cpu"}
         except Exception as e:
             print(f"[PrimeTopologicalSpace] eigsh fallback: {e}")
             self.lambda_1 = 1e-6
             self.eigenvectors = np.zeros((self.n, 2))
+            if self.last_npu_result is None:
+                self.last_npu_result = {"error": str(e), "method": "local_fallback"}
 
         return self.lambda_1, self.eigenvectors
 

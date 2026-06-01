@@ -116,6 +116,99 @@ def test_router_compute_laplacian_eigsh():
     print("=" * 70)
 
 
+def test_prime_space_npu_router_integration():
+    """
+    Phase 11 Task 3 integration test (TDD extension of the router harness).
+    Exercises PrimeTopologicalSpace (with explicit router injection per wiring contract)
+    + NPUKernelRouter together:
+      - creation of space with npu_router=...
+      - compute_sheaf_laplacian() (L_F stays local sparse)
+      - compute_spectral_gap() (delegates eigsh + normalizations to router)
+      - last_npu_result surfaces the *exact* metadata contract required by
+        future KV governor (Task 4) and claude_code_oracle.py (zero-VRAM swap):
+        salient_info, uma_compliant, frsqrte_contract_exercised, zero_copy, etc.
+    Uses existing make_* helpers. Bootstrap via importlib (matches live demo patterns)
+    so the test runs hermetically from e2e/ without package pollution.
+    """
+    print("=" * 70)
+    print("[HARNESS] Task 3 integration: PrimeTopologicalSpace + NPUKernelRouter wiring + metadata contract")
+    print("  (for enclosure by extension, oracle callability, and governor prep)")
+    print("=" * 70)
+
+    # Reuse existing helpers (no new data factories)
+    ref = make_quantized_ref()
+    delta_for_space = make_small_laplacian_csr(8)  # used as restriction_map for space (test only)
+
+    # Build minimal valid event (space only needs these two keys)
+    event = {
+        "node_data": [{"id": f"n{i}"} for i in range(8)],
+        "restriction_map_sparse": delta_for_space,
+    }
+
+    # Router (sim path on this host, but full contract exercised)
+    router = create_npu_router(backend="auto")
+    print(f"[HARNESS] Router for integration: {router}")
+
+    # === Import Space via importlib (robust for e2e harness, mirrors live_enclosure_demo.py) ===
+    import importlib.util
+    LAYER_ROOT = SEED_ROOT / "grok-tui-layer"
+
+    def _load_space(p: Path):
+        spec = importlib.util.spec_from_file_location("prime_topological_space_t3_harness", p)
+        m = importlib.util.module_from_spec(spec)
+        sys.modules["prime_topological_space_t3_harness"] = m
+        spec.loader.exec_module(m)
+        return m
+
+    topo_mod = _load_space(LAYER_ROOT / "adapter" / "prime_topological_space.py")
+    PrimeTopologicalSpace = topo_mod.PrimeTopologicalSpace
+
+    # === THE WIRING UNDER TEST (explicit injection per clarified A pattern) ===
+    space = PrimeTopologicalSpace(event, npu_router=router)
+    print(f"[HARNESS] Space created with npu_router (last_npu_result initially None): {space.last_npu_result}")
+
+    # L_F build (remains local per design)
+    lap = space.compute_sheaf_laplacian()
+    assert isinstance(lap, csr_matrix), "laplacian must be csr"
+    print(f"[HARNESS] compute_sheaf_laplacian succeeded (nnz={lap.nnz}) — local sparse matmul as expected")
+
+    # Spectral (eigsh path) — delegates to router when present
+    l1, ev = space.compute_spectral_gap(k=2)
+    print(f"[HARNESS] compute_spectral_gap via router delegation: lambda_1={l1}")
+
+    # === ASSERT THE METADATA CONTRACT (exact keys for governor + oracle) ===
+    assert space.last_npu_result is not None, "last_npu_result must be populated by delegation"
+    meta = space.last_npu_result
+    required_for_governor_and_oracle = [
+        "salient_info",
+        "uma_compliant",
+        "zero_copy",
+        "frsqrte_contract_exercised",
+        "asymmetric_precision",
+        "uma_doctrine",
+        "memory_semantics",
+        "memory_envelope_notes",
+        "backend",
+    ]
+    for key in required_for_governor_and_oracle:
+        assert key in meta, f"Router result missing required governor/oracle key: {key}"
+    assert meta.get("frsqrte_contract_exercised") is True
+    assert meta.get("zero_copy") is True
+    # salient_info may be {} on this path (no ref passed to space), but key must exist
+    assert isinstance(meta.get("salient_info"), dict)
+
+    # Also exercise the quantized-ref path through router directly (already in other test, but joint)
+    meta_with_ref = router.compute_laplacian_eigsh(delta=delta_for_space, quantized_model_ref=ref)
+    assert "salient_info" in meta_with_ref and meta_with_ref["salient_info"], "salient_info not passed through on ref path"
+    assert meta_with_ref.get("uma_compliant") is True
+
+    print(f"[HARNESS][PASS] PrimeTopologicalSpace + Router integration complete.")
+    print(f"  last_npu_result keys (governor contract): {list(meta.keys())}")
+    print(f"  space.lambda_1={space.lambda_1}, router last={repr(router)}")
+    print("=" * 70)
+
+
 if __name__ == "__main__":
     # Direct execution for manual/ad-hoc verification runs
     test_router_compute_laplacian_eigsh()
+    test_prime_space_npu_router_integration()
