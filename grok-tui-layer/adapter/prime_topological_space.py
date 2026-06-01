@@ -123,6 +123,105 @@ class PrimeTopologicalSpace:
 
         return self.holonomy_signature
 
+    def compute_h2_obstructions(self) -> Dict[str, Any]:
+        """
+        Phase 8: Calculate H² obstructions (fundamental architectural conflicts).
+
+        In this graph approximation:
+        - H² represents obstructions that cannot be resolved by local patching.
+        - We approximate it as "irreconcilable module clusters" — dense subgraphs
+          with conflicting external dependencies that create systemic tension.
+
+        Returns systemic refactor requirements that should halt local mutation.
+        """
+        if self.laplacian is None:
+            self.compute_sheaf_laplacian()
+
+        adj = (self.restriction_map != 0).astype(int)
+        n_comp, labels = connected_components(adj, directed=False)
+
+        # Find dense clusters with high internal edges but poor global connectivity
+        obstructions = []
+        for comp in range(n_comp):
+            members = [i for i, l in enumerate(labels) if l == comp]
+            if len(members) < 4:
+                continue
+
+            internal_edges = 0
+            external_edges = 0
+            for i, j in zip(adj.row, adj.col):
+                if labels[i] == comp and labels[j] == comp:
+                    internal_edges += 1
+                elif labels[i] == comp or labels[j] == comp:
+                    external_edges += 1
+
+            internal_edges //= 2
+            density = internal_edges / max(1, len(members) * (len(members) - 1) / 2)
+
+            if density > 0.6 and external_edges < len(members) * 0.8:
+                node_names = [self.event["node_data"][i]["id"] for i in members[:5]]
+                obstructions.append({
+                    "cluster_size": len(members),
+                    "internal_density": round(density, 3),
+                    "external_connectivity": external_edges,
+                    "example_nodes": node_names,
+                    "severity": "systemic",
+                    "recommended_action": "Macro-architectural refactor required — this cluster represents an H² obstruction that cannot be resolved by local patches."
+                })
+
+        return {
+            "h2_obstruction_count": len(obstructions),
+            "obstructions": obstructions,
+            "requires_macro_refactor": len(obstructions) > 0
+        }
+
+    def compute_h3_paradigm_violations(self) -> Dict[str, Any]:
+        """
+        Phase 9: Calculate H³ paradigm incompatibilities.
+
+        H³ represents fundamental, irreconcilable design conflicts
+        (e.g., injecting synchronous blocking logic into a purely asynchronous manifold,
+         or mixing mutable global state with strict topological invariance).
+
+        These are treated as **Axiom Violations**. Detection must trigger
+        irrecoverable rejection (sys.exit(1) equivalent in real runtime).
+        """
+        if self.laplacian is None:
+            self.compute_sheaf_laplacian()
+
+        violations = []
+
+        # Heuristic for H³: Look for nodes that represent "blocking" or "global mutable" patterns
+        # in a context that should be non-blocking / immutable.
+        # In this simplified model we scan node kinds for known anti-patterns.
+        blocking_keywords = {"sync", "blocking", "global", "mutable", "thread", "lock", "sleep"}
+
+        for i, node in enumerate(self.event.get("node_data", [])):
+            kind = node.get("kind", "").lower()
+            feature = node.get("feature", [])
+
+            is_blocking_pattern = any(kw in kind for kw in blocking_keywords)
+
+            # Also check if the node has very high complexity in a supposed async context
+            complexity = feature[5] if len(feature) > 5 else 0
+
+            if is_blocking_pattern or complexity > 15:
+                violations.append({
+                    "node_id": node.get("id"),
+                    "file": node.get("file"),
+                    "kind": node.get("kind"),
+                    "reason": "Detected paradigm-incompatible pattern (blocking/global state in topological manifold)",
+                    "severity": "axiom_violation",
+                    "recommended_action": "IRRECOVERABLE: This change violates core topological axioms. Reject commit."
+                })
+
+        return {
+            "h3_violation_count": len(violations),
+            "violations": violations,
+            "is_irrecoverable": len(violations) > 0,
+            "action": "sys.exit(1)" if violations else "proceed"
+        }
+
     def get_cryptologic_key(self) -> Dict[str, Any]:
         """Full K(S) with H⁰ and holonomy (Phase 4.3)."""
         if self.lambda_1 is None:

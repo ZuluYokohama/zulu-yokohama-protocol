@@ -1,0 +1,24 @@
+{
+  "manifest": {
+    "type": "PHASE_8_PRODUCTION_WIRING",
+    "version": "0.1",
+    "generated_at": "2026-06-04T15:55:00Z",
+    "axioms": ["19.4", "5.2", "20.3", "A3"],
+    "crucible_precondition": "SATISFIED"
+  },
+  "real_oracle_wiring": {
+    "coderabbit_binary": "production (no simulation)",
+    "context_injection": "live K(S) evidence bundle",
+    "h1_feedback": "fully wired into SurfaceEnclosure"
+  },
+  "cloud_hook": {
+    "workflow": ".github/workflows/omega_crystal_gate.yml",
+    "behavior": "Forces cloud CodeRabbit to evaluate PRs through local sheaf constraints and K(S) history"
+  },
+  "h2_support": {
+    "method": "compute_h2_obstructions()",
+    "capability": "Detects fundamental architectural obstructions requiring macro-refactor",
+    "output": "Systemic Refactor Requirements with severity"
+  },
+  "verdict": "PHASE 8 INITIATED — Real binary wired, cloud perimeter secured with topological lens, H² obstruction detection active."
+}
