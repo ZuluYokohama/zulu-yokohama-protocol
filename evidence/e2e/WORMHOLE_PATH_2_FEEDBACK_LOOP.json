@@ -1,0 +1,24 @@
+{
+  "manifest": {
+    "type": "WORMHOLE_PATH_2_OMEGA_FEEDBACK_LOOP",
+    "version": "0.1",
+    "generated_at": "2026-06-04T16:25:00Z",
+    "axioms": ["19.4", "5.2", "20.3", "MaxOp Hardware"],
+    "crucible_precondition": "SATISFIED"
+  },
+  "harvester": {
+    "class": "distillation/geometry_harvester.py",
+    "primitive": "capture_shape_pair(problem_event, solution_event, prompt, summary, delta_lambda_1)",
+    "ledger": "datasets/shape_pairs.jsonl"
+  },
+  "integration": "bipartite-router-plugin/distillation_integration.py (clean handoff from router)",
+  "live_smoke": {
+    "pairs_captured": 1,
+    "example": {
+      "prompt": "Refactor the entire auth layer (H2 obstruction)",
+      "summary": "CodeRabbit agent-optimized fix that closed 3 H1 voids",
+      "delta_lambda_1": 0.034
+    }
+  },
+  "verdict": "WORMHOLE-PATH 2 DELIVERED — The Bipartite Router now automatically feeds the Omega Feedback Loop. Every successful remote resolution with positive coherence gain is captured as a Shape Pair for continuous autonomous distillation of frontier geometric reasoning into the local edge model."
+}

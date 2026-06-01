@@ -1,0 +1,96 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Translations
+*.mo
+*.pot
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project-specific
+# Temporary patch files from development
+*.patch
+temp_diff_for_oracle.patch
+
+# Large model artifacts (never commit GGUF or adapters)
+*.gguf
+*.bin
+*.safetensors
+adapters/
+lora-*/
+qlora-*/
+checkpoints/
+
+# Evidence bundles are committed (small JSON), but large logs are not
+*.log
+logs/
+
+# Keep the shape pairs ledger (small) but ignore if it grows huge during dev
+# datasets/shape_pairs.jsonl is committed as the canonical ledger
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# pyre
+.pyre/

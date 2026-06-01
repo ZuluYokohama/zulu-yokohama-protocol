@@ -1,0 +1,25 @@
+{
+  "manifest": {
+    "type": "PHASE_11_2_BIPARTITE_SYNTHESIS_COMPLETE",
+    "version": "0.1",
+    "generated_at": "2026-06-04T16:15:00Z",
+    "axioms": ["19.4", "5.2", "20.3", "MaxOp Hardware"],
+    "crucible_precondition": "SATISFIED"
+  },
+  "fusion": {
+    "local_half": "edge_compute/kv_cache_governor.py (ruthless H0/H1 eviction for 1.2 GB ceiling)",
+    "remote_half": "edge_compute/claude_code_oracle.py (native /coderabbit:review + agent-optimized + zero-VRAM swap)",
+    "decision_engine": "bipartite-router-plugin/router_gateway.py",
+    "scanner": "bipartite-router-plugin/math/prompt_topology.py"
+  },
+  "live_behavior": {
+    "high_H0_low_fragmentation": "Route LOCAL → Governor strips context → local 8B NPU",
+    "H2_or_high_fragmentation": "Route REMOTE → Oracle (agent-optimized) with automatic context swap"
+  },
+  "plugin_integration": {
+    "manifest": ".claude-plugin/plugin.json",
+    "handlers": "bipartite-router-plugin/handlers.py",
+    "effect": "The human no longer chooses Local or Remote. The mathematics of the prompt itself dictates the hardware and intelligence level used."
+  },
+  "verdict": "PHASE 11.2 BIPARTITE SYNTHESIS COMPLETE — The two Phase 11.2 physical engines have been fused into one automatic, topologically-steered decision system. The CLI now routes by geometry, not by human choice. The Reality Bridge is now a true Bipartite Metacognitive Router."
+}

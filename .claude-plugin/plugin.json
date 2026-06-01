@@ -1,0 +1,31 @@
+{
+  "name": "bipartite-topological-router",
+  "version": "0.1.0-phase11.2",
+  "description": "Bipartite Metacognitive Router — automatically routes prompts to Local 8B NPU or Remote Oracle based on live topological geometry (H⁰, H¹, Δλ₁, holonomy).",
+
+  "commands": {
+    "/coderabbit:review": {
+      "description": "Topologically-aware review. The Bipartite Router decides Local vs Remote (agent-optimized Oracle) and performs automatic Zero-VRAM Context Swap + Seamless Override.",
+      "handler": "bipartite-router-plugin.handlers:handle_coderabbit_review"
+    }
+  },
+
+  "hooks": {
+    "PreToolUse": {
+      "description": "Every mutation is first classified by its topological weight (β₀, β₁, Δλ₁ projection). The router decides the execution path automatically.",
+      "handler": "bipartite-router-plugin.handlers:pre_tool_router"
+    },
+    "UserPromptSubmit": {
+      "description": "The primary entry point. Every user message is scanned for its geometric signature and automatically routed to Local 8B NPU or Remote Oracle.",
+      "handler": "bipartite-router-plugin.handlers:route_user_prompt"
+    }
+  },
+
+  "capabilities": {
+    "bipartite_routing": true,
+    "zero_vram_context_swap": true,
+    "h1_h2_h3_awareness": true,
+    "seamless_override": true,
+    "agent_optimized_oracle": true
+  }
+}
