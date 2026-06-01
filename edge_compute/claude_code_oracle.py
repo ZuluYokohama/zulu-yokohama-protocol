@@ -30,8 +30,13 @@ from datetime import datetime, timezone
 
 from .kv_cache_governor import TopologicalKVCacheGovernor
 from .npu_kernel_router import NPUKernelRouter, create_npu_router
-from ..grok_tui_layer.adapter.prime_topological_space import PrimeTopologicalSpace
-from ..grok_tui_layer.higher_cohomology.higher_cohomology import HigherCohomology
+
+# Consistent Phase 11.2 path bootstrap (absolute after sys.path, no fragile relatives)
+import sys
+from pathlib import Path as _Path
+sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
+from grok_tui_layer.adapter.prime_topological_space import PrimeTopologicalSpace
+from grok_tui_layer.higher_cohomology.higher_cohomology import HigherCohomology
 
 
 class ClaudeCodePrimeCrystalOracle:

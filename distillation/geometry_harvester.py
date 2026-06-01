@@ -25,7 +25,8 @@ from datetime import datetime, timezone
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from bipartite_router_plugin.router_gateway import BipartiteRouter
+# Lazy import of BipartiteRouter to break circular dependency with distillation_integration / router_gateway
+# (the harvester is imported by the integration which is imported by the router at module load time).
 from grok_tui_layer.adapter.prime_topological_space import PrimeTopologicalSpace
 
 

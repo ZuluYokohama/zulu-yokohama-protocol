@@ -6,18 +6,18 @@
   "commands": {
     "/coderabbit:review": {
       "description": "Topologically-aware review. The Bipartite Router decides Local vs Remote (agent-optimized Oracle) and performs automatic Zero-VRAM Context Swap + Seamless Override.",
-      "handler": "bipartite-router-plugin.handlers:handle_coderabbit_review"
+      "handler": "bipartite_router_plugin.handlers:handle_coderabbit_review"
     }
   },
 
   "hooks": {
     "PreToolUse": {
       "description": "Every mutation is first classified by its topological weight (β₀, β₁, Δλ₁ projection). The router decides the execution path automatically.",
-      "handler": "bipartite-router-plugin.handlers:pre_tool_router"
+      "handler": "bipartite_router_plugin.handlers:pre_tool_router"
     },
     "UserPromptSubmit": {
       "description": "The primary entry point. Every user message is scanned for its geometric signature and automatically routed to Local 8B NPU or Remote Oracle.",
-      "handler": "bipartite-router-plugin.handlers:route_user_prompt"
+      "handler": "bipartite_router_plugin.handlers:route_user_prompt"
     }
   },
 

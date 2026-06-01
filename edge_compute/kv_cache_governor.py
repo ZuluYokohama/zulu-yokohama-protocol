@@ -20,7 +20,11 @@ from typing import List, Dict, Any, Optional
 import heapq
 import numpy as np
 
-from ..grok_tui_layer.adapter.prime_topological_space import PrimeTopologicalSpace
+# Consistent with the rest of the Phase 11.2 codebase: explicit path bootstrap + absolute import
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from grok_tui_layer.adapter.prime_topological_space import PrimeTopologicalSpace
 
 
 @dataclass
