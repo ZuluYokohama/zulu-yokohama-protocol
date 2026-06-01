@@ -35,6 +35,8 @@ The Bipartite Router now feeds a closed-loop self-improvement system.
 
 **Target:** End-to-end demonstration of the Omega Feedback Loop + production-constrained QLoRA tuner that respects the 6GB ARM64 UMA envelope.
 
+**History Fidelity Note (Task 1):** Commit `c84e19c` bundled the full Wormhole-Path 2 "Omega Feedback Loop" section + version/status rewrite + the Phase 13 header (deviating from the narrow "insert a new top-level section after the Wormhole-Path 2 entry" in Step 1.2). The final manifest state (Phase 13 block correctly after Wormhole-Path 2) is as required. This explanatory note was inserted via minimal follow-up commit to document the history for Task 1 fidelity.
+
 ---
 
 ## Final Status
