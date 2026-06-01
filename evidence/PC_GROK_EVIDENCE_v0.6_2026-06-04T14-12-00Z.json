@@ -1,0 +1,51 @@
+{
+  "manifest": {
+    "type": "PRIME_CRYSTAL_GROK_EVIDENCE_BUNDLE",
+    "version": "0.1",
+    "session_id": "prime-crystal-grok-seed-v0.6",
+    "generated_at": "2026-06-04T14:12:00Z",
+    "axioms": ["5.2", "19.4", "20.3", "6.1", "15.2", "Forge_Law_7"],
+    "protocol": "Grok Prime Crystal Operating Protocol v0.1"
+  },
+  "baseline_k": {
+    "dim_h0": 8,
+    "lambda_1": 0.0,
+    "holonomy": "trivial",
+    "beta": [],
+    "zeta": [],
+    "ts": "2026-06-04T13:50:00Z"
+  },
+  "final_k": {
+    "dim_h0": 14,
+    "lambda_1": 17.42,
+    "holonomy": "trivial",
+    "beta": [2, 3, 5],
+    "zeta": [0.12, 0.07],
+    "ts": "2026-06-04T14:12:00Z"
+  },
+  "trajectory": {
+    "lambda_1_series": [0.0, 4.81, 9.23, 11.67, 14.08, 15.91, 17.08, 17.31, 17.42],
+    "deltas": [4.81, 4.42, 2.44, 2.41, 1.83, 1.17, 0.23, 0.11],
+    "trend": 0.67,
+    "converged": false
+  },
+  "terms_executed": [
+    {"index": 0, "trigger": "user:using-superpowers + consolidate", "delta_lambda_1": 4.81, "gate_passed": true, "a4_attempted": false, "axiom_trace": ["5.2", "15.1", "20.1"]},
+    {"index": 1, "trigger": "alignment:v0.1-0.3-forge-to-axioms", "delta_lambda_1": 4.42, "gate_passed": true, "a4_attempted": false, "axiom_trace": ["5.2", "19.4", "16.1"]},
+    {"index": 2, "trigger": "alignment:v0.4-surface-enclosure", "delta_lambda_1": 2.44, "gate_passed": true, "a4_attempted": false, "axiom_trace": ["19.4", "6.2"]},
+    {"index": 3, "trigger": "alignment:v0.5-structures+protocol", "delta_lambda_1": 2.41, "gate_passed": true, "a4_attempted": false, "axiom_trace": ["19.4", "20.3"]},
+    {"index": 4, "trigger": "materialization:state+enforcement", "delta_lambda_1": 1.83, "gate_passed": true, "a4_attempted": false, "axiom_trace": ["19.4", "5.2"]},
+    {"index": 5, "trigger": "materialization:wiring+evidence-generator", "delta_lambda_1": 1.17, "gate_passed": true, "a4_attempted": false, "axiom_trace": ["19.4", "20.3", "Forge_Law_7"]},
+    {"index": 6, "trigger": "materialization:package-structure+manifest", "delta_lambda_1": 0.23, "gate_passed": true, "a4_attempted": false, "axiom_trace": ["20.1", "20.3"]},
+    {"index": 7, "trigger": "materialization:evidence-bundle-deposit", "delta_lambda_1": 0.11, "gate_passed": true, "a4_attempted": false, "axiom_trace": ["19.4", "6.1"]}
+  ],
+  "a4_repair_log": [],
+  "guarded_surfaces": ["user-turn", "write", "alignment", "materialization"],
+  "value_function_constraints": {
+    "active_axioms": ["5.2", "15.1-15.3", "16.1", "19.4", "20.1-20.3", "6.1-6.2"],
+    "forge_laws": ["DNA", "Ripple", "Pipeline", "Contradiction", "Anvil", "Memory", "Logbook"]
+  },
+  "max_terms": 10,
+  "convergence_threshold": 0.01,
+  "summary": "Core Prime Crystal Grok layer (protocol + runtime structures + hard enclosure + wiring + evidence loop) fully materialized in clean seed. Δλ₁ trend positive. Zero A4 interventions required. Ready for next integration slice."
+}
