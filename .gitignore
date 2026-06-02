@@ -87,6 +87,11 @@ ENV/
 env/
 .venv/
 
+# Local dev junctions for import compatibility (hyphen-dirs on disk + underscore import names)
+# These are recreated on clone with: cmd /c "mklink /J grok_tui_layer grok-tui-layer"
+grok_tui_layer
+bipartite_router_plugin  # only if you keep a junction; the real source is now the underscore dir
+
 # mypy
 .mypy_cache/
 .dmypy.json
