@@ -35,8 +35,8 @@ from .npu_kernel_router import NPUKernelRouter, create_npu_router
 import sys
 from pathlib import Path as _Path
 sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
-from grok_tui_layer.adapter.prime_topological_space import PrimeTopologicalSpace
-from grok_tui_layer.higher_cohomology.higher_cohomology import HigherCohomology
+from tui-layer.adapter.prime_topological_space import PrimeTopologicalSpace
+from tui-layer.higher_cohomology.higher_cohomology import HigherCohomology
 
 
 class ClaudeCodePrimeCrystalOracle:

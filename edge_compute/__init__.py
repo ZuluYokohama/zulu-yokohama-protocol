@@ -10,7 +10,7 @@ Axiomatic Dependencies:
 - Volume VI Integration Layer (edge deployment)
 
 Purpose: All 6GB-constrained, NPU-accelerated topological logic lives here.
-Zero pollution of the core grok-tui-layer/ proven in previous phases.
+Zero pollution of the core tui-layer/ proven in previous phases.
 """
 
 __version__ = "0.1.0-phase11"

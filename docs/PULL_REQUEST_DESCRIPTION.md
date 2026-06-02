@@ -25,7 +25,7 @@ The legacy LLM execution model is fundamentally unbounded. It can (and regularly
   - `SurfaceEnclosure` (universal hard gate)
   - `HigherCohomology` (H¹ voids as technical debt)
 - Persistence layer with cross-process IPC bridge
-- Drop-in `grok_tui_main_shim.py` for TUI integration
+- Drop-in `tui_main_shim.py` for TUI integration
 - Full E2E verification suite (`e2e/`) including Dark Launch shadow telemetry and Soft Gate Crucible tests
 - Comprehensive `TUI_INTEGRATION_NOTES.md`
 

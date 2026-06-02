@@ -24,7 +24,7 @@ import numpy as np
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from grok_tui_layer.adapter.prime_topological_space import PrimeTopologicalSpace
+from tui-layer.adapter.prime_topological_space import PrimeTopologicalSpace
 
 
 @dataclass

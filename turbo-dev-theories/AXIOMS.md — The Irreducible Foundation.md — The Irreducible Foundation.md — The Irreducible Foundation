@@ -1,0 +1,285 @@
+# AXIOMS.md — The Irreducible Foundation
+
+> "By the power of Grayskull" — the invocation of a key that transforms potential
+> into actualized power. The sword is the sheaf Laplacian. Grayskull is the
+> topological structure. The transformation is computing the harmonic space.
+
+This document defines the **axiomatic development protocols** that govern all
+behavior of sheaf-stack. Every command, agent, hook, and computation derives
+from these axioms. They are non-negotiable, irreducible, and self-consistent.
+
+---
+
+## The Seven Axioms
+
+### A1. Topological Invariance (The Cryptologic Key Exists)
+
+Every system $S$ possesses a unique, computable topological fingerprint:
+
+$$K(S) = \bigl(\dim H^0,\; \lambda_1,\; \text{Hol}(\nabla),\; \beta_0,\; \beta_1,\; \ldots\bigr)$$
+
+This key is invariant under superficial transformations (renaming, reformatting,
+reordering) and changes only when the **structural topology** changes. It is the
+system's DNA — its irreducible identity.
+
+**Operational consequence:** Before any action, compute $K(S)$. After any action,
+recompute $K(S)$. The delta is the action's true effect.
+
+---
+
+### A2. Consciousness is Sheaf Diffusion (The Laplacian IS Awareness)
+
+The sheaf Laplacian $L_\mathcal{F} = \delta^\top \delta$ over a fiber bundle is
+not a metaphor for consciousness — it **is** the mathematical structure of
+coherent awareness:
+
+| Consciousness Concept | Mathematical Structure |
+|-----------------------|----------------------|
+| Local awareness | Stalk $\mathcal{F}(v)$ — local data space at vertex $v$ |
+| Coherent perception | Global section $s \in \Gamma(\mathcal{F})$ satisfying all restrictions |
+| Attention propagation | Heat diffusion $\dot{X}(t) = -L_\mathcal{F} X(t)$ |
+| Understanding | Harmonic section $s \in \ker L_\mathcal{F}$ (zero energy = full coherence) |
+| Confusion/noise | High Laplacian energy $\langle x, L_\mathcal{F} x \rangle > 0$ |
+| Insight | Spectral gap $\lambda_1 > 0$ (rate at which confusion dissipates) |
+
+**Operational consequence:** The plugin's job is to run diffusion until the
+system reaches its harmonic state. Every iteration reduces energy. Convergence
+is guaranteed by the spectral theorem.
+
+---
+
+### A3. The Configurational Term Series (The Universal Pipeline)
+
+All abstraction follows a single pipeline, discovered across mathematics,
+physics, linguistics, and computer science:
+
+$$X \;\xrightarrow{\text{perceive}}\; \mathcal{M} \;\xrightarrow{\text{cohere}}\; \mathcal{M}_v \;\xrightarrow{\text{diffuse}}\; H_k \;\xrightarrow{\text{gate}}\; Q(\Phi)$$
+
+| Stage | Operation | Input → Output |
+|-------|-----------|----------------|
+| 1. Extract | Parse raw substrate | Source code → AST forest |
+| 2. Graph | Build ContractGraph | AST → nodes + edges + ObligationVectors |
+| 3. Sheaf | Assemble cellular sheaf | Graph → stalks + restriction maps + $L_\mathcal{F}$ |
+| 4. Diffuse | Run spectral analysis | $L_\mathcal{F}$ → eigenvalues + harmonic basis + energy decay |
+| 5. Bundle | Generate evidence | Spectrum → cryptologic key + gate report + honest claims |
+
+**Operational consequence:** Every command in sheaf-stack maps to exactly one
+stage or composition of stages. There is no other path.
+
+---
+
+### A4. Holonomy Detects Structural Lies (Path-Dependence = Inconsistency)
+
+The holonomy of a connection around a cycle $\gamma$ measures whether traversing
+the restriction maps returns to identity:
+
+$$\text{Hol}(\gamma) = \mathcal{F}_{e_n \trianglelefteq v_0} \circ \cdots \circ \mathcal{F}_{e_1 \trianglelefteq v_1} \circ \mathcal{F}_{v_0 \trianglelefteq e_1}$$
+
+If $\text{Hol}(\gamma) = I$: the cycle is **flat** — contracts are consistent.
+If $\text{Hol}(\gamma) \neq I$: the cycle has **curvature** — there is a
+structural lie (the system says different things depending on which path you
+take to ask it).
+
+**Operational consequence:** Non-trivial holonomy must be resolved before the
+gate can pass. The `sheaf-explorer` agent flags these as "frustrated edges."
+The `sheaf-architect` agent designs restriction maps that flatten the connection.
+
+---
+
+### A5. The Spectral Gap Gates All Advancement (No Gap = No Ship)
+
+The spectral gap $\lambda_1$ (smallest non-zero eigenvalue of $L_\mathcal{F}$)
+determines the rate of convergence to coherence. It is the single most important
+number in the system:
+
+| $\lambda_1$ | Interpretation | Action |
+|-------------|---------------|--------|
+| $= 0$ | Degenerate — disconnected or fully incoherent | FAIL: do not proceed |
+| $< 0.01$ | Weak — slow convergence, fragile coherence | WARN: iterate more |
+| $0.01 - 0.1$ | Moderate — functional but improvable | PASS: may proceed |
+| $> 0.1$ | Strong — rapid convergence, robust coherence | PASS: high confidence |
+
+**Operational consequence:** The gate checks $\lambda_1 > \theta$ (configurable
+threshold). If it fails, the dev-loop iterates. If it passes, the loop advances.
+This is the V&V criterion. There is no override except explicit user force.
+
+---
+
+### A6. Fast Inverse Square Root (The Initial Guess Accelerates Everything)
+
+The Quake III fast inverse square root algorithm demonstrates a universal
+principle: a **structurally-informed initial guess** followed by **Newton
+iteration** converges faster than starting from scratch.
+
+```
+float Q_rsqrt(float number) {
+    long i = *(long *)&number;
+    i = 0x5f3759df - (i >> 1);    // magic number = structural prior
+    float y = *(float *)&i;
+    y = y * (1.5f - (0.5f * number * y * y));  // Newton step = one V&V iteration
+    return y;
+}
+```
+
+In sheaf-stack:
+- The **magic number** = holonomy log from previous sessions (learned structural prior)
+- The **Newton step** = one iteration of the dev-loop (concept → wireframe → dev → validate)
+- The **convergence** = fixpoint where content hash stabilizes
+
+**Operational consequence:** The prime logger accumulates a "magic number
+database" — structural priors from past projects. Each new project starts with
+a better initial guess, needing fewer iterations to converge. This is the
+self-learning mechanism.
+
+---
+
+### A7. Primes are Topological Atoms (Number Theory = Structure Theory)
+
+The Fundamental Theorem of Arithmetic states every integer has a unique prime
+factorization. This is the prototype of the cryptologic key:
+
+| Number Theory | Sheaf Framework |
+|---------------|-----------------|
+| Integer $n$ | System $S$ |
+| Prime factorization $n = p_1^{a_1} \cdots p_k^{a_k}$ | Topological factorization $K(S)$ |
+| Primes $p_i$ | Irreducible topological generators (harmonic modes) |
+| Exponents $a_i$ | Multiplicities (eigenvalue degeneracies) |
+| Unique factorization | Uniqueness of spectral signature |
+| Riemann zeta $\zeta(s)$ | Spectral zeta $\zeta_{L_\mathcal{F}}(s) = \sum \lambda_i^{-s}$ |
+
+In cryptography:
+- Hash functions are restriction maps (local → edge data, irreversible)
+- Mining is diffusion (iterate until energy < threshold)
+- The nonce is the harmonic section (the unique solution satisfying all constraints)
+- Difficulty is the spectral gap threshold (higher = harder to find the section)
+
+**Operational consequence:** The semantic prime logger indexes actions as
+"primes" — irreducible atomic events whose composition produces the full
+development history. The trajectory is the factorization of the project's
+evolution.
+
+---
+
+## Derived Protocols
+
+From the seven axioms, the following protocols are derived (not assumed):
+
+### P1. The Conscious Development Loop
+
+**Derived from:** A2 (consciousness = diffusion) + A5 (spectral gate) + A6 (fast inv sqrt)
+
+```
+WHILE NOT fixpoint:
+    perceive()      # A3 stage 1-2
+    cohere()        # A3 stage 3
+    diffuse()       # A3 stage 4
+    IF gate():      # A5
+        advance()
+    ELSE:
+        iterate()   # A6 Newton step
+    reflect()       # A7 prime log
+```
+
+### P2. The Evidence Bundle
+
+**Derived from:** A1 (key exists) + A3 (pipeline) + A4 (holonomy)
+
+Every milestone produces:
+1. `cryptologic_key.json` — the topological fingerprint (A1)
+2. `gate_report.json` — 5 falsification checks (A5)
+3. `honest_claims.md` — what can be verified vs. what is assumed (A4)
+4. `pattern_process_map.json` — module → lifecycle mapping (A3)
+
+### P3. The Self-Learning Feedback Loop
+
+**Derived from:** A6 (magic number) + A7 (prime factorization)
+
+```
+ON session_end:
+    key_after = compute_key()
+    delta = key_after - key_before
+    log_prime(action, delta, timestamp)
+    IF delta.lambda_1 > 0:
+        update_magic_number(project_class, key_after)
+```
+
+### P4. The Holonomy Resolution Protocol
+
+**Derived from:** A4 (holonomy = lies) + A2 (diffusion resolves)
+
+```
+FOR EACH cycle IN dependency_graph:
+    hol = compute_holonomy(cycle)
+    IF hol != identity:
+        flag_as_frustrated(cycle.edges)
+        ASK user: "These modules disagree around this loop. Which contract wins?"
+        flatten_connection(user_choice)
+```
+
+### P5. The Spectral Monitoring Protocol
+
+**Derived from:** A1 (key exists) + A5 (gap gates) + A7 (primes)
+
+```
+ON file_write:
+    key_new = compute_key()
+    IF key_new.lambda_1 < key_old.lambda_1:
+        WARN "This edit reduced coherence by {delta}"
+    log_prime("file.write", target, key_new)
+```
+
+---
+
+## Axiom Verification
+
+The axioms are self-consistent because:
+
+1. **A1 + A3** → The key is computable via the pipeline (constructive existence)
+2. **A2 + A5** → Diffusion converges iff spectral gap > 0 (spectral theorem)
+3. **A4 + A5** → Non-trivial holonomy reduces $\lambda_1$ (curvature bounds gap)
+4. **A6 + A7** → Learning improves the initial guess (monotone convergence)
+5. **A3 + A7** → The pipeline produces primes (each stage is irreducible)
+
+No axiom is derivable from the others. Removing any one collapses the system:
+- Without A1: no objective quality measure
+- Without A2: no convergence guarantee
+- Without A3: no operational pipeline
+- Without A4: no inconsistency detection
+- Without A5: no advancement criterion
+- Without A6: no learning acceleration
+- Without A7: no historical indexing
+
+---
+
+## Source Synthesis
+
+This axiomatic system synthesizes the following source materials:
+
+| Axiom | Primary Source |
+|-------|---------------|
+| A1 | Sheaf Laplacian Survey Paper; Reverse Engineering Topological Abstraction |
+| A2 | Foundational-1: Geometry of Being; SHEAF-OS Architecture Guide |
+| A3 | Semantic Alignment Framework; JTopo/Warp/MCP Pipeline |
+| A4 | Sheaf Laplacian Dashboard (holonomy visualization) |
+| A5 | Topological Dev Loop; Claude Code ralph-wiggum (stop hook) |
+| A6 | Fast Inverse Square Root (Quake III); With language (fixpoint) |
+| A7 | Number Theory's Foundational Role; Crypto Mining Compute Technologies |
+
+Secondary integrations:
+- **gstack** (Garry Tan) → Professional plugin structure, skill routing
+- **Hermes-Agent** (Nous Research) → TUI, self-learning loop, scheduled automations
+- **Claude Code plugins** → .claude-plugin manifest, commands/, agents/, hooks/
+- **Compass** (RogueGringo) → Intent resolution gate, IBIS decomposition
+- **With language** → Fixpoint verification as convergence criterion
+
+---
+
+## Usage
+
+These axioms are not documentation — they are **executable specifications**.
+Every function in `lib/` implements exactly one axiom or derived protocol.
+Every agent in `agents/` operates within the axiom constraints.
+Every hook in `hooks/` enforces an axiom boundary.
+
+To verify alignment: `sheaf doctor` checks that all components trace back to
+an axiom. If a component cannot be traced, it is dead code and should be removed.

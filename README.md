@@ -15,7 +15,7 @@ This directory is the initial executable seed for the single final working repos
 - **Evidence bundle generator** (Forge Law 7 / 19.4 Logbook)
 - Proper Python package structure with `__init__.py` files
 - Top-level **SEED_MANIFEST.md**
-- Real evidence bundle deposited for this sequence: `evidence/PC_GROK_EVIDENCE_v0.6_...json`
+- Real evidence bundle deposited for this sequence: `evidence/PC_EVIDENCE_v0.6_...json`
 
 See `SEED_MANIFEST.md` for the authoritative current state and next steps.
 

@@ -26,9 +26,9 @@ def run_soft_gate_test(destructive_intent: str) -> dict:
     In real Soft Gate this would be the actual TUI calling the live SurfaceEnclosure.
     Here we simulate the full topological evaluation of the bad proposal.
     """
-    from grok_tui_layer.adapter.rich_prime_event_builder import RichPrimeEventBuilder
-    from grok_tui_layer.adapter.prime_topological_space import PrimeTopologicalSpace
-    from grok_tui_layer.higher_cohomology.higher_cohomology import HigherCohomology
+    from tui-layer.adapter.rich_prime_event_builder import RichPrimeEventBuilder
+    from tui-layer.adapter.prime_topological_space import PrimeTopologicalSpace
+    from tui-layer.higher_cohomology.higher_cohomology import HigherCohomology
 
     print(f"\n[Human Hallucination Test]")
     print(f"Developer instruction: \"{destructive_intent}\"")

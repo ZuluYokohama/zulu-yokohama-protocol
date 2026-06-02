@@ -27,7 +27,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 # Lazy import of BipartiteRouter to break circular dependency with distillation_integration / router_gateway
 # (the harvester is imported by the integration which is imported by the router at module load time).
-from grok_tui_layer.adapter.prime_topological_space import PrimeTopologicalSpace
+from tui-layer.adapter.prime_topological_space import PrimeTopologicalSpace
 
 
 class GeometryHarvester:

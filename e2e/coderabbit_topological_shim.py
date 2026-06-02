@@ -119,9 +119,9 @@ def main():
     print("Real binary execution (no simulation)")
     print("=" * 70)
 
-    evidence_bundle = SEED_ROOT / "evidence" / "PC_GROK_EVIDENCE_phase5_2_assimilation.json"
+    evidence_bundle = SEED_ROOT / "evidence" / "PC_EVIDENCE_phase5_2_assimilation.json"
     if not evidence_bundle.exists():
-        evidence_bundle = SEED_ROOT / "evidence" / "PC_GROK_EVIDENCE_phase4_3_autonomy_gate.json"
+        evidence_bundle = SEED_ROOT / "evidence" / "PC_EVIDENCE_phase4_3_autonomy_gate.json"
 
     ks = load_ks_evidence(evidence_bundle)
     print(f"\n[1] Ingested live K(S) from {evidence_bundle.name}")

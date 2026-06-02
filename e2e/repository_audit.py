@@ -75,8 +75,8 @@ def audit_cold_start_performance() -> bool:
 
     try:
         # Simulate the critical hot path the TUI will hit on startup
-        from grok_tui_layer.persistence.ipc_bridge import create_ipc_bridge_for_grok_tui
-        from grok_tui_layer.persistence.persistent_fabric import get_persistent_fabric_for_tui
+        from tui-layer.persistence.ipc_bridge import create_ipc_bridge_for_grok_tui
+        from tui-layer.persistence.persistent_fabric import get_persistent_fabric_for_tui
 
         fabric = get_persistent_fabric_for_tui(SEED_ROOT)
         bridge = create_ipc_bridge_for_grok_tui(SEED_ROOT, transport="memory_mapped")

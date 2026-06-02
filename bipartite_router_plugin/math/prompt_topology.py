@@ -23,7 +23,7 @@ import re
 
 # Import from the proven clean seed (no duplication)
 import sys
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "grok-tui-layer"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tui-layer"))
 
 from adapter.rich_prime_event_builder import RichPrimeEventBuilder
 from adapter.prime_topological_space import PrimeTopologicalSpace

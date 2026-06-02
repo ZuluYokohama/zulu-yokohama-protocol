@@ -28,8 +28,8 @@ def simulate_external_file_change():
 
 
 def run_ipc_persistence_test() -> dict:
-    from grok_tui_layer.persistence.ipc_bridge import create_ipc_bridge_for_grok_tui
-    from grok_tui_layer.persistence.persistent_fabric import get_persistent_fabric_for_tui
+    from tui-layer.persistence.ipc_bridge import create_ipc_bridge_for_grok_tui
+    from tui-layer.persistence.persistent_fabric import get_persistent_fabric_for_tui
 
     print("\n[IPC Persistence Check]")
     print("1. Starting TUI session A (primary)")
@@ -49,8 +49,8 @@ def run_ipc_persistence_test() -> dict:
     bridge_a.get_current_ks()  # force refresh
 
     # Rebuild to simulate what the hot path would do on external change
-    from grok_tui_layer.adapter.rich_prime_event_builder import RichPrimeEventBuilder
-    from grok_tui_layer.adapter.prime_topological_space import PrimeTopologicalSpace
+    from tui-layer.adapter.rich_prime_event_builder import RichPrimeEventBuilder
+    from tui-layer.adapter.prime_topological_space import PrimeTopologicalSpace
 
     builder = RichPrimeEventBuilder(max_files=80)
     event = builder.build_from_project(SEED_ROOT, trigger="ipc:focus_return_after_external_change")

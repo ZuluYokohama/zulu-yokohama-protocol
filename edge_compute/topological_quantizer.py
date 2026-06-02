@@ -13,7 +13,7 @@ Axiomatic Dependencies:
 - Volume IV Computational Architecture (NPU kernel offload + GGUF/QNN bridge)
 - Volume VI Integration Layer (edge deployment, clean namespace isolation)
 
-Purpose: Provide the quantization foundation that guarantees topological invariants survive 4/5-bit GGUF quantization on the strict 6GB ARM64+NPU UMA envelope. Mixed-precision: 4/5-bit base for bulk weights; 8-bit reserved exclusively for salient (topology-critical) weights. This is the enabler for NPUKernelRouter (Task 3) and TopologicalKVCacheGovernor (Task 4). All math remains sparse. Zero pollution of grok-tui-layer/.
+Purpose: Provide the quantization foundation that guarantees topological invariants survive 4/5-bit GGUF quantization on the strict 6GB ARM64+NPU UMA envelope. Mixed-precision: 4/5-bit base for bulk weights; 8-bit reserved exclusively for salient (topology-critical) weights. This is the enabler for NPUKernelRouter (Task 3) and TopologicalKVCacheGovernor (Task 4). All math remains sparse. Zero pollution of tui-layer/.
 
 Integration: Consumes calibration PrimeTopologicalSpace (for salient detection) and produces a model ref that PrimeTopologicalSpace.verify_topological_invariants(...) can score. Real GGUF loading / QNN delegate binding deferred to follow-on tasks; skeleton guarantees the TDD contract and doctrine compliance in comments + stubs.
 
@@ -28,7 +28,7 @@ import numpy as np
 from scipy.sparse import csr_matrix  # Re-export / type alignment for zero-copy doctrine in callers
 
 # Internal import (will be resolved via the same bootstrap used by e2e tests)
-from grok_tui_layer.adapter.prime_topological_space import PrimeTopologicalSpace
+from tui-layer.adapter.prime_topological_space import PrimeTopologicalSpace
 
 
 class TopologicalQuantizer:

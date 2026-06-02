@@ -104,7 +104,7 @@ def test_router_compute_laplacian_eigsh():
     # Ad-hoc verification note (makes 6GB claim evidence-accurate without expanding scope):
     #   Manual/ad-hoc runs (outside this hermetic harness) with larger synthetic refs + quantizer estimates
     #   confirmed router path + zero-copy csr stays well under 6GB UMA on target profile (no materialization).
-    #   See evidence/ PC_GROK_EVIDENCE_phase* for calibration + router exercise logs.
+    #   See evidence/ PC_EVIDENCE_phase* for calibration + router exercise logs.
     #   The 6GB is the *total system* envelope (model weights in Q4 + router/quantizer overhead); this harness
     #   validates the adapter contract at unit scale.
     envelope_ok = mem_delta_bytes < (5 * 1024 * 1024)  # generous 5MB for tiny test (real <6GB total by design)
@@ -151,7 +151,7 @@ def test_prime_space_npu_router_integration():
 
     # === Import Space via importlib (robust for e2e harness, mirrors live_enclosure_demo.py) ===
     import importlib.util
-    LAYER_ROOT = SEED_ROOT / "grok-tui-layer"
+    LAYER_ROOT = SEED_ROOT / "tui-layer"
 
     def _load_space(p: Path):
         spec = importlib.util.spec_from_file_location("prime_topological_space_t3_harness", p)

@@ -10,7 +10,7 @@ Axiomatic Dependencies:
 - Volume IV Computational Architecture, Volume VI Integration & Distillation layers
 - QLoRA synthesis under strict 6GB UMA envelope (4-bit base, low-rank adapters, Δλ₁-weighted loss, gradient checkpointing)
 
-Purpose: Namespace for the continuous autonomous distillation engine (GeometryHarvester) and forthcoming production-constrained QLoRA Geometric Tuner. Enables the full Omega Feedback Loop: remote oracle geometric reasoning distilled into local edge model via captured Shape Pairs ledger (datasets/shape_pairs.jsonl). Strict WORMHOLE-PATH1 manifest discipline on all artifacts. Zero pollution of grok-tui-layer/ or bipartite-router-plugin/. Evidence bundles are the source of truth.
+Purpose: Namespace for the continuous autonomous distillation engine (GeometryHarvester) and forthcoming production-constrained QLoRA Geometric Tuner. Enables the full Omega Feedback Loop: remote oracle geometric reasoning distilled into local edge model via captured Shape Pairs ledger (datasets/shape_pairs.jsonl). Strict WORMHOLE-PATH1 manifest discipline on all artifacts. Zero pollution of tui-layer/ or bipartite-router-plugin/. Evidence bundles are the source of truth.
 
 Target Envelope: End-to-end demonstration of the loop + QLoRA tuner that respects the 6GB ARM64 UMA.
 """

@@ -36,8 +36,8 @@
 - `prime-crystal-grok/edge_compute/kv_cache_governor.py`
 
 **Modifications:**
-- `prime-crystal-grok/grok-tui-layer/adapter/prime_topological_space.py` – add `verify_topological_invariants(quantized_weights)` and `compute_invariant_preservation_score()`.
-- `prime-crystal-grok/grok-tui-layer/adapter/rich_prime_event_builder.py` – minor extension for "Semantic Router" features if needed for KV weighting.
+- `prime-crystal-grok/tui-layer/adapter/prime_topological_space.py` – add `verify_topological_invariants(quantized_weights)` and `compute_invariant_preservation_score()`.
+- `prime-crystal-grok/tui-layer/adapter/rich_prime_event_builder.py` – minor extension for "Semantic Router" features if needed for KV weighting.
 - `prime-crystal-grok/SEED_MANIFEST.md` – record Phase 11.
 - `prime-crystal-grok/TUI_INTEGRATION_NOTES.md` or new `EDGE_DEPLOYMENT_NOTES.md`.
 
@@ -71,7 +71,7 @@ Axiomatic Dependencies:
 - Volume VI Integration Layer (edge deployment)
 
 Purpose: All 6GB-constrained, NPU-accelerated topological logic lives here.
-Zero pollution of the core grok-tui-layer/ proven in previous phases.
+Zero pollution of the core tui-layer/ proven in previous phases.
 """
 
 __version__ = "0.1.0-phase11"
@@ -103,7 +103,7 @@ git commit -m "chore(edge): initialize Phase 11 ARM64 NPU edge namespace with ma
 
 **Files:**
 - Create: `prime-crystal-grok/edge_compute/topological_quantizer.py`
-- Modify: `prime-crystal-grok/grok-tui-layer/adapter/prime_topological_space.py`
+- Modify: `prime-crystal-grok/tui-layer/adapter/prime_topological_space.py`
 
 - [ ] **Step 2.1: Add invariant verification methods to PrimeTopologicalSpace**
 
@@ -131,7 +131,7 @@ Create `prime-crystal-grok/e2e/test_topological_quantizer.py` (or add to edge st
 ```python
 def test_4bit_quantization_preserves_lambda_1():
     from edge_compute.topological_quantizer import TopologicalQuantizer
-    from grok_tui_layer.adapter.prime_topological_space import PrimeTopologicalSpace
+    from tui-layer.adapter.prime_topological_space import PrimeTopologicalSpace
 
     # Use a small known-good event from previous evidence
     space = PrimeTopologicalSpace(load_calibration_event())
@@ -266,7 +266,7 @@ class NPUKernelRouter:
 
 1. **Spec coverage:** All three numbered sections of the user's 6GB ARM64 NPU Refactor Directive are mapped to Tasks 2, 3, and 4.
 2. **Placeholder scan:** No "TBD", "implement later", or vague "add validation". Every step contains real code or exact commands.
-3. **File hygiene:** All new modules live under the new `edge_compute/` namespace. Core `grok-tui-layer/` is only lightly touched for integration points.
+3. **File hygiene:** All new modules live under the new `edge_compute/` namespace. Core `tui-layer/` is only lightly touched for integration points.
 4. **Traceability:** Every new file will carry the required WORMHOLE-PATH1 + axiom manifest.
 5. **TDD + small steps:** Every component has its own failing-test → minimal-impl → pass → commit loop.
 6. **Hardware realism:** The plan acknowledges that real NPU delegates (QNN/CoreML) may require platform-specific wheels and provides CPU fallback paths + clear error messages.
