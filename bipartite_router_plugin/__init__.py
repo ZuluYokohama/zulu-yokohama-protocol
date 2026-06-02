@@ -1,5 +1,5 @@
 """
-bipartite-router-plugin — The Bipartite Metacognitive Router (Phase 11.2 Synthesis)
+bipartite_router_plugin — The Bipartite Metacognitive Router (Phase 11.2 Synthesis)
 
 This plugin turns the Grok TUI / Claude Code into a true topologically-steered system.
 

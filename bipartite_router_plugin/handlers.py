@@ -1,5 +1,5 @@
 """
-WORMHOLE-PATH1 | OMEGA-CLASS | prime-crystal-grok/bipartite-router-plugin/handlers.py
+WORMHOLE-PATH1 | OMEGA-CLASS | prime-crystal-grok/bipartite_router_plugin/handlers.py
 Claude Code Plugin Handlers for the Bipartite Router (Phase 11.2)
 
 These are the concrete entry points registered in .claude-plugin/plugin.json.

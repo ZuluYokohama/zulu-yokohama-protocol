@@ -1,5 +1,5 @@
 """
-WORMHOLE-PATH1 | OMEGA-CLASS | prime-crystal-grok/bipartite-router-plugin/router_gateway.py
+WORMHOLE-PATH1 | OMEGA-CLASS | prime-crystal-grok/bipartite_router_plugin/router_gateway.py
 Bipartite Router Gateway — The Hard Decision Engine (Phase 11.2 Synthesis)
 
 This is the central nervous system of the Bipartite Metacognitive Router.

@@ -1,5 +1,5 @@
 """
-WORMHOLE-PATH1 | OMEGA-CLASS | prime-crystal-grok/bipartite-router-plugin/math/prompt_topology.py
+WORMHOLE-PATH1 | OMEGA-CLASS | prime-crystal-grok/bipartite_router_plugin/math/prompt_topology.py
 Prompt Topology Scanner — Geometric Intent Extraction (Phase 11.2 Bipartite Synthesis)
 
 This module is the "eyes" of the Bipartite Router.
@@ -82,7 +82,7 @@ def extract_intent_stalks(user_prompt: str, current_event: Dict[str, Any] | None
             "beta0_proxy": beta0_proxy,
             "beta1_proxy": beta1_proxy,
             "coherence_bias": coherence_bias,
-            "source": "bipartite-router-plugin/math/prompt_topology.py"
+            "source": "bipartite_router_plugin/math/prompt_topology.py"
         }
     }
 
