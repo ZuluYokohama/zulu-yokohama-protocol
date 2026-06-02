@@ -1,9 +1,11 @@
-# ZuluYokohama Protocol — Full Structure
+# ZuluYokohama Protocol — Full Structure (Max-Effect Synthesis from 37-Chapter Session Transcripts)
 
 **ZULUYOKAHAMA PROTOCOL | 2026-06-04**  
-**Status:** Full Structure on Main — Core Engine + All Dims (01-zulu-yokohama-protocol) + Turbo Theories
+**Status:** Full Structure on Main — Core Engine + All Dims (01-zulu-yokohama-protocol, re-dimensioned) + Turbo Theories + 37-Chapter Sequence Abstraction
 
-This is the professional consolidated repository for the ZuluYokohama Protocol. It synthesizes the complete body of work into one clean, executable, self-consistent structure with no agent or human names in the naming convention hierarchy.
+This is the professional consolidated repository for the ZuluYokohama Protocol. It is the result of abstracting the pattern and process of all systems from the full 37-chapter sequence-oriented transcript saves in io/, with the right qualia and quantity of data, dimensioned proper for interpretation using the protocol's own mathematics (configurational terms, prime encoding, sheaf over the development manifold, real L_F / K(S)). This yields max effect.
+
+The hierarchy uses only protocol-reflective names (no agent or human names). The 37 chapters are the highest-fidelity source data for the protocol's self-consistent, maximally coherent form.
 
 The root contains:
 - The Prime Crystal Engine core (sheaf Laplacian runtime, Δλ₁ gating, Bipartite Router, GeometryHarvester, closed feedback loop)

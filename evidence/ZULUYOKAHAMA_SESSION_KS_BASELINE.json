@@ -1,0 +1,14 @@
+﻿{
+    "protocol_manifest":  "See 00_SESSION_CHAPTERS_MANIFEST.md and the script e2e/session_transcript_baseline.py for full traceability.",
+    "timestamp":  "2026-06-02T15:24:56.0913203-05:00",
+    "K_S":  {
+                "qualia":  "mathematics as runtime, zero bypass, A4 on negative delta lambda1, one focused plus evidence with exact numbers, clean seed, sequence saves, protocol naming purity, max effect from proper dimensioning",
+                "note":  "Baseline from sampled + synthetic restriction on the 37-chapter development manifold. Phase 2 will add real per-chapter trend/holonomy.",
+                "source":  "io 37 chapter session transcripts sequence oriented saves",
+                "dim_H0":  0,
+                "holonomy_signature":  "trivial",
+                "sequence_length":  37,
+                "lambda_1":  0.0091862800568663187
+            },
+    "type":  "ZULUYOKAHAMA_SESSION_KS_BASELINE"
+}

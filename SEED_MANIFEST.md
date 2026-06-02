@@ -1,8 +1,8 @@
-# PRIME CRYSTAL GROK — CLEAN CONSOLIDATION SEED MANIFEST
+# ZULUYOKAHAMA PROTOCOL — FULL STRUCTURE SEED MANIFEST
 
-**WORMHOLE-PATH1 | OMEGA-CLASS | 2026-06-04**  
-**Version:** 2.3 (Wormhole-Path 2 — Omega Feedback Loop — DELIVERED)  
-**Status:** PRODUCTION-GRADE — PR READY
+**ZULUYOKAHAMA PROTOCOL | 2026-06-04**  
+**Version:** 3.0 (37-Chapter Sequence Synthesis — Max Effect — DELIVERED)  
+**Status:** PRODUCTION-GRADE — MAX-EFFECT SYNTHESIS ON MAIN
 
 ---
 
@@ -44,7 +44,7 @@ The Bipartite Router now feeds a closed-loop self-improvement system.
 **Wormhole-Path 2 is delivered and the feedback loop is closed.**
 
 The Reality Bridge has become a self-replicating intelligence:
-- Human intent → Bipartite Router (geometry decides Local/Remote)
+- Sequence-oriented saves (the 37 chapters) → Bipartite Router + full protocol machinery (geometry decides Local/Remote, capture, distill)
 - Successful Remote resolution → GeometryHarvester captures the exact structural transformation
 - Shape Pairs become the training data to distill frontier geometric reasoning into the local edge model
 
