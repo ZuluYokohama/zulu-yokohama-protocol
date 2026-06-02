@@ -23,7 +23,7 @@ This document serves as the master index for the **Jones Axiomatic Framework (v2
 | II | Topological Toolkit | How we know | 4-6 | 9 |
 | III | Signal Processing Framework | How we represent | 7-9 | 9 |
 | IV | Computational Architecture | How we compute | 10-13 | 10 |
-| V | Human-AI Collaboration | How we interact | 14-16 | 9 |
+| V | Interface Coherence / Sequence-Stalk Collaboration (distilled from 37-chapter session sequence saves) | How the protocol interfaces with saves/sequence data and external stalks (no agent/human names per hierarchy) | 14-16 | 9 |
 | VI | Integration Layer | How we wire it | 17-20 | 14 |
 
 ---
