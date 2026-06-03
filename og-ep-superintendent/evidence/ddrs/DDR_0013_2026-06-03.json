@@ -1,0 +1,37 @@
+{
+  "report_number": 13,
+  "report_date": "2026-06-03",
+  "well_name": "Blackstone Federal 1-28H",
+  "afe_number": "2026-FEP-001",
+  "rig_name": "Nabors 453",
+  "operator_rep": "Roy Tillman",
+  "depth_start_ft": 6150,
+  "depth_end_ft": 7240,
+  "footage": 1090,
+  "mud_weight_ppg": 9.5,
+  "ecd_ppg": 10.1,
+  "operations_24hr": "Drilled to 7,240ft. Packoff encountered \u2014 pumps up on connections. 18 tons overpull. Work string operation initiated at 1630.",
+  "plan_next_24hr": "Work free. Spot LCM pill (20ppb mica/walnut). POOH wiper trip. Resume drilling.",
+  "problems": [
+    "PACKOFF 7,240ft \u2014 18t overpull, ECD 10.1ppg (MW 9.5ppg)",
+    "14hrs NPT"
+  ],
+  "day_cost_usd": 168000,
+  "cumulative_cost_usd": 740000,
+  "afe_approved_usd": 2850000.0,
+  "afe_burn_pct": 26.0,
+  "k_s_snapshot": {
+    "well_name": "Blackstone Federal 1-28H",
+    "timestamp": "2026-06-03",
+    "dim_H0": 2,
+    "lambda_1": 2.562444,
+    "holonomy_signature": "non-trivial:ecd-mw-divergence-0.60ppg",
+    "afe_coherence": 0.4124,
+    "depth_coherence": 0.6296,
+    "npt_density": 0.5833,
+    "ecd_mw_delta": 0.6,
+    "cost_efficiency": 0.412
+  },
+  "delta_lambda_1": -0.31286,
+  "a4_triggered": true
+}

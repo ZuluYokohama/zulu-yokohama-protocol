@@ -1,0 +1,36 @@
+{
+  "report_number": 12,
+  "report_date": "2026-06-02",
+  "well_name": "Blackstone Federal 1-28H",
+  "afe_number": "2026-FEP-001",
+  "rig_name": "Nabors 453",
+  "operator_rep": "Roy Tillman",
+  "depth_start_ft": 5200,
+  "depth_end_ft": 6150,
+  "footage": 950,
+  "mud_weight_ppg": 9.4,
+  "ecd_ppg": 9.7,
+  "operations_24hr": "Drilled 8-1/2\" from 5,200ft to 6,150ft (950ft). Tight hole at 5,840ft \u2014 reamed 3 stands. 4hrs NPT.",
+  "plan_next_24hr": "Continue to 7,500ft. Wiper trip at 7,000ft per program.",
+  "problems": [
+    "Tight hole 5,840ft \u2014 resolved, not recurring"
+  ],
+  "day_cost_usd": 128000,
+  "cumulative_cost_usd": 580000,
+  "afe_approved_usd": 2850000.0,
+  "afe_burn_pct": 20.4,
+  "k_s_snapshot": {
+    "well_name": "Blackstone Federal 1-28H",
+    "timestamp": "2026-06-02",
+    "dim_H0": 2,
+    "lambda_1": 2.875304,
+    "holonomy_signature": "trivial",
+    "afe_coherence": 0.3805,
+    "depth_coherence": 0.5348,
+    "npt_density": 0.1667,
+    "ecd_mw_delta": 0.3,
+    "cost_efficiency": 0.381
+  },
+  "delta_lambda_1": -0.354802,
+  "a4_triggered": false
+}
