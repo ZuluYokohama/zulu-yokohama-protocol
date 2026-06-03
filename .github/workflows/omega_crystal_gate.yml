@@ -31,38 +31,65 @@ jobs:
       - name: Extract and inject K(S) into environment
         id: ks
         run: |
-          if [ -f .omega-evidence/*.json ]; then
-            KS_JSON=$(cat .omega-evidence/*.json | jq -c .)
+          if compgen -G ".omega-evidence/*.json" > /dev/null 2>&1; then
+            KS_JSON=$(cat .omega-evidence/*.json | python3 -c "import sys,json; data=[json.loads(l) for l in sys.stdin]; print(json.dumps(data[0] if len(data)==1 else data))")
             echo "ks_json=$KS_JSON" >> $GITHUB_OUTPUT
             echo "Local K(S) fingerprint loaded for cloud review."
           else
             echo "ks_json={\"error\":\"no_local_ks\"}" >> $GITHUB_OUTPUT
-            echo "No local K(S) found — cloud review will proceed with reduced context."
+            echo "No local K(S) found — proceeding with structural-only gate."
           fi
 
-      - name: CodeRabbit Pro Cloud Review (Sheaf Lens Enforcement)
-        uses: coderabbitai/ai-pr-reviewer@v1
-        with:
-          # Pass the local topological baseline directly to CodeRabbit
-          extra_context: |
-            This PR was pre-validated by the local Prime Crystal Engine.
-            You MUST evaluate every change against the following live K(S) baseline:
-            ${{ steps.ks.outputs.ks_json }}
-
-            Reject any diff that causes:
-            - Δλ₁ < 0
-            - Non-trivial holonomy
-            - Increase in H² obstructions
-
-            Only approve if the PR maintains or improves geometric coherence.
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Enforce Topological Coherence Gate
+      - name: Topological Coherence Gate — local K(S) validation
         run: |
-          # In a real hardened pipeline, we would parse CodeRabbit output here
-          # and fail the build if it reports negative Δλ₁ or new H² obstructions.
-          echo "Cloud topological review completed. Check CodeRabbit comments for K(S) alignment."
+          python3 - <<'EOF'
+          import json, sys, os, glob
+
+          print("=== Omega Crystal Gate — Topological Coherence Check ===")
+
+          # Load K(S) baseline if present
+          ks_files = glob.glob(".omega-evidence/*.json")
+          if ks_files:
+              with open(ks_files[0]) as f:
+                  ks = json.load(f)
+              lambda1 = ks.get("lambda1", None)
+              holonomy = ks.get("holonomy_trivial", True)
+              h2 = ks.get("dimH2", 0)
+              print(f"  λ₁ baseline      : {lambda1}")
+              print(f"  Holonomy trivial : {holonomy}")
+              print(f"  H² obstructions  : {h2}")
+
+              failures = []
+              if lambda1 is not None and lambda1 < 0:
+                  failures.append(f"FAIL: λ₁={lambda1} < 0 — coherence regression")
+              if not holonomy:
+                  failures.append("FAIL: non-trivial holonomy detected")
+              if h2 > 0:
+                  failures.append(f"WARN: {h2} H² obstruction(s) present")
+
+              if failures:
+                  for f in failures:
+                      print(f"  {f}")
+                  sys.exit(1)
+              else:
+                  print("  ✓ K(S) baseline within coherence bounds")
+          else:
+              print("  No K(S) artifact — running structural file checks only.")
+
+          # Structural checks: verify key modules are present
+          required = [
+              "og-ep-superintendent/core/afe_laplacian.py",
+              "og-ep-superintendent/core/ddr_harvester.py",
+              "og-ep-superintendent/core/topology_lite.py",
+          ]
+          missing = [r for r in required if not os.path.exists(r)]
+          if missing:
+              print(f"  FAIL: missing required files: {missing}")
+              sys.exit(1)
+
+          print("  ✓ All required topology modules present")
+          print("=== Gate PASSED ===")
+          EOF
 
       - name: Upload final evidence
         uses: actions/upload-artifact@v4
