@@ -79,6 +79,7 @@ if TYPE_CHECKING:
 from .fiber_sheaf_engine import (
     FiberSheafEngine, FiberSheafOps, ZetaSpectralEmbedder,
     FiberBundle, compute_delta_fiber, FIBER_DIM,
+    GATE_HALT_LAMBDA, GATE_WARN_LAMBDA,   # shared threshold constants
 )
 
 
@@ -255,10 +256,10 @@ def _gate_from_ks(ks: Dict[str, Any]) -> str:
     h_dim   = ks.get("harmonic_dim", 0)
     d       = ks.get("fiber_dim", FIBER_DIM)
 
-    # λ₁ gate thresholds aligned with the translation table (HALT<0.001, WARN<0.01)
-    if lam1 < 1e-3 or z_gate == "HALT_A4" or score < 0.2:
+    # λ₁ thresholds from GATE_HALT_LAMBDA / GATE_WARN_LAMBDA (fiber_sheaf_engine.py)
+    if lam1 < GATE_HALT_LAMBDA or z_gate == "HALT_A4" or score < 0.2:
         return "HALT_A4"
-    if lam1 < 1e-2 or z_gate == "WARN" or hol > 8.0 or h_dim > d * 2:
+    if lam1 < GATE_WARN_LAMBDA or z_gate == "WARN" or hol > 8.0 or h_dim > d * 2:
         return "WARN"
     return "PASS"
 

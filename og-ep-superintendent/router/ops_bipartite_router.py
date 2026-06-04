@@ -75,13 +75,12 @@ class OpsbipartiteRouter:
         The irrevocable routing decision.
 
         Args:
-            problem_description: What's happening at the rig
-            k_s_current: Current K(S) snapshot dict
-            delta_lambda_1: Change in λ₁ since last DDR
-            h_level: Pre-classified H-level (from WellboreTopologyEngine.classify_event)
-            afe_variance_pct: How far over/under AFE we are (positive = over)
-            additional_context: Any extra data (LWD readings, survey data, etc.)
+            afe_variance_pct: AFE overrun as a PERCENTAGE (0–100 scale).
+                              Ratio callers (0.0–1.0) are auto-normalised.
         """
+        # Normalise ratio-style callers (0.0–1.0) to percentage scale
+        if 0.0 < afe_variance_pct <= 1.0:
+            afe_variance_pct *= 100.0
         lambda_1 = k_s_current.get("lambda_1", 0.0)
         holonomy = k_s_current.get("holonomy_signature", "trivial")
 

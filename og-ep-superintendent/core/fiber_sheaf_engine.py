@@ -129,6 +129,12 @@ if TYPE_CHECKING:
 # I.  GLOBAL CONSTANTS
 # ─────────────────────────────────────────────────────────────────────────────
 
+# ── Gate threshold constants  (single source of truth) ──────────────────────
+# compute_dispatch._gate_from_ks() imports these; do NOT duplicate.
+GATE_HALT_LAMBDA: float = 1e-3   # λ₁ < this → HALT_A4
+GATE_WARN_LAMBDA: float = 1e-2   # λ₁ < this → WARN
+
+
 FIBER_DIM: int = 5      # Default ℝ^d fiber dimension
 ZETA_DECAY: float = 50.0  # τ in w_n = exp(-t_n/τ)
 
@@ -921,9 +927,9 @@ class FiberSheafEngine:
         )
 
         # ── Gate (combine fiber + zeta signals) ───────────────────────────
-        if lam1_f < 1e-6 or z_gate == "HALT_A4":
+        if lam1_f < GATE_HALT_LAMBDA or z_gate == "HALT_A4":
             gate = "HALT_A4"
-        elif lam1_f < 1e-3 or z_gate == "WARN":
+        elif lam1_f < GATE_WARN_LAMBDA or z_gate == "WARN":
             gate = "WARN"
         else:
             gate = "PASS"
