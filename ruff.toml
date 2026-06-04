@@ -11,8 +11,6 @@ select = [
 ]
 
 ignore = [
-  # Unused imports in __init__.py re-export files are intentional
-  "F401",   # re-enabled per-file below for strict modules
   # Ambiguous variable name `l` — used intentionally in math (Laplacian `l`)
   "E741",
   # Multiple statements on one line — intentional in compact math expressions

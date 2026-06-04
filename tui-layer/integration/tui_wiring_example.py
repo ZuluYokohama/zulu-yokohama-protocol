@@ -14,15 +14,16 @@ Purpose: This file is the exact template the Grok CLI runtime must adopt for all
 """
 
 from __future__ import annotations
-from typing import Any, Dict
-from pathlib import Path
+
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
+from pathlib import Path
+from typing import Any, Dict
+
+from ..enforcement.surface_enclosure import EnclosureResult, SurfaceEnclosure
 
 # These imports assume the clean seed structure when the layer is active in Grok
-from ..state.term_series import ActiveTermSeries, CurrentStalkBundle, CryptologicKey
-from ..enforcement.surface_enclosure import SurfaceEnclosure, EnclosureResult
-
+from ..state.term_series import ActiveTermSeries, CryptologicKey, CurrentStalkBundle
 
 # ============================================================
 # 1. SESSION INITIALIZATION (called once per Grok session under this protocol)
@@ -41,7 +42,7 @@ def initialize_prime_crystal_session(project_root: str) -> SurfaceEnclosure:
     )
 
     series = ActiveTermSeries(
-        session_id=f"grok-pc-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}",
+        session_id=f"grok-pc-{datetime.now(UTC).strftime('%Y%m%d-%H%M%S')}",
         start_k=baseline_k,
         value_function={
             "active_axioms": ["5.2", "15.1-15.3", "16.1", "19.4", "20.1-20.3", "6.1-6.2"],
@@ -58,7 +59,7 @@ def initialize_prime_crystal_session(project_root: str) -> SurfaceEnclosure:
 # 2. SURFACE WIRING PATTERNS (the actual replacements the Grok runtime must use)
 # ============================================================
 
-def wired_todo_write(enclosure: SurfaceEnclosure, todo_id: str, content: Dict[str, Any], **kwargs):
+def wired_todo_write(enclosure: SurfaceEnclosure, todo_id: str, content: dict[str, Any], **kwargs):
     """
     Replacement for the internal todo_write tool dispatch.
     Every call to todo_write in the Grok TUI must go through this (or equivalent).
@@ -73,7 +74,7 @@ def wired_todo_write(enclosure: SurfaceEnclosure, todo_id: str, content: Dict[st
             meta={"surface": "todo_write", "project_root": str(kwargs.get("project_root", "."))}
         )
 
-    def apply_action(stalks: CurrentStalkBundle) -> Dict[str, Any]:
+    def apply_action(stalks: CurrentStalkBundle) -> dict[str, Any]:
         # Here the *real* todo list mutation happens (the only place it is allowed).
         # In the actual Grok runtime this would be the call to the internal todo engine.
         print(f"[WIRED] Applying guarded todo_write for {todo_id}")
@@ -104,7 +105,7 @@ def wired_spawn_subagent(enclosure: SurfaceEnclosure, subagent_prompt: str, capa
             meta={"surface": "spawn_subagent", "capability_mode": capability_mode}
         )
 
-    def apply_action(stalks: CurrentStalkBundle) -> Dict[str, Any]:
+    def apply_action(stalks: CurrentStalkBundle) -> dict[str, Any]:
         # Real spawn happens here only after the gate.
         print(f"[WIRED] Spawning subagent under guard (mode={capability_mode})")
         # In real system: actual subagent launch, passing current K(S) slice
@@ -136,7 +137,7 @@ def wired_run_terminal_command(enclosure: SurfaceEnclosure, command: str, **kwar
             meta={"surface": "run_terminal_command"}
         )
 
-    def apply_action(stalks: CurrentStalkBundle) -> Dict[str, Any]:
+    def apply_action(stalks: CurrentStalkBundle) -> dict[str, Any]:
         # The actual shell execution only happens here.
         print(f"[WIRED] Executing guarded terminal command: {command[:60]}...")
         return {"executed": True, "command": command}

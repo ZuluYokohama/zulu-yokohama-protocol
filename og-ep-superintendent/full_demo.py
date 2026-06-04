@@ -19,27 +19,21 @@ Run: python full_demo.py
 """
 
 from __future__ import annotations
+
 import json
 import sys
-import os
-from datetime import datetime, date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 # Add parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 
-from core.wellbore_topology import (
-    WellboreTopologyEngine, WellboreInterval, WellState, compute_well_key
-)
-from core.afe_laplacian import AFELaplacian, AFEState, AFELineItem, STANDARD_COST_CODES
-from core.ddr_harvester import DDRHarvester, DDREntry, format_ddr_text
+from core.afe_laplacian import AFELaplacian, AFELineItem, AFEState
+from core.ddr_harvester import DDREntry, DDRHarvester
+from core.wellbore_topology import WellboreInterval, WellboreTopologyEngine, WellState
+from data.well_program import PhaseStatus, build_standard_vertical_program
 from router.ops_bipartite_router import OpsbipartiteRouter
 from ui.morning_report import quick_morning_report
-from data.well_program import (
-    WellProgram, WellProgramPhase, PhaseStatus,
-    build_standard_vertical_program
-)
-
 
 # ─────────────────────────────────────────────────────────────────────────────
 # DEMO WELL CONFIGURATION
@@ -69,7 +63,7 @@ def build_demo_well_state(
     mw: float = 10.2,
     wob: float = 18.0,
     rpm: float = 120.0,
-    events: list = None,
+    events: list | None = None,
 ) -> WellState:
     """Build a WellState for demo purposes."""
 
@@ -280,7 +274,7 @@ def run_demo():
     )
 
     if pair:
-        print(f"  ✅ Shape pair harvested — distillation fuel added to ledger")
+        print("  ✅ Shape pair harvested — distillation fuel added to ledger")
 
     # ── 6. Morning report ─────────────────────────────────────────────────
     print("\n[PHASE 5] Generating morning report...")

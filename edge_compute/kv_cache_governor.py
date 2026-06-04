@@ -15,14 +15,17 @@ All scoring is done with the live PrimeTopologicalSpace (λ₁, dim H⁰, eigenv
 """
 
 from __future__ import annotations
-from dataclasses import dataclass
-from typing import List, Dict, Any, Optional
+
 import heapq
-import numpy as np
 
 # Consistent with the rest of the Phase 11.2 codebase: explicit path bootstrap + absolute import
 import sys
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import numpy as np
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from tui_layer.adapter.prime_topological_space import PrimeTopologicalSpace
 
@@ -48,10 +51,10 @@ class TopologicalKVCacheGovernor:
 
     def __init__(self, max_kv_bytes: int = 1_200_000_000):  # 1.2 GB hard ceiling
         self.max_kv_bytes = max_kv_bytes
-        self.current_tokens: List[TokenEnergy] = []
-        self._last_space: Optional[PrimeTopologicalSpace] = None
+        self.current_tokens: list[TokenEnergy] = []
+        self._last_space: PrimeTopologicalSpace | None = None
 
-    def update_from_topological_space(self, space: PrimeTopologicalSpace, current_kv_tokens: List[int]):
+    def update_from_topological_space(self, space: PrimeTopologicalSpace, current_kv_tokens: list[int]):
         """
         Re-score the entire current KV cache against the latest topological state.
         This must be called after every significant L_F / K(S) update.
@@ -95,7 +98,7 @@ class TopologicalKVCacheGovernor:
         """Rough estimate: typical 8B KV cache bytes per token (with GQA etc.)."""
         return len(self.current_tokens) * bytes_per_token
 
-    def evict_to_target(self, target_bytes: int, bytes_per_token: int = 16384) -> List[int]:
+    def evict_to_target(self, target_bytes: int, bytes_per_token: int = 16384) -> list[int]:
         """
         Ruthlessly evict the lowest-energy tokens until we are under target_bytes.
 
@@ -112,7 +115,7 @@ class TopologicalKVCacheGovernor:
 
         evicted = []
         while current_bytes > target_bytes and heap:
-            energy, pos, tid = heapq.heappop(heap)
+            _energy, _pos, tid = heapq.heappop(heap)
             evicted.append(tid)
             current_bytes -= bytes_per_token
 
@@ -122,7 +125,7 @@ class TopologicalKVCacheGovernor:
 
         return evicted
 
-    def prepare_for_oracle_payload(self, estimated_payload_bytes: int, bytes_per_token: int = 16384) -> List[int]:
+    def prepare_for_oracle_payload(self, estimated_payload_bytes: int, bytes_per_token: int = 16384) -> list[int]:
         """
         The "Zero-VRAM Context Swap" primitive (Phase 11.2).
 
@@ -137,7 +140,7 @@ class TopologicalKVCacheGovernor:
 
         return self.evict_to_target(target, bytes_per_token)
 
-    def get_energy_report(self) -> Dict[str, Any]:
+    def get_energy_report(self) -> dict[str, Any]:
         if not self.current_tokens:
             return {"total_tokens": 0, "estimated_bytes": 0}
 

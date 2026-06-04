@@ -114,7 +114,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Tuple, Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
 
 import numpy as np
 from scipy.linalg import eigh as dense_eigh
@@ -152,14 +152,14 @@ ZETA_ZEROS_T: np.ndarray = np.array([
 ZETA_WEIGHTS: np.ndarray = np.exp(-ZETA_ZEROS_T / ZETA_DECAY)
 
 # First 30 primes (for Von Mangoldt and prime resonance)
-_PRIMES: List[int] = [
+_PRIMES: list[int] = [
       2,   3,   5,   7,  11,  13,  17,  19,  23,  29,
      31,  37,  41,  43,  47,  53,  59,  61,  67,  71,
      73,  79,  83,  89,  97, 101, 103, 107, 109, 113,
 ]
 
 # AFE cost-code dependency edges (duplicated here for standalone use)
-_AFE_COST_DEPS: List[Tuple[str, str]] = [
+_AFE_COST_DEPS: list[tuple[str, str]] = [
     ("100", "200"), ("100", "230"), ("200", "210"),
     ("200", "220"), ("220", "230"), ("300", "320"),
     ("310", "300"), ("500", "100"),
@@ -285,20 +285,20 @@ class FiberBundle:
     """
     n: int
     d: int
-    node_names: List[str]
+    node_names: list[str]
     sections: np.ndarray                           # shape (n, d)
-    edges: List[Tuple[int, int, float]]            # (u, v, c)
-    restriction_maps: Dict[Tuple[int, int], np.ndarray]
+    edges: list[tuple[int, int, float]]            # (u, v, c)
+    restriction_maps: dict[tuple[int, int], np.ndarray]
 
     @classmethod
     def build(
         cls,
-        node_names: List[str],
+        node_names: list[str],
         raw_sections,              # list of array-like, possibly ragged
-        edges: List[Tuple[int, int, float]],
+        edges: list[tuple[int, int, float]],
         d: int = FIBER_DIM,
         prime_weight: bool = True,
-    ) -> "FiberBundle":
+    ) -> FiberBundle:
         """
         Factory. Accepts ragged list of array-like sections — each entry
         is independently converted, padded, or truncated to d.
@@ -319,7 +319,7 @@ class FiberBundle:
                 secs[i] *= (1.0 + von_mangoldt(i + 1))
 
         # Build restriction maps for BOTH orientations — no rho_uv.T fallback
-        rho: Dict[Tuple[int, int], np.ndarray] = {}
+        rho: dict[tuple[int, int], np.ndarray] = {}
         for (u, v, _c) in edges:
             if (u, v) not in rho:
                 rho[(u, v)] = restriction_map(secs[u], secs[v], _c)
@@ -347,9 +347,9 @@ class FiberSheafOps:
 
     def __init__(self, bundle: FiberBundle):
         self.b = bundle
-        self._L:     Optional[np.ndarray] = None
-        self._evals: Optional[np.ndarray] = None
-        self._evecs: Optional[np.ndarray] = None
+        self._L:     np.ndarray | None = None
+        self._evals: np.ndarray | None = None
+        self._evecs: np.ndarray | None = None
 
     # ── Sheaf Laplacian ──────────────────────────────────────────────────────
 
@@ -364,7 +364,7 @@ class FiberSheafOps:
         nd = n * d
         L = np.zeros((nd, nd), dtype=np.float64)
 
-        for (u, v, c) in self.b.edges:
+        for (u, v, _c) in self.b.edges:
             rho_uv = self.b.restriction_maps.get((u, v), np.zeros((d, d)))
             rho_vu = self.b.restriction_maps.get((v, u), rho_uv.T)
 
@@ -380,7 +380,7 @@ class FiberSheafOps:
         self._L = (L + L.T) * 0.5
         return self._L
 
-    def eigendecompose(self) -> Tuple[np.ndarray, np.ndarray]:
+    def eigendecompose(self) -> tuple[np.ndarray, np.ndarray]:
         """Full eigendecomposition.  Returns (eigenvalues asc, eigenvectors)."""
         if self._L is None:
             self.build_block_laplacian()
@@ -446,14 +446,14 @@ class FiberSheafOps:
 
         # Compute fiber degrees
         Z = np.zeros(n, dtype=np.float64)
-        for (u, v, c) in self.b.edges:
+        for (u, v, _c) in self.b.edges:
             rho_uv = self.b.restriction_maps.get((u, v), np.zeros((d, d)))
             rho_vu = self.b.restriction_maps.get((v, u), rho_uv.T)
             Z[u] += np.linalg.norm(rho_uv, 'fro')
             Z[v] += np.linalg.norm(rho_vu, 'fro')
 
         # Fill transition blocks
-        for (u, v, c) in self.b.edges:
+        for (u, v, _c) in self.b.edges:
             rho_uv = self.b.restriction_maps.get((u, v), np.zeros((d, d)))
             rho_vu = self.b.restriction_maps.get((v, u), rho_uv.T)
             z_u = max(Z[u], 1e-12)
@@ -567,7 +567,7 @@ class ZetaSpectralEmbedder:
         """
         evals, evecs = dense_eigh(L)
         f_zeta = np.zeros(len(evals), dtype=np.float64)
-        for t, w in zip(cls.zeros, cls.weights):
+        for t, w in zip(cls.zeros, cls.weights, strict=False):
             f_zeta += w * np.cos(t * evals)
         return (evecs * f_zeta) @ evecs.T   # V diag(f) Vᵀ
 
@@ -730,12 +730,12 @@ class FiberSheafEngine:
     @classmethod
     def from_raw(
         cls,
-        node_names: List[str],
+        node_names: list[str],
         raw_sections,              # list of array-like, may be ragged
-        edges: List[Tuple[int, int, float]],
+        edges: list[tuple[int, int, float]],
         fiber_dim: int = FIBER_DIM,
         prime_weight: bool = True,
-    ) -> "FiberSheafEngine":
+    ) -> FiberSheafEngine:
         """Build engine from node sections + edge list. Sections may be ragged."""
         bundle = FiberBundle.build(
             node_names=node_names,
@@ -751,10 +751,10 @@ class FiberSheafEngine:
     @classmethod
     def from_afe(
         cls,
-        afe_state: "AFEState",
+        afe_state: AFEState,
         fiber_dim: int = FIBER_DIM,
         prime_weight: bool = True,
-    ) -> "FiberSheafEngine":
+    ) -> FiberSheafEngine:
         """
         Build fiber bundle from an AFE budget state.
 
@@ -763,8 +763,7 @@ class FiberSheafEngine:
         Edges from COST_DEPENDENCIES; coherence = geometric mean of both nodes.
         """
         items = afe_state.line_items
-        _n = len(items)
-        n     = len(items)
+        len(items)
         max_usd = max((li.afe_approved_usd for li in items), default=1.0) or 1.0
 
         node_names   = [f"{li.cost_code}:{li.description[:18]}" for li in items]
@@ -780,7 +779,7 @@ class FiberSheafEngine:
             raw_sections.append(s)
 
         code_to_idx = {li.cost_code: i for i, li in enumerate(items)}
-        edges: List[Tuple[int, int, float]] = []
+        edges: list[tuple[int, int, float]] = []
         for (ca, cb) in _AFE_COST_DEPS:
             if ca in code_to_idx and cb in code_to_idx:
                 u, v = code_to_idx[ca], code_to_idx[cb]
@@ -802,10 +801,10 @@ class FiberSheafEngine:
     @classmethod
     def from_well(
         cls,
-        well_state: "WellState",
+        well_state: WellState,
         fiber_dim: int = FIBER_DIM,
         prime_weight: bool = True,
-    ) -> "FiberSheafEngine":
+    ) -> FiberSheafEngine:
         """
         Build fiber bundle from a wellbore state.
 
@@ -822,14 +821,13 @@ class FiberSheafEngine:
         node_names = [iv.interval_id for iv in ivs]
         node_names += ["AFE_DRILLING", "CONTRACTOR_DIRECTIONAL",
                        "CONTRACTOR_MUD", "CONTRACTOR_MUDLOG"]
-        _n = len(node_names)
-        n = len(node_names)
+        len(node_names)
 
         active = next((iv for iv in ivs if iv.is_active), ivs[-1])
         ecd_delta = abs(well_state.ecd_ppg - active.mud_weight_ppg)
         rop_norm  = min(1.0, active.rop_fthr / 100.0)
 
-        raw_sections: List[np.ndarray] = []
+        raw_sections: list[np.ndarray] = []
         for iv in ivs:
             raw_sections.append(np.array([
                 iv.bottom_depth_ft / td,
@@ -857,7 +855,7 @@ class FiberSheafEngine:
         mlog_idx = node_names.index("CONTRACTOR_MUDLOG")
         act_idx  = next((i for i, iv in enumerate(ivs) if iv.is_active), 0)
 
-        edges: List[Tuple[int, int, float]] = []
+        edges: list[tuple[int, int, float]] = []
         # Interval chain
         for i in range(n_iv - 1):
             agr = 1.0 if ivs[i].is_cased else 0.5
@@ -884,7 +882,7 @@ class FiberSheafEngine:
 
     # ── Main compute ──────────────────────────────────────────────────────────
 
-    def compute(self) -> Dict[str, Any]:
+    def compute(self) -> dict[str, Any]:
         """
         Full three-layer enriched K(S) computation.
 
@@ -903,7 +901,7 @@ class FiberSheafEngine:
         """
         # ── Layer 1: Sheaf Laplacian ──────────────────────────────────────
         L_F          = self.sheaf_ops.build_block_laplacian()
-        evals, evecs = self.sheaf_ops.eigendecompose()
+        evals, _evecs = self.sheaf_ops.eigendecompose()
         lam1_f       = self.sheaf_ops.lambda_1_fiber()
         h_dim        = self.sheaf_ops.harmonic_dim()
         hol_trace    = self.sheaf_ops.fiber_holonomy_trace()
@@ -973,9 +971,9 @@ class FiberSheafEngine:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def compute_delta_fiber(
-    prior_ks:   Dict[str, Any],
-    current_ks: Dict[str, Any],
-) -> Dict[str, Any]:
+    prior_ks:   dict[str, Any],
+    current_ks: dict[str, Any],
+) -> dict[str, Any]:
     """
     Compute the enriched delta between two fiber K(S) snapshots.
 

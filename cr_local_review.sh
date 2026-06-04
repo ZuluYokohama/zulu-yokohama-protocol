@@ -31,7 +31,9 @@ declare -a FINDINGS=()
 
 log_finding() {
   local sev="$1" file="$2" msg="$3"
-  FINDINGS+=("{\"sev\":\"$sev\",\"file\":\"$file\",\"msg\":\"$(echo "$msg" | sed 's/"/\\"/g')\"}")
+  local json_obj
+  json_obj=$(jq -n --arg sev "$sev" --arg file "$file" --arg msg "$msg" '{sev:$sev,file:$file,msg:$msg}')
+  FINDINGS+=("$json_obj")
   case "$sev" in
     HALT) HALT=$((HALT+1)); echo $HALT>"$HALT_F"; echo "  🔴 HALT  $file — $msg" ;;
     WARN) WARN=$((WARN+1)); echo $WARN>"$WARN_F"; echo "  ⚠️  WARN  $file — $msg" ;;
@@ -52,15 +54,15 @@ echo "── GATE 1: ruff (Python lint) ─────────────�
 if command -v ruff &>/dev/null; then
   RUFF_OUT=$(ruff check . --output-format=json 2>/dev/null || true)
   if [ -n "$RUFF_OUT" ]; then
-    echo "$RUFF_OUT" | python3 -c "
+    while IFS='|' read -r sev loc msg; do
+      log_finding "$sev" "$loc" "$msg"
+    done < <(echo "$RUFF_OUT" | python3 -c "
 import json,sys
 items = json.load(sys.stdin)
 for i in items:
     sev = 'HALT' if i.get('code','').startswith(('E9','F8','F9','W6')) else 'WARN'
     print(f\"{sev}|{i.get('filename','')}:{i.get('location',{}).get('row','?')}|{i.get('code','')} {i.get('message','')}\")
-" | while IFS='|' read -r sev loc msg; do
-      log_finding "$sev" "$loc" "$msg"
-    done
+")
     RUFF_COUNT=$(echo "$RUFF_OUT" | python3 -c "import json,sys; print(len(json.load(sys.stdin)))" 2>/dev/null || echo "?")
     echo "  ruff: $RUFF_COUNT findings"
   else
@@ -73,23 +75,28 @@ fi
 # ── GATE 2: SHELLCHECK ───────────────────────────────────────────────────────
 echo ""
 echo "── GATE 2: shellcheck ──────────────────────────────────────────────"
-SC_HITS=0
-while IFS= read -r -d '' f; do
-  SC_OUT=$(shellcheck -f json "$f" 2>/dev/null || true)
-  if [ -n "$SC_OUT" ]; then
-    echo "$SC_OUT" | python3 -c "
+if ! command -v shellcheck &>/dev/null; then
+  log_finding "WARN" "toolchain" "shellcheck not installed — skipping shell script safety check"
+  echo "  ⚠️  shellcheck: not available, skipped"
+else
+  SC_HITS=0
+  while IFS= read -r -d '' f; do
+    SC_OUT=$(shellcheck -f json "$f" 2>/dev/null || true)
+    if [ -n "$SC_OUT" ]; then
+      while IFS='|' read -r sev loc msg; do
+        log_finding "$sev" "$loc" "$msg"
+        SC_HITS=$((SC_HITS+1))
+      done < <(echo "$SC_OUT" | python3 -c "
 import json,sys
 items = json.load(sys.stdin)
 for i in items:
     sev = 'HALT' if i.get('level','') == 'error' else 'WARN'
     print(f\"{sev}|{i.get('file','')}:{i.get('line','?')}|SC{i.get('code','')} {i.get('message','')}\")
-" | while IFS='|' read -r sev loc msg; do
-      log_finding "$sev" "$loc" "$msg"
-      SC_HITS=$((SC_HITS+1))
-    done
-  fi
-done < <(find . -name "*.sh" -not -path "./.git/*" -print0)
-[ "$SC_HITS" -eq 0 ] && echo "  ✅ shellcheck: clean" || echo "  shellcheck: $SC_HITS findings"
+")
+    fi
+  done < <(find . -name "*.sh" -not -path "./.git/*" -print0)
+  [ "$SC_HITS" -eq 0 ] && echo "  ✅ shellcheck: clean" || echo "  shellcheck: $SC_HITS findings"
+fi
 
 # ── GATE 3: AST-GREP SEMANTIC RULES ─────────────────────────────────────────
 echo ""
@@ -103,16 +110,16 @@ if command -v sg &>/dev/null && [ -d "$RULES_DIR" ]; then
     [[ "$sev_raw" == "error" ]] && sev="HALT"
     SG_OUT=$(sg scan --rule "$rule_file" --json 2>/dev/null || true)
     if [ -n "$SG_OUT" ] && echo "$SG_OUT" | python3 -c "import json,sys; d=json.load(sys.stdin); print(len(d.get('matches',[])))" 2>/dev/null | grep -qv '^0$'; then
-      echo "$SG_OUT" | python3 -c "
+      while IFS='|' read -r s l g; do
+        log_finding "$s" "$l" "$g"
+        AST_HITS=$((AST_HITS+1))
+      done < <(echo "$SG_OUT" | python3 -c "
 import json,sys
 d=json.load(sys.stdin)
 for m in d.get('matches',[]):
     loc=m.get('file','?')+':'+str(m.get('range',{}).get('start',{}).get('line','?'))
     print(f\"$sev|{loc}|[$rule_id] {m.get('message','match')}\")
-" | while IFS='|' read -r s l g; do
-        log_finding "$s" "$l" "$g"
-        AST_HITS=$((AST_HITS+1))
-      done
+")
     fi
   done
   [ "$AST_HITS" -eq 0 ] && echo "  ✅ ast-grep: all ZYP rules pass" || echo "  ast-grep: $AST_HITS semantic findings"
@@ -123,7 +130,8 @@ fi
 # ── GATE 4: K(S) TOPOLOGICAL COHERENCE ──────────────────────────────────────
 echo ""
 echo "── GATE 4: K(S) topological coherence ─────────────────────────────"
-python3 - <<'PYGATE' 2>&1 | grep -E "✅|⚠️|🔴|PASS|WARN|HALT|lambda|holonomy" || true
+set +e
+python3 - <<'PYGATE' 2>&1 | grep -E "✅|⚠️|🔴|PASS|WARN|HALT|lambda|holonomy"
 import sys, json, glob
 from pathlib import Path
 
@@ -161,6 +169,12 @@ else:
     print("  🔴 K(S) GATE HALT — negative λ₁ in evidence")
     sys.exit(1)
 PYGATE
+KS_EXIT=$?
+set -e
+if [ "$KS_EXIT" -ne 0 ]; then
+  HALT=$((HALT+1))
+  echo $HALT>"$HALT_F"
+fi
 
 # ── GATE 5: JSON/JSONL INTEGRITY ─────────────────────────────────────────────
 echo ""
@@ -208,7 +222,7 @@ echo "════════════════════════�
 
 # Write evidence bundle
 FINDINGS_JSON=$(printf '%s\n' "${FINDINGS[@]:-}" | paste -sd,)
-python3 -c "
+if ! python3 -c "
 import json
 from datetime import datetime, timezone
 report = {
@@ -222,7 +236,10 @@ report = {
 with open('$REPORT_FILE','w') as f:
     json.dump(report, f, indent=2)
 print(f'  Evidence: $REPORT_FILE')
-" 2>/dev/null || true
+"; then
+  echo "ERROR: Failed to write report file $REPORT_FILE" >&2
+  exit 1
+fi
 
 echo ""
 [ "$HALT" -gt 0 ] && exit 1 || exit 0

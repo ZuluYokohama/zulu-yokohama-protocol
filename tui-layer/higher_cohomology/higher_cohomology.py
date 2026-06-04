@@ -15,15 +15,17 @@ The engine can now not only measure coherence (λ₁) but actively propose mutat
 """
 
 from __future__ import annotations
+
+# Standalone support
+import sys
 from dataclasses import dataclass
-from typing import List, Dict, Any
+from pathlib import Path
+from typing import Any, Dict, List
+
 import numpy as np
 from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import connected_components
 
-# Standalone support
-import sys
-from pathlib import Path
 _ADAPTER_DIR = Path(__file__).parent.parent / "adapter"
 if str(_ADAPTER_DIR) not in sys.path:
     sys.path.insert(0, str(_ADAPTER_DIR))
@@ -33,7 +35,7 @@ from prime_topological_space import PrimeTopologicalSpace
 @dataclass
 class Void:
     """A mathematically defined structural void (technical debt candidate)."""
-    node_ids: List[str]
+    node_ids: list[str]
     severity: float          # normalized measure of the void (higher = worse)
     description: str
     suggested_mutation: str  # what an autonomous agent could do to close it
@@ -53,7 +55,7 @@ class HigherCohomology:
         self.laplacian = space.laplacian
 
         self.beta1: int | None = None
-        self.voids: List[Void] = []
+        self.voids: list[Void] = []
 
     def compute_h1_dimension(self) -> int:
         """
@@ -68,13 +70,13 @@ class HigherCohomology:
         e = adj.nnz // 2
 
         # Connected components
-        n_comp, labels = connected_components(adj, directed=False)
+        n_comp, _labels = connected_components(adj, directed=False)
 
         beta1 = e - self.n + n_comp
         self.beta1 = max(0, beta1)  # cannot be negative
         return self.beta1
 
-    def identify_voids(self, top_k: int = 5) -> List[Void]:
+    def identify_voids(self, top_k: int = 5) -> list[Void]:
         """
         Identify the most severe structural voids as technical debt.
 
@@ -107,7 +109,7 @@ class HigherCohomology:
         for comp in range(n_comp):
             members = np.where(labels == comp)[0]
             if len(members) > 3:
-                internal_edges = sum(1 for i, j in zip(adj.row, adj.col) if labels[i] == comp and labels[j] == comp) // 2
+                internal_edges = sum(1 for i, j in zip(adj.row, adj.col, strict=False) if labels[i] == comp and labels[j] == comp) // 2
                 if internal_edges > len(members) * 1.5:  # dense inside
                     severity = internal_edges / (len(members) ** 2)
                     voids.append(Void(
@@ -120,7 +122,7 @@ class HigherCohomology:
         self.voids = sorted(voids, key=lambda v: v.severity, reverse=True)[:top_k]
         return self.voids
 
-    def suggest_debt_closing_mutations(self) -> List[str]:
+    def suggest_debt_closing_mutations(self) -> list[str]:
         """Actionable list of mutations that would reduce H¹ (close voids)."""
         if not self.voids:
             self.identify_voids()
@@ -130,7 +132,7 @@ class HigherCohomology:
             suggestions.append(v.suggested_mutation)
         return suggestions
 
-    def get_technical_debt_report(self) -> Dict[str, Any]:
+    def get_technical_debt_report(self) -> dict[str, Any]:
         """Human + machine readable report of current voids."""
         if self.beta1 is None:
             self.compute_h1_dimension()

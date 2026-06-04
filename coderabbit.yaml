@@ -672,6 +672,7 @@ code_generation:
 chat:
   auto_reply: true
 
+# [KNOWLEDGE] — CR learns from every review cycle (cybernetic accumulation)
 knowledge_base:
   opt_out: false
   learnings:
@@ -683,6 +684,11 @@ knowledge_base:
   linear:
     usage: enabled
 
+# [LABELS] — auto-applied based on K(S) signal in summary
+# quality:high  → ks_fiber_score > 0.70, no BLOCKING ast-grep rules
+# quality:warn  → WARN-level issues only, no BLOCKING
+# quality:halt  → any BLOCKING rule fires → blocks merge
+# phase:*       → extracted from branch name by summary instruction §1
 labels:
   - name: "quality:halt"
     color: "b60205"
@@ -720,38 +726,12 @@ labels:
   - name: "phase:release"
     color: "0e8a16"
     description: "PHASE_COMPLETE"
-# [KNOWLEDGE] — CR learns from every review cycle (cybernetic accumulation)
-knowledge_base:
-  opt_out: false
-  learnings:
-    scope: auto
-  issues:
-    scope: auto
-
-# [LABELS] — auto-applied based on K(S) signal in summary
-# quality:high  → ks_fiber_score > 0.70, no BLOCKING ast-grep rules
-# quality:warn  → WARN-level issues only, no BLOCKING
-# quality:halt  → any BLOCKING rule fires → blocks merge
-# phase:*       → extracted from branch name by summary instruction §1
-labels:
-  - name: "quality:high"
-    color: "0e8a16"
-    description: "ks_fiber_score > 0.70, no blocking invariant violations"
   - name: "quality:warn"
     color: "e4a000"
     description: "WARN-level issues present, merge with caution"
   - name: "quality:halt"
     color: "b60205"
     description: "BLOCKING invariant violation — do not merge"
-  - name: "phase:setup"
-    color: "0075ca"
-    description: "SCAFFOLDING condition:state"
-  - name: "phase:feat"
-    color: "7057ff"
-    description: "CAPABILITY_ADD condition:state"
-  - name: "phase:fix"
-    color: "d73a4a"
-    description: "COHERENCE_PATCH condition:state"
   - name: "math:laplacian"
     color: "cfd3d7"
     description: "Touches L_F, restriction maps, or spectral operators"

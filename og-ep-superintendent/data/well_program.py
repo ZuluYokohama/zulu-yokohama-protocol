@@ -15,9 +15,10 @@ No bypass. No override except explicit written authorization with documented K(S
 """
 
 from __future__ import annotations
-from dataclasses import dataclass, field, asdict
-from typing import Dict, Any, List, Optional
+
+from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any
 
 
 class PhaseStatus(Enum):
@@ -85,8 +86,8 @@ class WellProgramPhase:
     planned_hours: float                # Planned time for phase (from AFE)
     planned_cost_usd: float             # AFE cost for this phase
     formation_prognosis: str            # Expected formations
-    hazards_identified: List[str] = field(default_factory=list)  # Pre-identified hazards
-    contingencies: List[str] = field(default_factory=list)
+    hazards_identified: list[str] = field(default_factory=list)  # Pre-identified hazards
+    contingencies: list[str] = field(default_factory=list)
 
     # Actuals (filled in as phase executes)
     status: PhaseStatus = PhaseStatus.PENDING
@@ -94,14 +95,14 @@ class WellProgramPhase:
     actual_bottom_ft: float = 0.0
     actual_hours: float = 0.0
     actual_cost_usd: float = 0.0
-    bit_records: List[BitRecord] = field(default_factory=list)
+    bit_records: list[BitRecord] = field(default_factory=list)
     npt_hours: float = 0.0
     notes: str = ""
 
     # Gate results
-    gate_k_s_at_entry: Optional[Dict[str, Any]] = None   # K(S) when phase started
-    gate_k_s_at_exit: Optional[Dict[str, Any]] = None    # K(S) when phase ended
-    gate_delta_lambda_1: Optional[float] = None
+    gate_k_s_at_entry: dict[str, Any] | None = None   # K(S) when phase started
+    gate_k_s_at_exit: dict[str, Any] | None = None    # K(S) when phase ended
+    gate_delta_lambda_1: float | None = None
     gate_status: str = "PENDING"        # PASS / WARN / HALT_A4 / BYPASSED
     gate_authorized_by: str = ""        # Who signed off
 
@@ -139,7 +140,7 @@ class WellProgram:
     spud_date_planned: str
     td_planned_ft: float
     td_formation_prognosis: str
-    phases: List[WellProgramPhase]
+    phases: list[WellProgramPhase]
     field_name: str = ""
     county_state: str = ""
     surface_location: str = ""
@@ -149,14 +150,14 @@ class WellProgram:
     notes: str = ""
 
     @property
-    def current_phase(self) -> Optional[WellProgramPhase]:
+    def current_phase(self) -> WellProgramPhase | None:
         for phase in self.phases:
             if phase.status == PhaseStatus.ACTIVE:
                 return phase
         return None
 
     @property
-    def completed_phases(self) -> List[WellProgramPhase]:
+    def completed_phases(self) -> list[WellProgramPhase]:
         return [p for p in self.phases if p.status == PhaseStatus.COMPLETE]
 
     @property
@@ -167,7 +168,7 @@ class WellProgram:
     def total_actual_hours(self) -> float:
         return sum(p.actual_hours for p in self.phases)
 
-    def get_next_gate_phase(self) -> Optional[WellProgramPhase]:
+    def get_next_gate_phase(self) -> WellProgramPhase | None:
         """Returns the next phase awaiting gate approval."""
         for phase in self.phases:
             if phase.status == PhaseStatus.GATE_CHECK:
@@ -175,10 +176,10 @@ class WellProgram:
         return None
 
     def advance_to_next_phase(self,
-                               gate_k_s: Dict[str, Any],
+                               gate_k_s: dict[str, Any],
                                gate_delta_lambda_1: float,
                                authorized_by: str,
-                               force: bool = False) -> Dict[str, Any]:
+                               force: bool = False) -> dict[str, Any]:
         """
         Advance the program to the next phase.
         Requires gate passage (Δλ₁ ≥ 0, holonomy trivial, λ₁ ≥ threshold).

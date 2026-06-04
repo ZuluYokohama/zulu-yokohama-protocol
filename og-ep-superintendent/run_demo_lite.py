@@ -7,8 +7,10 @@ Demonstrates the full workflow using topology_lite.py pure-Python engine.
 """
 
 from __future__ import annotations
-import json, sys, math
-from datetime import datetime, date, timedelta
+
+import json
+import sys
+from datetime import date, timedelta
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -190,7 +192,7 @@ def run():
         n_cased_intervals=2, n_open_intervals=2,
         timestamp=(today - timedelta(days=2)).isoformat(), well_name=WELL,
     )
-    print(f"  Baseline K(S):")
+    print("  Baseline K(S):")
     print(f"    dim H⁰ = {ks1['dim_H0']}  |  λ₁ = {ks1['lambda_1']:.4f}")
     print(f"    Holonomy: {ks1['holonomy_signature']}")
     print(f"    AFE coherence: {ks1['afe_coherence']:.3f}  |  NPT: {ks1['npt_density']:.3f}")
@@ -249,11 +251,11 @@ def run():
         print("            Do NOT attempt local patch. Halt downhole operations.")
         print("            Prepare full K(S) package for engineering review.")
         print(f"  NOTIFY:   → Drilling Engineer: {'+1 307-555-0142'}")
-        print(f"            → Rig Manager: Dave Kowalski +1 307-555-0199")
+        print("            → Rig Manager: Dave Kowalski +1 307-555-0199")
         print("  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
     else:
         print(f"  ROUTE: LOCAL — {h_class3}")
-        print(f"  ACTION: Apply local corrective action. Monitor Δλ₁ every 6hrs.")
+        print("  ACTION: Apply local corrective action. Monitor Δλ₁ every 6hrs.")
 
     _, ddr3_path = save_ddr(
         num=13, rdate=today.isoformat(),
@@ -290,7 +292,7 @@ def run():
         formation="Carlile Shale", res_hrs=18.0, cost_impact=45_000,
     )
     if pair:
-        print(f"  ✅ Shape pair HARVESTED → shape_pairs.jsonl")
+        print("  ✅ Shape pair HARVESTED → shape_pairs.jsonl")
         print(f"     problem→solution Δλ₁ = {dl1_d4:+.4f}")
 
     _, ddr4_path = save_ddr(

@@ -18,19 +18,21 @@ The mathematics of the prompt itself now dictate the hardware and the intelligen
 """
 
 from __future__ import annotations
-from pathlib import Path
-from typing import Dict, Any
 
 import sys
+from pathlib import Path
+from typing import Any, Dict
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 # Import the two Phase 11.2 delivered components (the physical halves we are fusing)
-from edge_compute.kv_cache_governor import TopologicalKVCacheGovernor
 from edge_compute.claude_code_oracle import ClaudeCodePrimeCrystalOracle
+from edge_compute.kv_cache_governor import TopologicalKVCacheGovernor
+
+from .distillation_integration import attach_harvester_to_router, capture_remote_resolution
 
 # The new geometric scanner we just built
 from .math.prompt_topology import compute_prompt_topology
-from .distillation_integration import attach_harvester_to_router, capture_remote_resolution
 
 
 class BipartiteRouter:
@@ -46,7 +48,7 @@ class BipartiteRouter:
         # Wormhole-Path 2: Automatically attach the Geometry Harvester for continuous distillation
         attach_harvester_to_router(self, self.seed_root)
 
-    def route(self, user_prompt: str, current_context: Dict[str, Any] | None = None) -> Dict[str, Any]:
+    def route(self, user_prompt: str, current_context: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         The hard, automatic routing decision.
         """
@@ -93,8 +95,8 @@ class BipartiteRouter:
 
     def capture_successful_remote_resolution(
         self,
-        problem_event: Dict[str, Any],
-        solution_event: Dict[str, Any],
+        problem_event: dict[str, Any],
+        solution_event: dict[str, Any],
         original_prompt: str,
         remote_summary: str,
         delta_lambda_1: float
@@ -105,7 +107,9 @@ class BipartiteRouter:
 
         This is the handoff into the Omega Feedback Loop (Wormhole-Path 2 Continuous Distillation).
         """
-        from .distillation_integration import capture_remote_resolution  # noqa: F811 — lazy re-import to avoid circular at module load
+        from .distillation_integration import (
+            capture_remote_resolution,  # noqa: F811 — lazy re-import to avoid circular at module load
+        )
         capture_remote_resolution(
             self,
             problem_event=problem_event,

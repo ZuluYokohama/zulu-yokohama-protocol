@@ -20,13 +20,14 @@ The shape pairs are the memory of every problem solved on every well.
 """
 
 from __future__ import annotations
-from dataclasses import dataclass, field, asdict
-from typing import Dict, Any, List, Optional
+
+import contextlib
 import json
 import os
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-
+from typing import Any, Dict, List, Optional
 
 # ─────────────────────────────────────────────────────────────────────────────
 # DDR DATA STRUCTURES
@@ -80,12 +81,12 @@ class DDREntry:
     # Operations narrative
     operations_24hr: str          # What happened (narrative)
     next_24hr_plan: str           # What's planned
-    problems: List[str] = field(default_factory=list)     # Problem events
-    corrective_actions: List[str] = field(default_factory=list)
+    problems: list[str] = field(default_factory=list)     # Problem events
+    corrective_actions: list[str] = field(default_factory=list)
 
     # K(S) snapshot (added by system)
-    k_s_snapshot: Optional[Dict[str, Any]] = None
-    delta_lambda_1: Optional[float] = None
+    k_s_snapshot: dict[str, Any] | None = None
+    delta_lambda_1: float | None = None
     a4_triggered: bool = False
 
     @property
@@ -128,8 +129,8 @@ class ShapePair:
     problem_type: str             # e.g. "stuck_pipe", "lost_circulation", "bit_failure"
     problem_description: str
     solution_description: str
-    k_s_problem: Dict[str, Any]   # WellboreCryptologicKey at time of problem
-    k_s_solution: Dict[str, Any]  # WellboreCryptologicKey after resolution
+    k_s_problem: dict[str, Any]   # WellboreCryptologicKey at time of problem
+    k_s_solution: dict[str, Any]  # WellboreCryptologicKey after resolution
     delta_lambda_1: float         # Must be ≥ 0 for capture
     depth_ft: float
     formation: str
@@ -188,13 +189,13 @@ class DDRHarvester:
         problem_type: str,
         problem_description: str,
         solution_description: str,
-        k_s_problem: Dict[str, Any],
-        k_s_solution: Dict[str, Any],
+        k_s_problem: dict[str, Any],
+        k_s_solution: dict[str, Any],
         delta_lambda_1: float,
         formation: str,
         resolution_hours: float,
         cost_impact_usd: float,
-    ) -> Optional[ShapePair]:
+    ) -> ShapePair | None:
         """
         Capture a shape pair from a resolved problem.
         Only harvests if Δλ₁ ≥ 0 (Wormhole-Path 2 rule: positive resolution only).
@@ -239,7 +240,7 @@ class DDRHarvester:
         with open(self.shape_pairs_file) as f:
             return sum(1 for line in f if line.strip())
 
-    def load_shape_pairs(self) -> List[Dict[str, Any]]:
+    def load_shape_pairs(self) -> list[dict[str, Any]]:
         """Load all shape pairs from the ledger."""
         if not self.shape_pairs_file.exists():
             return []
@@ -247,13 +248,11 @@ class DDRHarvester:
         with open(self.shape_pairs_file) as f:
             for line in f:
                 if line.strip():
-                    try:
+                    with contextlib.suppress(json.JSONDecodeError):
                         pairs.append(json.loads(line))
-                    except json.JSONDecodeError:
-                        pass
         return pairs
 
-    def get_well_summary(self, well_name: str) -> Dict[str, Any]:
+    def get_well_summary(self, well_name: str) -> dict[str, Any]:
         """Get performance summary for a well from all its DDRs."""
         well_dir = self.ddrs_dir / well_name.replace(" ", "_").replace("/", "-")
         if not well_dir.exists():

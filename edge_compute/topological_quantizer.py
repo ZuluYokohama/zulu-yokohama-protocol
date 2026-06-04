@@ -51,14 +51,14 @@ class TopologicalQuantizer:
     def __init__(
         self,
         precision: str = "Q4_K_M",
-        calibration_space: Optional[PrimeTopologicalSpace] = None,
+        calibration_space: PrimeTopologicalSpace | None = None,
     ):
         if precision not in self.SUPPORTED_PRECISION:
             print(f"[TopologicalQuantizer][WARN] Unknown precision '{precision}', falling back to Q4_K_M")
             precision = "Q4_K_M"
         self.precision = precision
         self.calibration_space = calibration_space
-        self._salient_mask: Dict[str, Any] = {}
+        self._salient_mask: dict[str, Any] = {}
 
         # UMA doctrine reminder (visible in every instance)
         self._uma_envelope_note = (
@@ -66,7 +66,7 @@ class TopologicalQuantizer:
             "ruthless KV eviction by H⁰/H¹ contribution (Task 4) | FRSQRTE for all normalization"
         )
 
-    def _identify_salient_weights(self, model_path: str) -> Dict[str, Any]:
+    def _identify_salient_weights(self, model_path: str) -> dict[str, Any]:
         """
         UMA + Topological Salience Detector (stub for Task 2 foundation).
 

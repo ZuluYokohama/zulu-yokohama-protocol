@@ -9,10 +9,10 @@ Axiom A6: a structurally-informed initial guess is better than nothing.
 """
 
 from __future__ import annotations
+
 import math
 import random
-from typing import Dict, List, Tuple, Any, Optional
-
+from typing import Any, Dict, List, Optional, Tuple
 
 # ─────────────────────────────────────────────────────────────────────────────
 # PURE PYTHON SPARSE MATRIX (COO format)
@@ -20,21 +20,21 @@ from typing import Dict, List, Tuple, Any, Optional
 
 class SparseMatrix:
     """Minimal COO sparse matrix for field use."""
-    def __init__(self, rows: List[int], cols: List[int], vals: List[float], shape: Tuple[int, int]):
+    def __init__(self, rows: list[int], cols: list[int], vals: list[float], shape: tuple[int, int]):
         self.rows = rows
         self.cols = cols
         self.vals = vals
         self.shape = shape
 
-    def to_dense(self) -> List[List[float]]:
+    def to_dense(self) -> list[list[float]]:
         n, m = self.shape
         M = [[0.0] * m for _ in range(n)]
-        for r, c, v in zip(self.rows, self.cols, self.vals):
+        for r, c, v in zip(self.rows, self.cols, self.vals, strict=False):
             M[r][c] += v
         return M
 
     @classmethod
-    def from_dense(cls, M: List[List[float]]) -> "SparseMatrix":
+    def from_dense(cls, M: list[list[float]]) -> SparseMatrix:
         rows, cols, vals = [], [], []
         for i, row in enumerate(M):
             for j, v in enumerate(row):
@@ -42,21 +42,21 @@ class SparseMatrix:
                     rows.append(i); cols.append(j); vals.append(v)
         return cls(rows, cols, vals, (len(M), len(M[0])))
 
-    def matvec(self, x: List[float]) -> List[float]:
+    def matvec(self, x: list[float]) -> list[float]:
         n = self.shape[0]
         y = [0.0] * n
-        for r, c, v in zip(self.rows, self.cols, self.vals):
+        for r, c, v in zip(self.rows, self.cols, self.vals, strict=False):
             y[r] += v * x[c]
         return y
 
 
-def _dot(a: List[float], b: List[float]) -> float:
-    return sum(ai * bi for ai, bi in zip(a, b))
+def _dot(a: list[float], b: list[float]) -> float:
+    return sum(ai * bi for ai, bi in zip(a, b, strict=False))
 
-def _norm(a: List[float]) -> float:
+def _norm(a: list[float]) -> float:
     return math.sqrt(sum(x*x for x in a))
 
-def _normalize(a: List[float]) -> List[float]:
+def _normalize(a: list[float]) -> list[float]:
     n = _norm(a)
     if n < 1e-14:
         return a
@@ -106,9 +106,9 @@ def power_iteration_lambda1(L: SparseMatrix, k: int = 80, tol: float = 1e-6) -> 
         return 0.0
 
     # Step 2-3: largest eigenvalue of (lam_max·I − L)
-    def _shifted_matvec(v: List[float]) -> List[float]:
+    def _shifted_matvec(v: list[float]) -> list[float]:
         Lv = L.matvec(v)
-        return [lam_max * vi - Lvi for vi, Lvi in zip(v, Lv)]
+        return [lam_max * vi - Lvi for vi, Lvi in zip(v, Lv, strict=False)]
 
     lam_max_B = _power_max(_shifted_matvec, seed=137)
 
@@ -116,7 +116,7 @@ def power_iteration_lambda1(L: SparseMatrix, k: int = 80, tol: float = 1e-6) -> 
     return max(0.0, lam_max - lam_max_B)
 
 
-def count_connected_components(adj: Dict[int, List[int]], n: int) -> int:
+def count_connected_components(adj: dict[int, list[int]], n: int) -> int:
     """DFS to count connected components (dim H⁰ approximation)."""
     visited = [False] * n
 
@@ -139,14 +139,14 @@ def count_connected_components(adj: Dict[int, List[int]], n: int) -> int:
     return components
 
 
-def build_laplacian(rows: List[int], cols: List[int], vals: List[float],
-                    n: int) -> Tuple[SparseMatrix, Dict[int, List[int]]]:
+def build_laplacian(rows: list[int], cols: list[int], vals: list[float],
+                    n: int) -> tuple[SparseMatrix, dict[int, list[int]]]:
     """Build L = DᵀD style Laplacian from edge list."""
     # Degree vector
     deg = [0.0] * n
-    adj: Dict[int, List[int]] = {i: [] for i in range(n)}
+    adj: dict[int, list[int]] = {i: [] for i in range(n)}
 
-    for r, c, v in zip(rows, cols, vals):
+    for r, c, v in zip(rows, cols, vals, strict=False):
         if r != c:
             deg[r] += abs(v)
             adj[r].append(c)
@@ -158,7 +158,7 @@ def build_laplacian(rows: List[int], cols: List[int], vals: List[float],
         if deg[i] > 0:
             L_rows.append(i); L_cols.append(i); L_vals.append(deg[i])
     # Off-diagonal
-    for r, c, v in zip(rows, cols, vals):
+    for r, c, v in zip(rows, cols, vals, strict=False):
         if r != c:
             L_rows.append(r); L_cols.append(c); L_vals.append(-abs(v))
 
@@ -184,7 +184,7 @@ def compute_well_key_lite(
     n_open_intervals: int = 2,
     timestamp: str = "",
     well_name: str = "",
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Compute K(S) without scipy.
     Uses pure Python graph construction + power iteration.

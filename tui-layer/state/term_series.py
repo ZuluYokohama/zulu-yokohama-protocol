@@ -20,11 +20,12 @@ of truth for both external transducer surfaces and internal Grok surfaces in the
 """
 
 from __future__ import annotations
-from dataclasses import dataclass, field
-from typing import List, Dict, Any, Optional
-from datetime import datetime, timezone
+
 import json
+from dataclasses import dataclass, field
+from datetime import UTC, datetime, timezone
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 # ============================================================
 # 1. CORE TYPES (lifted directly from 19.4 + 5.2 + Prime Crystal)
@@ -36,14 +37,14 @@ class CryptologicKey:
     dim_h0: int
     lambda_1: float
     holonomy_signature: str  # "trivial" | "non-trivial:<cycle-ids>"
-    beta_vector: List[int] = field(default_factory=list)
-    zeta_moments: List[float] = field(default_factory=list)
-    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    beta_vector: list[int] = field(default_factory=list)
+    zeta_moments: list[float] = field(default_factory=list)
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     def is_trivial_holonomy(self) -> bool:
         return self.holonomy_signature == "trivial"
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "dim_h0": self.dim_h0,
             "lambda_1": self.lambda_1,
@@ -60,8 +61,8 @@ class Term:
     index: int
     trigger: str
     pre_k: CryptologicKey
-    post_k: Optional[CryptologicKey] = None
-    delta_lambda_1: Optional[float] = None
+    post_k: CryptologicKey | None = None
+    delta_lambda_1: float | None = None
     a4_attempted: bool = False
     a4_success: bool = False
     issue: str = ""
@@ -69,9 +70,9 @@ class Term:
     act_description: str = ""
     verify_passed: bool = False
     gate_passed: bool = False
-    axiom_trace: List[str] = field(default_factory=list)
-    restriction_map_shape: Optional[tuple] = None
-    restriction_map_nnz: Optional[int] = None
+    axiom_trace: list[str] = field(default_factory=list)
+    restriction_map_shape: tuple | None = None
+    restriction_map_nnz: int | None = None
 
 
 @dataclass
@@ -79,9 +80,9 @@ class HolonomyEvent:
     term_index: int
     before: CryptologicKey
     after: CryptologicKey
-    repair_actions: List[str]
+    repair_actions: list[str]
     success: bool
-    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
 # ============================================================
@@ -92,30 +93,30 @@ class HolonomyEvent:
 class CurrentStalkBundle:
     """Fiber bundle section for the current term. Produced by RichPrimeEventBuilder."""
     trigger: str
-    node_data: List[Dict[str, Any]] = field(default_factory=list)
-    edge_data: List[Dict[str, Any]] = field(default_factory=list)
+    node_data: list[dict[str, Any]] = field(default_factory=list)
+    edge_data: list[dict[str, Any]] = field(default_factory=list)
     restriction_map_sparse: Any = None  # csr_matrix in real impl
-    meta: Dict[str, Any] = field(default_factory=dict)
+    meta: dict[str, Any] = field(default_factory=dict)
 
-    def to_prime_event(self) -> Dict[str, Any]:
+    def to_prime_event(self) -> dict[str, Any]:
         """Payload for MCPToolchainGateway / PrimeTopologicalSpace."""
         return {
             "trigger": self.trigger,
             "node_data": self.node_data,
             "edge_data": self.edge_data,
             "meta": self.meta,
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(UTC).isoformat()
         }
 
 
 @dataclass
 class KSHistory:
     """The diffusion trajectory — primary learning signal for the agent."""
-    keys: List[CryptologicKey] = field(default_factory=list)
-    deltas: List[float] = field(default_factory=list)
-    holonomy_events: List[HolonomyEvent] = field(default_factory=list)
+    keys: list[CryptologicKey] = field(default_factory=list)
+    deltas: list[float] = field(default_factory=list)
+    holonomy_events: list[HolonomyEvent] = field(default_factory=list)
 
-    def last(self) -> Optional[CryptologicKey]:
+    def last(self) -> CryptologicKey | None:
         return self.keys[-1] if self.keys else None
 
     def trend(self) -> float:
@@ -138,7 +139,7 @@ class KSHistory:
 @dataclass
 class A4RepairLog:
     """Self-repair / immune system trace (Law 4 / Axiom 4)."""
-    attempts: List[HolonomyEvent] = field(default_factory=list)
+    attempts: list[HolonomyEvent] = field(default_factory=list)
 
     def record(self, event: HolonomyEvent) -> None:
         self.attempts.append(event)
@@ -158,9 +159,9 @@ class ActiveTermSeries:
     """
     session_id: str
     start_k: CryptologicKey
-    terms: List[Term] = field(default_factory=list)
-    current_stalk_bundle: Optional[CurrentStalkBundle] = None
-    value_function: Dict[str, Any] = field(default_factory=dict)  # 7 Laws + active axioms as constraints
+    terms: list[Term] = field(default_factory=list)
+    current_stalk_bundle: CurrentStalkBundle | None = None
+    value_function: dict[str, Any] = field(default_factory=dict)  # 7 Laws + active axioms as constraints
     max_terms: int = 10
     convergence_threshold: float = 0.01
     ks_history: KSHistory = field(default_factory=KSHistory)
@@ -199,7 +200,7 @@ class TermSeriesExecutor:
 
     def __init__(self, series: ActiveTermSeries):
         self.series = series
-        self.execution_log: List[Dict[str, Any]] = []
+        self.execution_log: list[dict[str, Any]] = []
 
     def execute_term(self,
                      trigger: str,

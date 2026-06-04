@@ -10,15 +10,18 @@ This is the data collection phase before any blocking is enabled.
 """
 
 from __future__ import annotations
-from pathlib import Path
+
 import importlib
-import sys
 import json
-from datetime import datetime, timezone
-from typing import List, Dict, Any
+import sys
+from datetime import UTC, datetime, timezone
+from pathlib import Path
+from typing import Any, Dict, List
 
 SCRIPT_PATH = Path(__file__).resolve()
 SEED_ROOT = SCRIPT_PATH.parents[1]
+sys.path.insert(0, str(SEED_ROOT))
+
 LAYER_ROOT = SEED_ROOT / "tui_layer"
 
 def _load(name: str, p: Path):
@@ -43,7 +46,7 @@ def simulate_legacy_llm_output(user_intent: str) -> str:
     return "benign_legacy_output"
 
 
-def run_shadow_analysis(user_intent: str) -> Dict[str, Any]:
+def run_shadow_analysis(user_intent: str) -> dict[str, Any]:
     """
     In real Dark Launch this would run the topological solver asynchronously
     on every LLM generation without blocking the user.
@@ -51,8 +54,8 @@ def run_shadow_analysis(user_intent: str) -> Dict[str, Any]:
     # Simulate the topological solver running on the proposed change
     # (In production this would use the live RichPrimeEventBuilder + PrimeTopologicalSpace)
 
-    from tui_layer.adapter.rich_prime_event_builder import RichPrimeEventBuilder
     from tui_layer.adapter.prime_topological_space import PrimeTopologicalSpace
+    from tui_layer.adapter.rich_prime_event_builder import RichPrimeEventBuilder
 
     builder = RichPrimeEventBuilder(max_files=80)
     event = builder.build_from_project(SEED_ROOT, trigger=f"shadow:{user_intent[:30]}")
@@ -67,7 +70,7 @@ def run_shadow_analysis(user_intent: str) -> Dict[str, Any]:
     legacy_baseline_lambda = 0.12  # arbitrary "good enough" the LLM would have accepted
 
     divergence = {
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "user_intent": user_intent,
         "legacy_output": simulate_legacy_llm_output(user_intent),
         "shadow_ks": {
@@ -96,14 +99,14 @@ def main():
         "Implement the missing H1 void closer for the three dangling nodes"
     ]
 
-    divergences: List[Dict[str, Any]] = []
+    divergences: list[dict[str, Any]] = []
 
     for intent in test_intents:
         div = run_shadow_analysis(intent)
         divergences.append(div)
 
         if div["would_have_caused_regression"]:
-            print(f"\n[DIVERGENCE EVENT DETECTED]")
+            print("\n[DIVERGENCE EVENT DETECTED]")
             print(f"  Intent: {intent}")
             print(f"  Shadow λ₁: {div['shadow_ks']['lambda_1']:.6f} (baseline was {0.12})")
             print(f"  Holonomy: {div['shadow_ks']['holonomy']}")
@@ -113,7 +116,7 @@ def main():
         "manifest": {
             "type": "PHASE_5_2_DARK_LAUNCH_SHADOW_MATRIX",
             "version": "0.1",
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": datetime.now(UTC).isoformat(),
             "mode": "shadow_only_no_blocking",
             "axioms": ["19.4", "5.2", "A4"]
         },

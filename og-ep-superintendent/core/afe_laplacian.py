@@ -22,14 +22,15 @@ Over-budget regions are expanded → hard to reach without A4 approval.
 """
 
 from __future__ import annotations
-from dataclasses import dataclass, field, asdict
-from typing import Dict, Any, List, Optional, Tuple
+
 import json
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple
+
 import numpy as np
 from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import eigsh
-
 
 # ─────────────────────────────────────────────────────────────────────────────
 # AFE DATA STRUCTURES
@@ -107,7 +108,7 @@ class AFEState:
     well_name: str
     operator: str
     timestamp: str
-    line_items: List[AFELineItem]
+    line_items: list[AFELineItem]
     phase: str = "DRILLING"  # DRILLING, COMPLETION, WORKOVER
 
     @property
@@ -169,11 +170,11 @@ class AFELaplacian:
 
     def __init__(self, afe_state: AFEState):
         self.state = afe_state
-        self._code_to_idx: Dict[str, int] = {}
-        self._lambda_1: Optional[float] = None
-        self._laplacian: Optional[csr_matrix] = None
+        self._code_to_idx: dict[str, int] = {}
+        self._lambda_1: float | None = None
+        self._laplacian: csr_matrix | None = None
 
-    def _build_cost_graph(self) -> Tuple[csr_matrix, List[str]]:
+    def _build_cost_graph(self) -> tuple[csr_matrix, list[str]]:
         """Build the cost dependency graph with restriction maps."""
         line_items = self.state.line_items
         codes = [li.cost_code for li in line_items]
@@ -207,12 +208,12 @@ class AFELaplacian:
         delta = csr_matrix((vals, (rows, cols)), shape=(n, n), dtype=np.float64).tocsr()
         return delta, codes
 
-    def compute_cost_key(self) -> Dict[str, Any]:
+    def compute_cost_key(self) -> dict[str, Any]:
         """
         Compute K(S) for the AFE.
         Returns the cost topology fingerprint with λ₁, coherence, and variance flags.
         """
-        delta, codes = self._build_cost_graph()
+        delta, _codes = self._build_cost_graph()
         # Proper graph Laplacian: L = D − A  (NOT delta.T @ delta)
         diag_vals = np.array(delta.sum(axis=1)).flatten()
         n = delta.shape[0]
@@ -275,7 +276,7 @@ class AFELaplacian:
             "message": message,
         }
 
-    def draft_afe_supplement(self, reason: str) -> Dict[str, Any]:
+    def draft_afe_supplement(self, reason: str) -> dict[str, Any]:
         """
         Auto-draft an AFE supplement when A4 fires.
         Superintendent reviews, adjusts numbers, signs.

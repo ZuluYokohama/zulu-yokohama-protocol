@@ -51,7 +51,7 @@ class NPUKernelRouter:
 
     def __init__(self, backend: str = "auto"):
         self.backend = self._detect_best_backend(backend)
-        self._last_result: Optional[Dict[str, Any]] = None
+        self._last_result: dict[str, Any] | None = None
         self._uma_doctrine_active = True
 
         # UMA doctrine reminder (visible in every instance, matching quantizer)
@@ -106,7 +106,7 @@ class NPUKernelRouter:
     def _stub_extract_sparse_from_quantized_ref(
         self,
         quantized_model_ref: Any,
-        original_delta: Optional[csr_matrix] = None,
+        original_delta: csr_matrix | None = None,
     ) -> csr_matrix:
         """
         Stub for physical weight-loading via llama-cpp-python or coremltools.
@@ -217,7 +217,7 @@ class NPUKernelRouter:
             inv_sqrt = np.reciprocal(np.sqrt(np.abs(x) + 1e-30))
         return x * inv_sqrt
 
-    def _cpu_fallback(self, delta: csr_matrix, k: int) -> Dict[str, Any]:
+    def _cpu_fallback(self, delta: csr_matrix, k: int) -> dict[str, Any]:
         """Validated scipy path. Used for TDD + any platform without NPU delegate."""
         if delta.shape[0] < 2:
             return {
@@ -254,7 +254,7 @@ class NPUKernelRouter:
                 "error": str(e),
             }
 
-    def _delegate_sparse_eigsh(self, delta: csr_matrix, k: int) -> Dict[str, Any]:
+    def _delegate_sparse_eigsh(self, delta: csr_matrix, k: int) -> dict[str, Any]:
         """
         Production delegate path (QNN or CoreML/ANE) — simulated on this host.
 
@@ -354,10 +354,10 @@ class NPUKernelRouter:
 
     def compute_laplacian_eigsh(
         self,
-        delta: Optional[csr_matrix] = None,
+        delta: csr_matrix | None = None,
         k: int = 2,
         quantized_model_ref: Any = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Primary entry point for the adapter.
 
@@ -373,7 +373,7 @@ class NPUKernelRouter:
         # Always surface these for Task 4 ruthless eviction (salient = keep; non-salient evict before NPU pressure)
         # and for Phase 11.2 zero-VRAM context swap in claude_code_oracle (evict low-energy tokens to ingest
         # agent-optimized CodeRabbit payload, then auto-apply only topologically validated fixes).
-        salient_info: Dict[str, Any] = {}
+        salient_info: dict[str, Any] = {}
         uma_compliant: bool = True
         if quantized_model_ref is not None and isinstance(quantized_model_ref, dict):
             salient_info = quantized_model_ref.get("salient_info", {}) or {}
@@ -404,10 +404,7 @@ class NPUKernelRouter:
         # Exercise hardware normalize on the primary eigenvector (contract validation)
         if result.get("eigenvectors") is not None:
             ev = result["eigenvectors"]
-            if ev.ndim == 2 and ev.shape[1] > 0:
-                v0 = ev[:, 0]
-            else:
-                v0 = ev.ravel()
+            v0 = ev[:, 0] if ev.ndim == 2 and ev.shape[1] > 0 else ev.ravel()
             _ = self._hardware_normalize(v0[: min(8, len(v0))])
 
         # Enrich result with doctrine metadata (for downstream governor / verifier / oracle)
@@ -439,10 +436,7 @@ class NPUKernelRouter:
             last_l1 = self._last_result.get("lambda_1", "None")
         else:
             getter = getattr(self._last_result, "get", None)
-            if callable(getter):
-                last_l1 = getter("lambda_1")
-            else:
-                last_l1 = getattr(self._last_result, "lambda_1", None)
+            last_l1 = getter("lambda_1") if callable(getter) else getattr(self._last_result, "lambda_1", None)
             if last_l1 is None:
                 last_l1 = "None"
         return (

@@ -21,10 +21,12 @@ that grafts the proven logic from the old transducer session.
 """
 
 from __future__ import annotations
+
 import ast
-from pathlib import Path
-from typing import Dict, List, Any, Tuple
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Dict, List, Tuple
+
 import numpy as np
 from scipy.sparse import csr_matrix
 
@@ -51,7 +53,7 @@ class StalkFeatures:
     line_span: int          # Rough size proxy
 
 
-def _classify_node(node: ast.AST) -> Tuple[int, int, int]:
+def _classify_node(node: ast.AST) -> tuple[int, int, int]:
     """Map AST node type to (kind, semantic_category, is_public)."""
     if isinstance(node, ast.Module):
         return 0, 0, 1
@@ -71,8 +73,8 @@ def _classify_node(node: ast.AST) -> Tuple[int, int, int]:
     return 7, 0, 1
 
 
-def _extract_features(node: ast.AST, depth: int, source_lines: List[str],
-                      file_imports: set[str], reverse_imports: Dict[str, int]) -> List[float]:
+def _extract_features(node: ast.AST, depth: int, source_lines: list[str],
+                      file_imports: set[str], reverse_imports: dict[str, int]) -> list[float]:
     """Build the 9D vector for a single AST node with real topological degree."""
     kind, category, public = _classify_node(node)
     has_doc = 0
@@ -133,7 +135,7 @@ class RichPrimeEventBuilder:
         trigger: str = "unknown",
         glob: str = "**/*.py",
         max_files: int | None = None
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Walk the project, parse AST, emit rich stalks + sparse restriction map skeleton.
 
@@ -144,14 +146,14 @@ class RichPrimeEventBuilder:
         root = Path(project_dir).resolve()
         py_files = sorted(root.glob(glob))[: (max_files or self.max_files)]
 
-        node_data: List[Dict[str, Any]] = []
-        edge_data: List[Dict[str, Any]] = []
+        node_data: list[dict[str, Any]] = []
+        edge_data: list[dict[str, Any]] = []
         node_id = 0
-        file_to_nodes: Dict[str, List[int]] = {}
+        file_to_nodes: dict[str, list[int]] = {}
 
         # First pass: collect import information for fan_in/fan_out
-        file_imports: Dict[str, set[str]] = {}
-        reverse_imports: Dict[str, int] = {}
+        file_imports: dict[str, set[str]] = {}
+        reverse_imports: dict[str, int] = {}
 
         for f in py_files:
             try:
@@ -233,7 +235,7 @@ class RichPrimeEventBuilder:
             data.append(1.0)  # self-loop
 
         # Add edges within the same file as "contains" relations (stronger weight)
-        for fname, nodes_in_file in file_to_nodes.items():
+        for _fname, nodes_in_file in file_to_nodes.items():
             for i in range(len(nodes_in_file)):
                 for j in range(i + 1, len(nodes_in_file)):
                     a = nodes_in_file[i]

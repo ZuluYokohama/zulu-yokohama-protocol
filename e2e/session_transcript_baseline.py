@@ -22,17 +22,18 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
 # Ensure we can import the sanitized engine (tui-layer dir + updated refs)
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from tui_layer.adapter.prime_topological_space import PrimeTopologicalSpace
-from scipy.sparse import csr_matrix
 import numpy as np
+from scipy.sparse import csr_matrix
+
+from tui_layer.adapter.prime_topological_space import PrimeTopologicalSpace
 
 
-def build_minimal_session_event_from_chapters() -> Dict[str, Any]:
+def build_minimal_session_event_from_chapters() -> dict[str, Any]:
     """
     Build a minimal RichPrimeEvent-like dict for the *entire 37-chapter sequence*
     as one "state" for baseline K(S).
@@ -40,7 +41,7 @@ def build_minimal_session_event_from_chapters() -> Dict[str, Any]:
     In full Phase 2/3 this will be per-chapter or sliding-window events with richer
     stalks from actual transcript text (system mentions, qualia tags, position).
 
-    Here (Phase 1 baseline): 
+    Here (Phase 1 baseline):
     - node_data: the "all systems" + qualia motifs distilled from sampling the 37
       (early design docs, mid A4/Δλ1 hard blocks with numbers, late pushes + protocol
       naming + "full structure" + "max effect" directive).
@@ -53,7 +54,7 @@ def build_minimal_session_event_from_chapters() -> Dict[str, Any]:
     """
     # The 37 "saves" as nodes in a path (sequence dimension)
     # (abbreviated labels for baseline; full Phase 2 will have rich per-chapter)
-    nodes: List[Dict[str, Any]] = [
+    nodes: list[dict[str, Any]] = [
         {"id": i, "label": f"chapter-{i:02d}"} for i in range(37)
     ]
 
@@ -63,9 +64,9 @@ def build_minimal_session_event_from_chapters() -> Dict[str, Any]:
     # (A4/holonomy/DeltaLambda1 appears mid and echoed in 37 "max effect")
     # + "clean seed / protocol naming" recurrence late.
     # Sparse csr for the engine.
-    rows: List[int] = []
-    cols: List[int] = []
-    data: List[float] = []
+    rows: list[int] = []
+    cols: list[int] = []
+    data: list[float] = []
 
     # Path edges (sequence "time" dimension)
     for i in range(n - 1):
@@ -91,7 +92,7 @@ def build_minimal_session_event_from_chapters() -> Dict[str, Any]:
 
     restriction = csr_matrix((data, (rows, cols)), shape=(n, n))
 
-    event: Dict[str, Any] = {
+    event: dict[str, Any] = {
         "node_data": nodes,
         "restriction_map_sparse": restriction,
         "meta": {

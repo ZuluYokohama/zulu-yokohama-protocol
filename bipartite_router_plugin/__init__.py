@@ -10,6 +10,6 @@ When the human types anything, the router automatically decides:
 The mathematics of the prompt itself now dictate the hardware and intelligence level used.
 """
 
-from .router_gateway import get_bipartite_router, BipartiteRouter
+from .router_gateway import BipartiteRouter, get_bipartite_router
 
-__all__ = ["get_bipartite_router", "BipartiteRouter"]
+__all__ = ["BipartiteRouter", "get_bipartite_router"]

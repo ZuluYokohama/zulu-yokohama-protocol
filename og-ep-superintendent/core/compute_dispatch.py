@@ -64,30 +64,36 @@ TRANSLATION TABLE (math → operational action):
 
 from __future__ import annotations
 
-import time
 import math
 import threading
+import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from enum import Enum
-from typing import Dict, Any, Optional, List, Callable, Tuple, TYPE_CHECKING
+from enum import Enum, StrEnum
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
+
 import numpy as np
 
 if TYPE_CHECKING:
-    from .wellbore_topology import WellState
     from .afe_laplacian import AFEState
+    from .wellbore_topology import WellState
 
 from .fiber_sheaf_engine import (
-    FiberSheafEngine, FiberSheafOps, ZetaSpectralEmbedder,
-    FiberBundle, compute_delta_fiber, FIBER_DIM,
-    GATE_HALT_LAMBDA, GATE_WARN_LAMBDA,   # shared threshold constants
+    FIBER_DIM,
+    GATE_HALT_LAMBDA,  # shared threshold constants
+    GATE_WARN_LAMBDA,
+    FiberBundle,
+    FiberSheafEngine,
+    FiberSheafOps,
+    ZetaSpectralEmbedder,
+    compute_delta_fiber,
 )
-
 
 # ─────────────────────────────────────────────────────────────────────────────
 # DISPATCH TIER ENUM
 # ─────────────────────────────────────────────────────────────────────────────
 
-class Tier(str, Enum):
+class Tier(StrEnum):
     FAST     = "FAST"       # < 2ms   — real-time A4 gate, mid-operation
     STANDARD = "STANDARD"   # < 15ms  — shift handoff, hourly snapshot
     FULL     = "FULL"       # < 90ms  — end-of-day DDR, batch analysis
@@ -98,7 +104,7 @@ class Tier(str, Enum):
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Coefficients fitted from benchmark: cost = a * n + b  (ms)
-_COST: Dict[str, Dict[str, float]] = {
+_COST: dict[str, dict[str, float]] = {
     "bundle_build":     {"a": 0.313, "b": 0.22},   # per node
     "laplacian_build":  {"a": 0.154, "b": 0.10},
     "eigendecompose":   {"a": 0.278, "b": 0.06},   # n·d ≤ 150 region
@@ -139,7 +145,7 @@ class OpPlan:
     estimated_ms:      float = 0.0
 
     @classmethod
-    def for_tier(cls, tier: Tier, n: int, d: int) -> "OpPlan":
+    def for_tier(cls, tier: Tier, n: int, d: int) -> OpPlan:
         plan = cls(tier=tier, n_nodes=n, fiber_dim=d)
         est = 0.0
         est += _estimate_ms("bundle_build", n)
@@ -185,7 +191,7 @@ class OpPlan:
 # TRANSLATION TABLE  — math output → operational language
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _translate_lambda1(v: float) -> Dict[str, str]:
+def _translate_lambda1(v: float) -> dict[str, str]:
     if v >= 0.5:
         return {"level": "COHERENT",  "colour": "GREEN",
                 "action": "System coherent. Advance operations per program."}
@@ -199,7 +205,7 @@ def _translate_lambda1(v: float) -> Dict[str, str]:
         return {"level": "HALT_A4",   "colour": "RED",
                 "action": "A4 TRIGGERED. Halt operations. File corrective action. Do not advance."}
 
-def _translate_zeta_coherence(z: float) -> Dict[str, str]:
+def _translate_zeta_coherence(z: float) -> dict[str, str]:
     if z >= 0.4:
         return {"regime": "GUE",     "note": "Spectrum prime-resonant (well-coupled). Full cross-node learning active."}
     elif z >= 0.15:
@@ -215,7 +221,7 @@ def _translate_prime_resonance(r: float) -> str:
     else:
         return "De-resonated: fragmented eigenvalue distribution. Structural primitives disconnected."
 
-def _translate_holonomy(trace: float, harmonic_dim: int, fiber_dim: int) -> Dict[str, str]:
+def _translate_holonomy(trace: float, harmonic_dim: int, fiber_dim: int) -> dict[str, str]:
     silo = harmonic_dim > fiber_dim
     if trace > 5.0 and silo:
         return {"status": "NON_TRIVIAL",
@@ -234,7 +240,7 @@ def _translate_holonomy(trace: float, harmonic_dim: int, fiber_dim: int) -> Dict
         return {"status": "FLAT",
                 "note": "Trivial holonomy. Parallel transport consistent. No loop contradictions."}
 
-def _translate_markov(top_node: str, weights: List[float], names: List[str]) -> Dict[str, Any]:
+def _translate_markov(top_node: str, weights: list[float], names: list[str]) -> dict[str, Any]:
     top_idx = int(np.argmax(weights))
     bottom_idx = int(np.argmin(weights))
     return {
@@ -247,7 +253,7 @@ def _translate_markov(top_node: str, weights: List[float], names: List[str]) -> 
                  f"'{names[bottom_idx]}' is most isolated ({weights[bottom_idx]*100:.1f}%)."),
     }
 
-def _gate_from_ks(ks: Dict[str, Any]) -> str:
+def _gate_from_ks(ks: dict[str, Any]) -> str:
     """Combine all signals into a single gate decision."""
     lam1    = ks.get("lambda_1_fiber", 0.0)
     z_gate  = ks.get("zeta_gate", "PASS")
@@ -293,7 +299,7 @@ class ComputeDispatch:
         "background"    → FULL
     """
 
-    CONTEXT_TIER: Dict[str, Tier] = {
+    CONTEXT_TIER: dict[str, Tier] = {
         "realtime":       Tier.FAST,
         "alarm":          Tier.FAST,
         "a4_check":       Tier.FAST,
@@ -311,7 +317,7 @@ class ComputeDispatch:
 
     # ── Core run ──────────────────────────────────────────────────────────────
 
-    def run(self, engine: FiberSheafEngine) -> Dict[str, Any]:
+    def run(self, engine: FiberSheafEngine) -> dict[str, Any]:
         """
         Execute operations according to tier plan, return enriched + translated K(S).
         """
@@ -320,11 +326,11 @@ class ComputeDispatch:
         plan = OpPlan.for_tier(self.tier, n, d)
 
         t_start = time.perf_counter()
-        ks: Dict[str, Any] = {}
+        ks: dict[str, Any] = {}
 
         # ── Always: sheaf Laplacian + eigendecompose ──────────────────────────
         L_F          = engine.sheaf_ops.build_block_laplacian()
-        evals, evecs = engine.sheaf_ops.eigendecompose()
+        evals, _evecs = engine.sheaf_ops.eigendecompose()
         lam1_f       = engine.sheaf_ops.lambda_1_fiber()
         h_dim        = engine.sheaf_ops.harmonic_dim()
         hol_trace    = engine.sheaf_ops.fiber_holonomy_trace()
@@ -358,8 +364,7 @@ class ComputeDispatch:
         if plan.run_markov_T:
             T = engine.sheaf_ops.build_markov_transition()
             # Cheap proxy for node importance: row L2 norms of T
-            _nd = T.shape[0]
-            nd = T.shape[0]
+            T.shape[0]
             proxy_w = np.array([
                 float(np.linalg.norm(T[v*d:(v+1)*d, :]))
                 for v in range(n)
@@ -420,7 +425,7 @@ class ComputeDispatch:
     # ── Translation ───────────────────────────────────────────────────────────
 
     @staticmethod
-    def translate(ks: Dict[str, Any]) -> Dict[str, Any]:
+    def translate(ks: dict[str, Any]) -> dict[str, Any]:
         """
         Convert raw K(S) dict into a structured operational translation.
         Every mathematical output → human-readable, action-oriented language.
@@ -448,8 +453,6 @@ class ComputeDispatch:
         # Determine primary trigger for the gate decision
         lam1_is_trigger  = lam1 < 0.01
         hol_is_trigger   = hol > 8.0 or h_dim > d * 2
-        _zeta_is_trigger = z_gate in ("HALT_A4", "WARN")
-        zeta_is_trigger  = z_gate in ("HALT_A4", "WARN")
 
         if gate == "HALT_A4":
             if lam1_is_trigger:
@@ -512,20 +515,20 @@ class ComputeDispatch:
         cls,
         engine: FiberSheafEngine,
         context: str = "shift_handoff",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Run with tier auto-selected from operational context string."""
         tier = cls.CONTEXT_TIER.get(context, Tier.STANDARD)
         return cls(tier=tier).run(engine)
 
     @classmethod
-    def from_afe(cls, afe_state: "AFEState",
-                 context: str = "ddr") -> Dict[str, Any]:
+    def from_afe(cls, afe_state: AFEState,
+                 context: str = "ddr") -> dict[str, Any]:
         eng = FiberSheafEngine.from_afe(afe_state)
         return cls.auto(eng, context)
 
     @classmethod
-    def from_well(cls, well_state: "WellState",
-                  context: str = "shift_handoff") -> Dict[str, Any]:
+    def from_well(cls, well_state: WellState,
+                  context: str = "shift_handoff") -> dict[str, Any]:
         eng = FiberSheafEngine.from_well(well_state)
         return cls.auto(eng, context)
 
@@ -549,13 +552,13 @@ class BackgroundSheaf:
 
     def __init__(self, engine: FiberSheafEngine):
         self._engine  = engine
-        self._fast_ks: Optional[Dict[str, Any]] = None
-        self._full_ks: Optional[Dict[str, Any]] = None
+        self._fast_ks: dict[str, Any] | None = None
+        self._full_ks: dict[str, Any] | None = None
         self._event   = threading.Event()
         self._thread  = threading.Thread(target=self._run_full, daemon=True)
         self._thread.start()
 
-    def fast(self) -> Dict[str, Any]:
+    def fast(self) -> dict[str, Any]:
         """Return FAST result synchronously (< 2ms)."""
         if self._fast_ks is None:
             self._fast_ks = ComputeDispatch(Tier.FAST).run(self._engine)
@@ -565,7 +568,7 @@ class BackgroundSheaf:
         self._full_ks = ComputeDispatch(Tier.FULL).run(self._engine)
         self._event.set()
 
-    def get(self, timeout: float = 30.0) -> Optional[Dict[str, Any]]:
+    def get(self, timeout: float = 30.0) -> dict[str, Any] | None:
         """Block until FULL result is ready, or return None on timeout."""
         self._event.wait(timeout=timeout)
         return self._full_ks
@@ -582,7 +585,7 @@ def dispatch_delta(
     prior_engine:   FiberSheafEngine,
     current_engine: FiberSheafEngine,
     context: str = "shift_handoff",
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Compute and translate the delta K(S) between two operational states.
     Returns enriched delta with gate + human-readable change summary.

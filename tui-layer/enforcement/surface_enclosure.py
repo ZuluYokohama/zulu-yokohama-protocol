@@ -16,20 +16,22 @@ It turns the abstract Grok Prime Crystal Operating Protocol into enforceable run
 """
 
 from __future__ import annotations
-from typing import Any, Callable, Dict, Optional
-from dataclasses import dataclass
+
 import sys
 import traceback
+from collections.abc import Callable
+from dataclasses import dataclass
+from typing import Any, Dict, Optional
 
 # Import the core structures from the sibling state module
 # In a real integrated Grok this would be absolute or properly packaged.
 from ..state.term_series import (
     ActiveTermSeries,
-    CurrentStalkBundle,
-    TermSeriesExecutor,
     CryptologicKey,
+    CurrentStalkBundle,
     HolonomyEvent,
-    Term
+    Term,
+    TermSeriesExecutor,
 )
 
 
@@ -37,10 +39,10 @@ from ..state.term_series import (
 class EnclosureResult:
     """Result of attempting to execute a surface through the guard."""
     allowed: bool
-    term: Optional[Term] = None
-    error: Optional[str] = None
-    blocked_reason: Optional[str] = None
-    emitted_k: Optional[CryptologicKey] = None
+    term: Term | None = None
+    error: str | None = None
+    blocked_reason: str | None = None
+    emitted_k: CryptologicKey | None = None
 
 
 class SurfaceEnclosure:
@@ -64,10 +66,10 @@ class SurfaceEnclosure:
         *,
         build_stalks: Callable[[str], CurrentStalkBundle],
         apply_action: Callable[[CurrentStalkBundle], Any],
-        verify_pre: Optional[Callable[[CurrentStalkBundle], bool]] = None,
-        verify_post: Optional[Callable[[CurrentStalkBundle, Any], bool]] = None,
-        continuity_guard: Optional[Callable[[CryptologicKey, CryptologicKey], bool]] = None,
-        on_block: Optional[Callable[[EnclosureResult], None]] = None,
+        verify_pre: Callable[[CurrentStalkBundle], bool] | None = None,
+        verify_post: Callable[[CurrentStalkBundle, Any], bool] | None = None,
+        continuity_guard: Callable[[CryptologicKey, CryptologicKey], bool] | None = None,
+        on_block: Callable[[EnclosureResult], None] | None = None,
     ) -> EnclosureResult:
         """
         The single choke point.
@@ -128,13 +130,13 @@ class SurfaceEnclosure:
                 term_index=len(self.series.terms),
                 before=pre_k,
                 after=error_k,
-                repair_actions=[f"Exception during enclose: {str(e)}"],
+                repair_actions=[f"Exception during enclose: {e!s}"],
                 success=False
             ))
 
             result = EnclosureResult(
                 allowed=False,
-                blocked_reason=f"Exception during guarded term: {str(e)}",
+                blocked_reason=f"Exception during guarded term: {e!s}",
                 emitted_k=error_k
             )
             self._emit_hard_block(result, None)
@@ -149,7 +151,7 @@ class SurfaceEnclosure:
             return f"Coherence regression: Δλ₁ = {term.delta_lambda_1:.4f} (A4 repair insufficient)"
         return "One or more 19.4 guards failed (pre/post/continuity)"
 
-    def _emit_hard_block(self, result: EnclosureResult, term: Optional[Term]) -> None:
+    def _emit_hard_block(self, result: EnclosureResult, term: Term | None) -> None:
         """
         The 'Drop the hammer' behavior — full transparent contradictory K(S) to stderr.
         This is the alien-level technician's immune response.

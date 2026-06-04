@@ -12,11 +12,12 @@ This is the conceptual nervous system for the entire Grok TUI under the Prime Cr
 """
 
 from __future__ import annotations
-from pathlib import Path
-import sys
+
 import importlib.util
 import json
+import sys
 from datetime import datetime, timezone
+from pathlib import Path
 
 SCRIPT_PATH = Path(__file__).resolve()
 LAYER_ROOT = SCRIPT_PATH.parents[1]
@@ -101,7 +102,7 @@ def main():
     simulated_bad_lambda = lambda_1_1 - 0.8
     simulated_bad_h1 = beta1_1 + 4
 
-    print(f"Proposed: 'delete three core interface modules to simplify'")
+    print("Proposed: 'delete three core interface modules to simplify'")
     print(f"Solver projects: lambda_1 -> {simulated_bad_lambda:.4f} (delta {simulated_bad_lambda - lambda_1_1:+.4f}), H1 -> {simulated_bad_h1}")
 
     if simulated_bad_lambda < 0 or simulated_bad_h1 > beta1_1 * 1.5:

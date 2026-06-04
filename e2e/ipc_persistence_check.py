@@ -12,12 +12,15 @@ Proves the Reality Bridge survives real-world chaos.
 """
 
 from __future__ import annotations
-from pathlib import Path
+
 import json
+import sys
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
+from pathlib import Path
 
 SEED_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(SEED_ROOT))
 
 
 def simulate_external_file_change():
@@ -49,8 +52,8 @@ def run_ipc_persistence_test() -> dict:
     bridge_a.get_current_ks()  # force refresh
 
     # Rebuild to simulate what the hot path would do on external change
-    from tui_layer.adapter.rich_prime_event_builder import RichPrimeEventBuilder
     from tui_layer.adapter.prime_topological_space import PrimeTopologicalSpace
+    from tui_layer.adapter.rich_prime_event_builder import RichPrimeEventBuilder
 
     builder = RichPrimeEventBuilder(max_files=80)
     event = builder.build_from_project(SEED_ROOT, trigger="ipc:focus_return_after_external_change")
@@ -85,7 +88,7 @@ def main():
         "manifest": {
             "type": "PHASE_5_2_IPC_PERSISTENCE_CHECK",
             "version": "0.1",
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": datetime.now(UTC).isoformat(),
             "axioms": ["19.4", "20.3", "A4"]
         },
         "result": result,
@@ -97,7 +100,7 @@ def main():
     with open(bundle_path, "w", encoding="utf-8") as f:
         json.dump(bundle, f, indent=2)
 
-    print(f"\nIPC Persistence Check complete.")
+    print("\nIPC Persistence Check complete.")
     print(f"Verdict: {bundle['verdict']}")
     print(f"Evidence: {bundle_path}")
     print("=" * 70)

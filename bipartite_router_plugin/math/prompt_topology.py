@@ -5,7 +5,8 @@ Prompt Topology Scanner — Geometric Intent Extraction (Phase 11.2 Bipartite Sy
 This module is the "eyes" of the Bipartite Router.
 
 When the human types a command in the CLI, this scanner:
-- Extracts semantic stalks from the prompt (treated as a high-signal "edit intent" against the current codebase manifold).
+- Extracts semantic stalks from the prompt (treated as a high-signal "edit intent"
+  against the current codebase manifold).
 - Computes lightweight topological features:
   - β₀ proxy: fragmentation / number of isolated "islands" the edit would touch.
   - β₁ proxy: cyclicity / how many new loops or feedback paths the edit would create.
@@ -13,23 +14,26 @@ When the human types a command in the CLI, this scanner:
 
 These three numbers are the decision features fed to router_gateway.py.
 
-It re-uses the existing RichPrimeEventBuilder + PrimeTopologicalSpace machinery from the clean seed for consistency and zero pollution.
+It re-uses the existing RichPrimeEventBuilder + PrimeTopologicalSpace machinery from
+the clean seed for consistency and zero pollution.
 """
 
 from __future__ import annotations
-from pathlib import Path
-from typing import Dict, Any, List
+
 import re
 
 # Import from the proven clean seed (no duplication)
 import sys
+from pathlib import Path
+from typing import Any
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tui_layer"))
 
-from adapter.rich_prime_event_builder import RichPrimeEventBuilder
 from adapter.prime_topological_space import PrimeTopologicalSpace
+from adapter.rich_prime_event_builder import RichPrimeEventBuilder
 
 
-def extract_intent_stalks(user_prompt: str, current_event: Dict[str, Any] | None = None) -> Dict[str, Any]:
+def extract_intent_stalks(user_prompt: str, current_event: dict[str, Any] | None = None) -> dict[str, Any]:
     """
     Treat the user's prompt as a "virtual edit" and build a lightweight stalk representation.
     In a real implementation this would do semantic embedding + retrieval against the current stalks.
@@ -97,7 +101,7 @@ def extract_intent_stalks(user_prompt: str, current_event: Dict[str, Any] | None
     return synthetic_event
 
 
-def compute_prompt_topology(user_prompt: str, current_event: Dict[str, Any] | None = None) -> Dict[str, Any]:
+def compute_prompt_topology(user_prompt: str, current_event: dict[str, Any] | None = None) -> dict[str, Any]:
     """
     The main entry point for the Bipartite Router.
 

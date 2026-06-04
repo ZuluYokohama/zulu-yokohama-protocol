@@ -16,12 +16,14 @@ This is the permanent bridge. Once wired, the legacy probabilistic path is depre
 """
 
 from __future__ import annotations
-from pathlib import Path
-from typing import Dict, Any, Optional, Callable
+
 import json
 import threading
 import time
-from datetime import datetime, timezone
+from collections.abc import Callable
+from datetime import UTC, datetime, timezone
+from pathlib import Path
+from typing import Any, Dict, Optional
 
 from ..state.term_series import ActiveTermSeries, CryptologicKey
 from .persistent_fabric import PersistentFabric, get_persistent_fabric_for_tui
@@ -43,9 +45,9 @@ class IPCBridge:
     def __init__(self, seed_root: Path, transport: str = "memory_mapped"):
         self.seed_root = Path(seed_root).resolve()
         self.transport = transport
-        self.fabric: Optional[PersistentFabric] = None
+        self.fabric: PersistentFabric | None = None
         self._lock = threading.RLock()
-        self._last_ks: Optional[Dict[str, Any]] = None
+        self._last_ks: dict[str, Any] | None = None
         self._running = False
 
         # Initialize the persistent fabric (this holds the real K(S))
@@ -71,7 +73,7 @@ class IPCBridge:
         # Stub: in production this would start a small JSON-RPC server thread.
         print("[IPCBridge] JSON-RPC transport stub initialized (localhost:4872)")
 
-    def get_current_ks(self) -> Dict[str, Any]:
+    def get_current_ks(self) -> dict[str, Any]:
         """Fast path for the TUI to read the live K(S) with minimal latency."""
         with self._lock:
             if self.fabric and self.fabric.series:
@@ -80,7 +82,7 @@ class IPCBridge:
                 return current
             return self._last_ks or {}
 
-    def evolve(self, trigger: str, proposed_action: Any) -> Dict[str, Any]:
+    def evolve(self, trigger: str, proposed_action: Any) -> dict[str, Any]:
         """
         The main entry point called by the TUI on every significant event.
 
@@ -115,13 +117,13 @@ class IPCBridge:
         if self.fabric:
             self.fabric.save()
 
-    def get_full_state(self) -> Dict[str, Any]:
+    def get_full_state(self) -> dict[str, Any]:
         """For debugging / A4 recovery."""
         return {
             "transport": self.transport,
             "current_ks": self.get_current_ks(),
             "session_id": self.fabric.session_id if self.fabric else None,
-            "last_updated": datetime.now(timezone.utc).isoformat()
+            "last_updated": datetime.now(UTC).isoformat()
         }
 
 

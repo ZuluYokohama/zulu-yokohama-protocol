@@ -12,10 +12,11 @@ Purpose: Called by the Grok agent at end of significant term sequences (or on us
 """
 
 from __future__ import annotations
-from typing import Dict, Any
-from pathlib import Path
-from datetime import datetime, timezone
+
 import json
+from datetime import UTC, datetime, timezone
+from pathlib import Path
+from typing import Any, Dict
 
 from ..state.term_series import ActiveTermSeries
 
@@ -27,7 +28,7 @@ def generate_evidence_bundle(series: ActiveTermSeries, output_dir: str | Path = 
     This is the direct realization of the "Logbook" law and 19.4 axiom trace requirement.
     Every significant session or "continue" sequence must call this before the next major term.
     """
-    ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%SZ")
+    ts = datetime.now(UTC).strftime("%Y-%m-%dT%H-%M-%SZ")
     bundle_name = f"PC_EVIDENCE_{series.session_id}_{ts}.json"
     bundle_path = Path(output_dir) / bundle_name
 
@@ -75,7 +76,7 @@ def generate_evidence_bundle(series: ActiveTermSeries, output_dir: str | Path = 
             }
             for e in series.a4_log.attempts
         ],
-        "guarded_surfaces": sorted(set(t.trigger.split(":")[0] for t in series.terms)),
+        "guarded_surfaces": sorted({t.trigger.split(":")[0] for t in series.terms}),
         "value_function_constraints": series.value_function,
         "max_terms": series.max_terms,
         "convergence_threshold": series.convergence_threshold

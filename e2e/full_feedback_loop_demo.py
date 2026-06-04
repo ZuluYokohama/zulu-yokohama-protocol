@@ -41,15 +41,16 @@ Expected (skeleton phase): Prints the planned 4-turn flow, then raises NotImplem
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
-from pathlib import Path
-from typing import Dict, Any
 
 # Phase 11.2 / Wormhole-Path 2 delivered components (the only allowed imports for this demo)
 # NOTE: Imports are lazy (inside main) for the skeleton phase so the PLANNED FLOW banner
 # prints cleanly during TDD red-state verification. Real steps will import at the top level
 # or use the integration shims once wiring is complete.
 import sys
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Dict
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 
@@ -108,6 +109,7 @@ def main() -> None:
 
     # Real imports now that the foundation + junctions + bootstrap repairs are in place.
     from pathlib import Path as _Path
+
     from bipartite_router_plugin.router_gateway import BipartiteRouter
 
     seed_root = _Path(__file__).resolve().parents[1]
@@ -127,8 +129,9 @@ def main() -> None:
     print()
 
     # === TURN 2 + 3 + 4: REMOTE + SIMULATED ORACLE + HARVEST (full Wormhole-Path 2 loop) ===
-    from scipy.sparse import csr_matrix
     import numpy as np
+    from scipy.sparse import csr_matrix
+
     from distillation.geometry_harvester import GeometryHarvester
 
     remote_prompt = (
@@ -154,7 +157,7 @@ def main() -> None:
 
     # Minimal but valid synthetic RichPrimeEvent dicts (small 4-node graph)
     # These satisfy PrimeTopologicalSpace.__init__ (node_data + restriction_map_sparse)
-    def make_minimal_event(label: str) -> Dict[str, Any]:
+    def make_minimal_event(label: str) -> dict[str, Any]:
         n = 4
         node_data = [{"id": i, "label": f"{label}_{i}"} for i in range(n)]
         # Simple cycle + one chord as restriction map (sparse)

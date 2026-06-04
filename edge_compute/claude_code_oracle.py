@@ -21,19 +21,21 @@ This completely subjugates the raw probabilistic reviewer path inside the TUI.
 """
 
 from __future__ import annotations
-from pathlib import Path
-from typing import Dict, Any, List
+
 import json
-import subprocess
 import shutil
-from datetime import datetime, timezone
+import subprocess
+
+# Consistent Phase 11.2 path bootstrap (absolute after sys.path, no fragile relatives)
+import sys
+from datetime import UTC, datetime, timezone
+from pathlib import Path
+from pathlib import Path as _Path
+from typing import Any, Dict, List
 
 from .kv_cache_governor import TopologicalKVCacheGovernor
 from .npu_kernel_router import NPUKernelRouter, create_npu_router
 
-# Consistent Phase 11.2 path bootstrap (absolute after sys.path, no fragile relatives)
-import sys
-from pathlib import Path as _Path
 sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
 from tui_layer.adapter.prime_topological_space import PrimeTopologicalSpace
 from tui_layer.higher_cohomology.higher_cohomology import HigherCohomology
@@ -50,13 +52,13 @@ class ClaudeCodePrimeCrystalOracle:
         self.governor = TopologicalKVCacheGovernor(max_kv_bytes=1_200_000_000)  # 1.2 GB ruthless ceiling
         self.npu_router = create_npu_router(backend="auto")
 
-    def handle_coderabbit_review(self, args: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
+    def handle_coderabbit_review(self, args: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
         """
         This is the actual implementation that gets wired into the Claude Code
         `/coderabbit:review` command via the plugin manifest.
         """
         proposed_diff = args.get("diff", args.get("changes", ""))
-        _trigger = f"claude_code:/coderabbit:review:{datetime.now(timezone.utc).isoformat()}"  # instrumentation stub
+        _trigger = f"claude_code:/coderabbit:review:{datetime.now(UTC).isoformat()}"  # instrumentation stub
 
         # 1. Local topological pre-gate (using the live enclosure / space if available)
         print("[Claude Code Oracle] Local topological pre-check before dispatching to CodeRabbit...")
@@ -139,7 +141,7 @@ class ClaudeCodePrimeCrystalOracle:
         # In real runtime this comes from the PersistentFabric / current enclosure state + HigherCohomology
         return "Live K(S) + current H¹ voids + H² obstructions + explicit instruction to only suggest changes that improve λ₁ or close voids."
 
-    def _parse_agent_optimized_to_voids(self, agent_output: str) -> List[Dict[str, Any]]:
+    def _parse_agent_optimized_to_voids(self, agent_output: str) -> list[dict[str, Any]]:
         """Parse the structured agent-optimized output into our H¹/H² void format."""
         # Real implementation would be a robust parser for CodeRabbit's agent-optimized schema.
         # For Phase 11.2 we return a representative structured finding.
@@ -152,14 +154,14 @@ class ClaudeCodePrimeCrystalOracle:
             }
         ]
 
-    def _would_improve_coherence(self, void: Dict[str, Any]) -> bool:
+    def _would_improve_coherence(self, void: dict[str, Any]) -> bool:
         """The final topological validation before auto-applying a CodeRabbit-suggested fix."""
         # In real system: temporarily apply the diff, re-run L_F, check if λ₁ improved or H¹ decreased.
         # For this implementation we use a strong heuristic.
         return "interface" in void.get("suggested_fix", "").lower() or "H¹" in void.get("description", "")
 
     # PreToolUse hook implementation (for any mutation)
-    def pre_tool_topological_gate(self, tool_name: str, args: Dict[str, Any]) -> Dict[str, Any]:
+    def pre_tool_topological_gate(self, tool_name: str, args: dict[str, Any]) -> dict[str, Any]:
         """Any Write/Edit/Terminal/etc. that mutates state must pass the local gate first."""
         _trigger = f"claude_code:pre_tool:{tool_name}"
         # Real implementation calls the live SurfaceEnclosure here

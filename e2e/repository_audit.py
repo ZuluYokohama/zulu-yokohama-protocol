@@ -13,12 +13,13 @@ It enforces:
 """
 
 from __future__ import annotations
-from pathlib import Path
-import time
-import sys
+
 import importlib.util
-from datetime import datetime, timezone
 import json
+import sys
+import time
+from datetime import UTC, datetime, timezone
+from pathlib import Path
 
 SEED_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SEED_ROOT))
@@ -102,7 +103,7 @@ def main():
     print("=" * 70)
     print("STEP 1: REPOSITORY AUDIT — Zero-Pollution & MaxOp Compliance")
     print(f"Seed: {SEED_ROOT}")
-    print(f"Timestamp: {datetime.now(timezone.utc).isoformat()}")
+    print(f"Timestamp: {datetime.now(UTC).isoformat()}")
     print("=" * 70)
 
     results = {
@@ -117,7 +118,7 @@ def main():
         "manifest": {
             "type": "PHASE_5_2_REPOSITORY_AUDIT",
             "version": "0.1",
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": datetime.now(UTC).isoformat(),
             "axioms": ["20.3", "Forge_Law_5", "A4"],
             "target": "Production readiness gate before Dark Launch"
         },

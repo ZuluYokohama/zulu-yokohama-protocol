@@ -38,17 +38,17 @@ from __future__ import annotations
 
 import argparse
 import json
-from pathlib import Path
-from typing import Dict, Any, List, Optional
 from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 
-def load_shape_pairs(dataset_path: Path) -> List[Dict[str, Any]]:
+def load_shape_pairs(dataset_path: Path) -> list[dict[str, Any]]:
     """Load the canonical Shape Pair ledger (JSONL)."""
     if not dataset_path.exists():
         return []
     pairs = []
-    with open(dataset_path, "r", encoding="utf-8") as f:
+    with open(dataset_path, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if line:
@@ -56,7 +56,7 @@ def load_shape_pairs(dataset_path: Path) -> List[Dict[str, Any]]:
     return pairs
 
 
-def compute_dataset_stats(pairs: List[Dict[str, Any]]) -> Dict[str, Any]:
+def compute_dataset_stats(pairs: list[dict[str, Any]]) -> dict[str, Any]:
     deltas = [p.get("delta_lambda_1", 0.0) for p in pairs]
     positive = [d for d in deltas if d >= 0]
     return {

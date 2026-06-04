@@ -14,11 +14,12 @@ It demonstrates:
 """
 
 from __future__ import annotations
-import sys
+
 import importlib.util
-from pathlib import Path
 import json
-from datetime import datetime, timezone
+import sys
+from datetime import UTC, datetime, timezone
+from pathlib import Path
 
 SCRIPT_PATH = Path(__file__).resolve()
 LAYER_ROOT = SCRIPT_PATH.parents[1]
@@ -68,7 +69,7 @@ def main():
     delta = lambda_1 - 0.0
     gate_passed = (delta >= -0.01) and (holonomy == "trivial")
 
-    print(f"\n[3] A4-style Gate Decision:")
+    print("\n[3] A4-style Gate Decision:")
     print(f"    Delta lambda_1: {delta:+.8f}")
     print(f"    Gate passed: {gate_passed}")
 
@@ -76,7 +77,7 @@ def main():
         print("    HARD BLOCK would have been triggered (but we proceed for demo).")
 
     # The "self-directed mutation" (safe append)
-    comment = f"\n# [AUTONOMY GATE] {datetime.now(timezone.utc).isoformat()} — Phase 4.3 autonomous mutation. λ₁={lambda_1:.6f}  dimH0={dim_h0}  holonomy={holonomy}\n"
+    comment = f"\n# [AUTONOMY GATE] {datetime.now(UTC).isoformat()} — Phase 4.3 autonomous mutation. λ₁={lambda_1:.6f}  dimH0={dim_h0}  holonomy={holonomy}\n"
     with open(SCRIPT_PATH, "a", encoding="utf-8") as f:
         f.write(comment)
 
@@ -93,7 +94,7 @@ def main():
         "manifest": {
             "type": "PHASE_4_3_AUTONOMY_GATE",
             "version": "0.1",
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": datetime.now(UTC).isoformat(),
             "mutation_file": str(SCRIPT_PATH),
             "axioms": ["19.4", "5.2", "A3", "20.3", "6.2"],
             "crucible_precondition": "SATISFIED"

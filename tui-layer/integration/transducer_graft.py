@@ -14,8 +14,10 @@ Never copy-paste code from the old session. Re-implement with full AXiomZ tracea
 """
 
 from __future__ import annotations
+
+from collections.abc import Callable
 from pathlib import Path
-from typing import Dict, Any, Callable
+from typing import Any, Dict
 
 # Local clean imports
 from ..adapter.rich_prime_event_builder import RichPrimeEventBuilder
@@ -32,7 +34,7 @@ class TransducerGraft:
         self.project_root = Path(project_root).resolve()
         self.builder = RichPrimeEventBuilder()
 
-    def get_enriched_event(self, trigger: str) -> Dict[str, Any]:
+    def get_enriched_event(self, trigger: str) -> dict[str, Any]:
         """
         Primary entry point for the SurfaceEnclosure and future PrimeTopologicalSpace.
 

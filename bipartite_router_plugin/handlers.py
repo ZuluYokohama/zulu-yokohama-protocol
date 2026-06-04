@@ -8,13 +8,14 @@ hand off to the real `router_gateway.py`.
 """
 
 from __future__ import annotations
+
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any
 
 from .router_gateway import get_bipartite_router
 
 
-def route_user_prompt(args: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
+def route_user_prompt(args: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
     """UserPromptSubmit hook — the primary decision point for every human message."""
     prompt = args.get("prompt", "") or args.get("text", "")
     seed_root = Path(context.get("workspace", "."))
@@ -30,7 +31,7 @@ def route_user_prompt(args: Dict[str, Any], context: Dict[str, Any]) -> Dict[str
     }
 
 
-def handle_coderabbit_review(args: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
+def handle_coderabbit_review(args: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
     """Intercepts the /coderabbit:review command and forces it through the topological router."""
     seed_root = Path(context.get("workspace", "."))
     router = get_bipartite_router(seed_root)
@@ -51,7 +52,7 @@ def handle_coderabbit_review(args: Dict[str, Any], context: Dict[str, Any]) -> D
         return real_oracle(args, context)
 
 
-def pre_tool_router(tool_name: str, args: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
+def pre_tool_router(tool_name: str, args: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
     """PreToolUse hook — every mutation is first classified geometrically."""
     seed_root = Path(context.get("workspace", "."))
     router = get_bipartite_router(seed_root)

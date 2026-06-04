@@ -16,15 +16,17 @@ This module is the self-replication engine of the Prime Crystal Engine.
 """
 
 from __future__ import annotations
-from pathlib import Path
-from typing import TYPE_CHECKING, Dict, Any, Optional
+
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 if TYPE_CHECKING:
     from bipartite_router_plugin.router_gateway import BipartiteRouter
 
 import sys
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 # Lazy import of BipartiteRouter to break circular dependency with distillation_integration / router_gateway
@@ -49,7 +51,7 @@ class GeometryHarvester:
         self.dataset_path.parent.mkdir(parents=True, exist_ok=True)
 
         # In a real runtime, this would be injected or discovered from the active router instance
-        self.router: Optional[BipartiteRouter] = None
+        self.router: BipartiteRouter | None = None
 
     def attach_to_router(self, router: BipartiteRouter):
         """Wire the harvester into the live BipartiteRouter instance."""
@@ -60,8 +62,8 @@ class GeometryHarvester:
 
     def capture_shape_pair(
         self,
-        problem_event: Dict[str, Any],
-        solution_event: Dict[str, Any],
+        problem_event: dict[str, Any],
+        solution_event: dict[str, Any],
         original_prompt: str,
         remote_resolution_summary: str,
         delta_lambda_1: float
@@ -100,7 +102,7 @@ class GeometryHarvester:
         solution_space.detect_holonomy()
 
         shape_pair = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "original_prompt": original_prompt,
             "remote_resolution_summary": remote_resolution_summary,
             "delta_lambda_1": delta_lambda_1,
@@ -120,14 +122,14 @@ class GeometryHarvester:
 
         return self.dataset_path
 
-    def get_dataset_stats(self) -> Dict[str, Any]:
+    def get_dataset_stats(self) -> dict[str, Any]:
         """Quick introspection for the swarm / TUI."""
         if not self.dataset_path.exists():
             return {"pairs": 0, "path": str(self.dataset_path)}
 
         count = 0
         total_delta = 0.0
-        with open(self.dataset_path, "r", encoding="utf-8") as f:
+        with open(self.dataset_path, encoding="utf-8") as f:
             for line in f:
                 if line.strip():
                     pair = json.loads(line)

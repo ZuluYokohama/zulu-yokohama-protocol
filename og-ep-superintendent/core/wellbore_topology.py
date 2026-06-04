@@ -23,15 +23,16 @@ A4 fires when:
 """
 
 from __future__ import annotations
-from dataclasses import dataclass, field, asdict
-from typing import Dict, Any, List, Optional, Tuple
+
 import json
 import time
+from dataclasses import asdict, dataclass, field
+from typing import Any, Dict, List, Optional, Tuple
+
 import numpy as np
 from scipy.sparse import csr_matrix
-from scipy.sparse.linalg import eigsh, svds
 from scipy.sparse.csgraph import connected_components
-
+from scipy.sparse.linalg import eigsh, svds
 
 # ─────────────────────────────────────────────────────────────────────────────
 # WELLBORE DATA STRUCTURES
@@ -85,14 +86,14 @@ class WellState:
     afe_number: str
     afe_approved_usd: float
     afe_spent_usd: float
-    intervals: List[WellboreInterval]
+    intervals: list[WellboreInterval]
     active_bit: str                   # e.g. "12.25in PDC - 6B"
     bit_hours: float
     wob_klbs: float                   # Weight on bit
     rpm: float
     flow_rate_gpm: float
     ecd_ppg: float                    # Equivalent circulating density
-    events_24hr: List[str] = field(default_factory=list)  # Any notable events
+    events_24hr: list[str] = field(default_factory=list)  # Any notable events
 
     @property
     def afe_burn_rate(self) -> float:
@@ -146,7 +147,7 @@ class WellboreCryptologicKey:
         self.timestamp = timestamp
         self.well_name = well_name
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "well_name": self.well_name,
             "timestamp": self.timestamp,
@@ -191,13 +192,13 @@ class WellboreTopologyEngine:
 
     def __init__(self, well_state: WellState):
         self.state = well_state
-        self._key: Optional[WellboreCryptologicKey] = None
-        self._laplacian: Optional[csr_matrix] = None
-        self._delta: Optional[csr_matrix] = None
+        self._key: WellboreCryptologicKey | None = None
+        self._laplacian: csr_matrix | None = None
+        self._delta: csr_matrix | None = None
 
     # ── Graph construction ──────────────────────────────────────────────────
 
-    def _build_wellbore_graph(self) -> Tuple[csr_matrix, List[str]]:
+    def _build_wellbore_graph(self) -> tuple[csr_matrix, list[str]]:
         """
         Construct the sheaf graph for the well.
 
@@ -299,7 +300,7 @@ class WellboreTopologyEngine:
         Main entry point. Compute K(S) for the current WellState.
         Axiom A1: before any action compute K(S). After any action, recompute.
         """
-        delta, node_ids = self._build_wellbore_graph()
+        delta, _node_ids = self._build_wellbore_graph()
         self._delta = delta
         n = delta.shape[0]
 
@@ -360,7 +361,7 @@ class WellboreTopologyEngine:
         directional driller's depth/inclination all tell different stories.
         """
         adj = (delta != 0).astype(int).tocoo()
-        n_comp, labels = connected_components(
+        n_comp, _labels = connected_components(
             csr_matrix((np.ones(len(adj.row)), (adj.row, adj.col)), shape=(n, n)),
             directed=False
         )
@@ -383,7 +384,7 @@ class WellboreTopologyEngine:
 
     # ── Delta K(S) and A4 gate ─────────────────────────────────────────────
 
-    def compute_delta(self, prior_key: WellboreCryptologicKey) -> Dict[str, Any]:
+    def compute_delta(self, prior_key: WellboreCryptologicKey) -> dict[str, Any]:
         """
         Compute Δλ₁ between prior K(S) and current K(S).
         Axiom A5: Δλ₁ < -0.5 → HALT, do not advance to next casing point.
@@ -392,13 +393,9 @@ class WellboreTopologyEngine:
         delta_lambda_1 = current.lambda_1 - prior_key.lambda_1
 
         gate_status = "PASS"
-        if delta_lambda_1 < -0.5:
+        if delta_lambda_1 < -0.5 or current.holonomy_signature != "trivial":
             gate_status = "HALT_A4"
-        elif current.holonomy_signature != "trivial":
-            gate_status = "HALT_A4"
-        elif delta_lambda_1 < -0.1:
-            gate_status = "WARN"
-        elif current.lambda_1 < self.LAMBDA_1_THRESHOLDS["weak"]:
+        elif delta_lambda_1 < -0.1 or current.lambda_1 < self.LAMBDA_1_THRESHOLDS["weak"]:
             gate_status = "WARN"
 
         return {
@@ -412,7 +409,7 @@ class WellboreTopologyEngine:
 
     # ── H-level classification ─────────────────────────────────────────────
 
-    def classify_event(self, event_description: str) -> Dict[str, Any]:
+    def classify_event(self, event_description: str) -> dict[str, Any]:
         """
         Classify any wellbore event by its H-level obstruction class.
         Maps the Jones Framework Vol IV / SANS architecture to O&G events.
@@ -492,7 +489,7 @@ def compute_well_key(state: WellState) -> WellboreCryptologicKey:
     return engine.compute_key()
 
 
-def check_advance_gate(prior_state: WellState, current_state: WellState) -> Dict[str, Any]:
+def check_advance_gate(prior_state: WellState, current_state: WellState) -> dict[str, Any]:
     """
     The Δλ₁ gate — call before advancing to next casing point, next bit run, or
     committing a major AFE supplement.

@@ -22,10 +22,10 @@ and at what level. Zero bypass of the gate.
 """
 
 from __future__ import annotations
-from typing import Dict, Any, Optional
+
 from dataclasses import dataclass
-import json
 from datetime import datetime
+from typing import Any
 
 
 @dataclass
@@ -36,7 +36,7 @@ class RoutingDecision:
     action_required: str
     escalation_contacts: list
     time_sensitivity: str           # "ROUTINE" | "URGENT" | "IMMEDIATE"
-    topology_basis: Dict[str, Any]  # The K(S) that drove this decision
+    topology_basis: dict[str, Any]  # The K(S) that drove this decision
 
 
 class OpsbipartiteRouter:
@@ -70,11 +70,11 @@ class OpsbipartiteRouter:
     def route(
         self,
         problem_description: str,
-        k_s_current: Dict[str, Any],
+        k_s_current: dict[str, Any],
         delta_lambda_1: float,
         h_level: str,
         afe_variance_pct: float = 0.0,
-        additional_context: Optional[Dict[str, Any]] = None,
+        additional_context: dict[str, Any] | None = None,
     ) -> RoutingDecision:
         """
         The irrevocable routing decision.

@@ -15,16 +15,18 @@ when the Prime Crystal protocol is enabled for a session.
 """
 
 from __future__ import annotations
-from pathlib import Path
-import sys
+
 import json
-from datetime import datetime, timezone
+import sys
+from datetime import UTC, datetime, timezone
+from pathlib import Path
+
+from ..adapter.prime_topological_space import PrimeTopologicalSpace
+from ..integration.transducer_graft import TransducerGraft
 
 # Clean seed imports (in real deployment these become part of the Grok package)
 from ..persistence.ipc_bridge import create_ipc_bridge_for_grok_tui
 from ..persistence.persistent_fabric import get_persistent_fabric_for_tui
-from ..adapter.prime_topological_space import PrimeTopologicalSpace
-from ..integration.transducer_graft import TransducerGraft
 
 
 class GrokTUIPrimeCrystalShim:
@@ -34,7 +36,7 @@ class GrokTUIPrimeCrystalShim:
 
     def __init__(self, seed_root: Path):
         self.seed_root = Path(seed_root).resolve()
-        print(f"[GrokTUIPrimeCrystalShim] Booting with Prime Crystal protocol")
+        print("[GrokTUIPrimeCrystalShim] Booting with Prime Crystal protocol")
         print(f"    Seed: {self.seed_root}")
 
         # 1. Boot the persistent fabric (continuous K(S))
@@ -55,7 +57,7 @@ class GrokTUIPrimeCrystalShim:
 
         Every user message is now a term in the continuous series.
         """
-        trigger = f"tui:user_input:{datetime.now(timezone.utc).isoformat()}"
+        trigger = f"tui:user_input:{datetime.now(UTC).isoformat()}"
 
         # The Seamless Override lives here
         result = self.bridge.evolve(trigger, {"type": "user_prompt", "content": user_prompt})

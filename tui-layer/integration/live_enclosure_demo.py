@@ -7,11 +7,12 @@ the clean seed's own ASTs.
 """
 
 from __future__ import annotations
-import sys
+
 import importlib.util
-from pathlib import Path
 import json
-from datetime import datetime, timezone
+import sys
+from datetime import UTC, datetime, timezone
+from pathlib import Path
 
 SCRIPT_PATH = Path(__file__).resolve()
 LAYER_ROOT = SCRIPT_PATH.parents[1]
@@ -77,7 +78,7 @@ def main():
         "manifest": {
             "type": "PHASE_4_2_LIVE_ENCLOSURE_DEMO",
             "version": "0.1",
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": datetime.now(UTC).isoformat(),
             "target": str(target),
             "axioms": ["19.4", "5.2"]
         },

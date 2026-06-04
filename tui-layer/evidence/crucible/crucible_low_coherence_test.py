@@ -5,14 +5,15 @@ Deliberate high-entropy hallucination injection to prove the hard A4 + Delta lam
 """
 
 from __future__ import annotations
-import sys
+
 import io
+import json
+import sys
 from contextlib import redirect_stderr
 from dataclasses import dataclass, field
-from typing import List, Dict, Any
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from pathlib import Path
-import json
+from typing import Any, Dict, List
 
 
 @dataclass
@@ -20,7 +21,7 @@ class CryptologicKey:
     dim_h0: int
     lambda_1: float
     holonomy_signature: str
-    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     def to_dict(self):
         return {
@@ -34,9 +35,9 @@ class CryptologicKey:
 @dataclass
 class CurrentStalkBundle:
     trigger: str
-    node_data: List[Dict] = field(default_factory=list)
-    edge_data: List[Dict] = field(default_factory=list)
-    meta: Dict = field(default_factory=dict)
+    node_data: list[dict] = field(default_factory=list)
+    edge_data: list[dict] = field(default_factory=list)
+    meta: dict = field(default_factory=dict)
 
 
 @dataclass
@@ -44,18 +45,18 @@ class HolonomyEvent:
     term_index: int
     before: CryptologicKey
     after: CryptologicKey
-    repair_actions: List[str]
+    repair_actions: list[str]
     success: bool
-    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
 @dataclass
 class ActiveTermSeries:
     session_id: str
     start_k: CryptologicKey
-    value_function: Dict = field(default_factory=dict)
-    a4_log: List[HolonomyEvent] = field(default_factory=list)
-    ks_history: List[CryptologicKey] = field(default_factory=list)
+    value_function: dict = field(default_factory=dict)
+    a4_log: list[HolonomyEvent] = field(default_factory=list)
+    ks_history: list[CryptologicKey] = field(default_factory=list)
 
     def current_k(self):
         return self.ks_history[-1] if self.ks_history else self.start_k

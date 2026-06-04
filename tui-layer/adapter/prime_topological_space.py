@@ -12,11 +12,13 @@ Strictly sparse. No dense matrices on hot paths.
 """
 
 from __future__ import annotations
-from typing import TYPE_CHECKING, Dict, Any, Tuple, Optional
+
+from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple
+
 import numpy as np
 from scipy.sparse import csr_matrix, identity
-from scipy.sparse.linalg import eigsh, svds
 from scipy.sparse.csgraph import connected_components
+from scipy.sparse.linalg import eigsh, svds
 
 if TYPE_CHECKING:
     from edge_compute.npu_kernel_router import NPUKernelRouter
@@ -24,6 +26,7 @@ if TYPE_CHECKING:
 # Standalone execution support (Phase 4.3)
 import sys
 from pathlib import Path
+
 _ADAPTER_DIR = Path(__file__).parent
 if str(_ADAPTER_DIR) not in sys.path:
     sys.path.insert(0, str(_ADAPTER_DIR))
@@ -36,7 +39,7 @@ class PrimeTopologicalSpace:
     Computes L_F, λ₁, dim H⁰, and holonomy signature from sparse data.
     """
 
-    def __init__(self, event: Dict[str, Any], npu_router: Optional["NPUKernelRouter"] = None):
+    def __init__(self, event: dict[str, Any], npu_router: NPUKernelRouter | None = None):
         """
         Phase 11 wiring point: pass an NPUKernelRouter (from edge_compute) to enable
         delegation of eigsh (and future L_F ops) to NPU when available (QNN/CoreML or sim).
@@ -53,8 +56,8 @@ class PrimeTopologicalSpace:
         self.eigenvectors: np.ndarray | None = None
 
         # Phase 11 NPU offload + metadata surfacing (for governor/oracle)
-        self.npu_router: Optional["NPUKernelRouter"] = npu_router
-        self.last_npu_result: Optional[Dict[str, Any]] = None
+        self.npu_router: NPUKernelRouter | None = npu_router
+        self.last_npu_result: dict[str, Any] | None = None
 
     def compute_sheaf_laplacian(self) -> csr_matrix:
         """L_F = δ^T δ (strictly sparse).
@@ -72,7 +75,7 @@ class PrimeTopologicalSpace:
         self.laplacian = (self.laplacian + self.laplacian.T) / 2
         return self.laplacian
 
-    def compute_spectral_gap(self, k: int = 4) -> Tuple[float, np.ndarray]:
+    def compute_spectral_gap(self, k: int = 4) -> tuple[float, np.ndarray]:
         """Extract λ₁ via eigsh (smallest magnitude).
 
         Phase 11 wiring: if an npu_router was injected at construction, delegate the
@@ -140,7 +143,7 @@ class PrimeTopologicalSpace:
 
         try:
             # Find smallest singular values (correspond to kernel)
-            u, s, vt = svds(self.laplacian, k=min(10, self.n-1), which='SM', tol=1e-8)
+            _u, s, _vt = svds(self.laplacian, k=min(10, self.n-1), which='SM', tol=1e-8)
             # Count how many are effectively zero (within tolerance)
             zero_threshold = 1e-6 * (s.max() if len(s) > 0 else 1.0)
             self.dim_h0 = int(np.sum(s < zero_threshold))
@@ -167,7 +170,7 @@ class PrimeTopologicalSpace:
         # Very lightweight cycle detection: if the graph has cycles and the
         # restriction maps around those cycles are inconsistent (future: full parallel transport)
         # For now we use a heuristic: high cycle density + non-trivial kernel mismatch
-        n_components, labels = connected_components(adj, directed=False)
+        n_components, _labels = connected_components(adj, directed=False)
 
         # Rough cycle indicator: edges >> nodes in components
         cycle_density = (adj.nnz / 2) / max(self.n, 1)
@@ -179,7 +182,7 @@ class PrimeTopologicalSpace:
 
         return self.holonomy_signature
 
-    def compute_h2_obstructions(self) -> Dict[str, Any]:
+    def compute_h2_obstructions(self) -> dict[str, Any]:
         """
         Phase 8: Calculate H² obstructions (fundamental architectural conflicts).
 
@@ -205,7 +208,7 @@ class PrimeTopologicalSpace:
 
             internal_edges = 0
             external_edges = 0
-            for i, j in zip(adj.row, adj.col):
+            for i, j in zip(adj.row, adj.col, strict=False):
                 if labels[i] == comp and labels[j] == comp:
                     internal_edges += 1
                 elif labels[i] == comp or labels[j] == comp:
@@ -231,7 +234,7 @@ class PrimeTopologicalSpace:
             "requires_macro_refactor": len(obstructions) > 0
         }
 
-    def compute_h3_paradigm_violations(self) -> Dict[str, Any]:
+    def compute_h3_paradigm_violations(self) -> dict[str, Any]:
         """
         Phase 9: Calculate H³ paradigm incompatibilities.
 
@@ -252,7 +255,7 @@ class PrimeTopologicalSpace:
         # In this simplified model we scan node kinds for known anti-patterns.
         blocking_keywords = {"sync", "blocking", "global", "mutable", "thread", "lock", "sleep"}
 
-        for i, node in enumerate(self.event.get("node_data", [])):
+        for _i, node in enumerate(self.event.get("node_data", [])):
             kind = node.get("kind", "").lower()
             feature = node.get("feature", [])
 
@@ -278,7 +281,7 @@ class PrimeTopologicalSpace:
             "action": "sys.exit(1)" if violations else "proceed"
         }
 
-    def get_cryptologic_key(self) -> Dict[str, Any]:
+    def get_cryptologic_key(self) -> dict[str, Any]:
         """Full K(S) with H⁰ and holonomy (Phase 4.3)."""
         if self.lambda_1 is None:
             self.compute_spectral_gap()
@@ -296,7 +299,7 @@ class PrimeTopologicalSpace:
             "sparsity": 1 - (self.laplacian.nnz / (self.n ** 2)) if self.laplacian is not None else 0.0
         }
 
-    def verify_topological_invariants(self, quantized_model_ref: Any) -> Dict[str, float]:
+    def verify_topological_invariants(self, quantized_model_ref: Any) -> dict[str, float]:
         """
         Phase 11: Run the current (possibly quantized) model through the topological
         evaluator and return preservation scores for λ₁, dim H⁰, and holonomy.
@@ -311,7 +314,7 @@ class PrimeTopologicalSpace:
             "holonomy_stable": True
         }
 
-    def compute_invariant_preservation_score(self, scores: Dict[str, Any] | None = None) -> float:
+    def compute_invariant_preservation_score(self, scores: dict[str, Any] | None = None) -> float:
         """
         Phase 11: Aggregate the per-invariant preservation metrics into a single scalar [0,1].
         Higher = better survival of topological structure post-quantization (or other mutation).

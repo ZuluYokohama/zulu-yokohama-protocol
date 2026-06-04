@@ -20,17 +20,17 @@ to avoid external deps or variable project scans during the unit TDD loop.
 
 from __future__ import annotations
 
-from typing import Any, Dict
-from pathlib import Path
 import sys
 import types
+from pathlib import Path
+from typing import Any, Dict
 
 # SEED_ROOT for bootstrap (required to make literal plan imports work on hyphenated dir + new edge_compute/)
 SCRIPT_PATH = Path(__file__).resolve()
 SEED_ROOT = SCRIPT_PATH.parents[1]
 
 
-def load_calibration_event() -> Dict[str, Any]:
+def load_calibration_event() -> dict[str, Any]:
     """
     Phase 11 TDD helper: Return a small, deterministic 'known-good' event.
     When fed to PrimeTopologicalSpace + compute_* it yields stable positive λ₁ and dim H⁰ >= 1.

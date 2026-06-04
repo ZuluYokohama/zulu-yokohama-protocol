@@ -14,14 +14,15 @@ This is the "nervous system" binding. The engine no longer forgets between promp
 """
 
 from __future__ import annotations
-from pathlib import Path
-from typing import Dict, Any, Optional
-import json
-from datetime import datetime, timezone
 
-from ..state.term_series import ActiveTermSeries, CryptologicKey, CurrentStalkBundle
+import json
+from datetime import UTC, datetime, timezone
+from pathlib import Path
+from typing import Any, Dict, Optional
+
 from ..enforcement.surface_enclosure import SurfaceEnclosure
 from ..integration.transducer_graft import TransducerGraft, make_grafted_stalk_builder
+from ..state.term_series import ActiveTermSeries, CryptologicKey, CurrentStalkBundle
 
 
 class PersistentFabric:
@@ -32,22 +33,22 @@ class PersistentFabric:
     (or until explicit reset).
     """
 
-    def __init__(self, seed_root: Path, session_id: Optional[str] = None):
+    def __init__(self, seed_root: Path, session_id: str | None = None):
         self.seed_root = Path(seed_root).resolve()
         self.persistence_dir = self.seed_root / "evidence" / "persistence"
         self.persistence_dir.mkdir(parents=True, exist_ok=True)
 
-        self.session_id = session_id or f"persistent-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}"
+        self.session_id = session_id or f"persistent-{datetime.now(UTC).strftime('%Y%m%d-%H%M%S')}"
         self.state_file = self.persistence_dir / f"{self.session_id}.json"
 
-        self.series: Optional[ActiveTermSeries] = None
-        self.enclosure: Optional[SurfaceEnclosure] = None
+        self.series: ActiveTermSeries | None = None
+        self.enclosure: SurfaceEnclosure | None = None
 
         self._load_or_initialize()
 
     def _load_or_initialize(self):
         if self.state_file.exists():
-            with open(self.state_file, "r", encoding="utf-8") as f:
+            with open(self.state_file, encoding="utf-8") as f:
                 data = json.load(f)
 
             # Reconstruct minimal series (in real system this would be richer)
@@ -96,7 +97,7 @@ class PersistentFabric:
     def _rewire_enclosure(self):
         graft = TransducerGraft(self.seed_root)
         build_stalks = make_grafted_stalk_builder(graft)
-        self.enclosure = SurfaceEnclosure(self.series)
+        self.enclosure = PersistentSurfaceEnclosure(self)
 
         # Monkey-patch the build_stalks inside the enclosure for persistence
         # (In a real TUI runtime this would be cleaner dependency injection)
@@ -110,7 +111,7 @@ class PersistentFabric:
 
         self.enclosure.enclose_and_execute = persistent_enclose
 
-    def get_current_ks(self) -> Dict[str, Any]:
+    def get_current_ks(self) -> dict[str, Any]:
         """Return the live K(S) of the persistent manifold."""
         if self.series is None:
             return {}
@@ -132,7 +133,7 @@ class PersistentFabric:
             "baseline_k": self.series.start_k.to_dict() if hasattr(self.series.start_k, "to_dict") else {},
             "ks_history": [k.to_dict() if hasattr(k, "to_dict") else {} for k in self.series.ks_history.keys],
             "value_function": self.series.value_function,
-            "last_updated": datetime.now(timezone.utc).isoformat()
+            "last_updated": datetime.now(UTC).isoformat()
         }
 
         with open(self.state_file, "w", encoding="utf-8") as f:
@@ -140,7 +141,7 @@ class PersistentFabric:
 
         print(f"[PersistentFabric] State saved for session {self.session_id}")
 
-    def evolve(self, trigger: str, proposed_action: Any) -> Dict[str, Any]:
+    def evolve(self, trigger: str, proposed_action: Any) -> dict[str, Any]:
         """
         The main entry point for the Grok TUI.
 
@@ -172,11 +173,11 @@ class PersistentSurfaceEnclosure(SurfaceEnclosure):
     across TUI sessions. Every enclose_and_execute call auto-saves the fabric.
     """
 
-    def __init__(self, fabric: PersistentFabric):
+    def __init__(self, fabric: PersistentFabric) -> None:
         super().__init__(fabric.series)
         self._fabric = fabric
 
-    def enclose_and_execute(self, trigger: str, **kwargs):
+    def enclose_and_execute(self, trigger: str, **kwargs: Any):
         result = super().enclose_and_execute(trigger, **kwargs)
         self._fabric.save()
         return result

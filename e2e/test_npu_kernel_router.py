@@ -16,8 +16,8 @@ Run: python e2e/test_npu_kernel_router.py  (or via pytest)
 from __future__ import annotations
 
 import sys
-from pathlib import Path
 import tracemalloc
+from pathlib import Path
 
 from scipy.sparse import csr_matrix
 
@@ -65,7 +65,7 @@ def test_router_compute_laplacian_eigsh():
     # Explicit direct eigsh assert on the sparse rep (covers "eigsh succeeds on the sparse rep" claim)
     from scipy.sparse.linalg import eigsh as direct_eigsh
     try:
-        evals, evecs = direct_eigsh(delta, k=2, which="SM", tol=1e-8, maxiter=2000)
+        evals, _evecs = direct_eigsh(delta, k=2, which="SM", tol=1e-8, maxiter=2000)
         print(f"[HARNESS][ASSERT] direct_eigsh succeeded on sparse csr rep of quantized graph: evals={evals.tolist()}")
         assert len(evals) >= 1
     except Exception as e:
@@ -111,8 +111,8 @@ def test_router_compute_laplacian_eigsh():
     print(f"[HARNESS][MEM] Harness envelope check: {'PASS' if envelope_ok else 'WARN'} (full 6GB UMA ARM64+NPU protected by quantizer estimates + caller; see doctrine in router)")
     assert envelope_ok, "memory envelope check in harness"
 
-    print(f"[HARNESS][PASS] NPUKernelRouter.compute_laplacian_eigsh fully exercised + verified for Task 2 (6GB/zero-copy/eigsh claims).")
-    print(f"  final_repr={repr(router)}")
+    print("[HARNESS][PASS] NPUKernelRouter.compute_laplacian_eigsh fully exercised + verified for Task 2 (6GB/zero-copy/eigsh claims).")
+    print(f"  final_repr={router!r}")
     print("=" * 70)
 
 
@@ -173,7 +173,7 @@ def test_prime_space_npu_router_integration():
     print(f"[HARNESS] compute_sheaf_laplacian succeeded (nnz={lap.nnz}) — local sparse matmul as expected")
 
     # Spectral (eigsh path) — delegates to router when present
-    l1, ev = space.compute_spectral_gap(k=2)
+    l1, _ev = space.compute_spectral_gap(k=2)
     print(f"[HARNESS] compute_spectral_gap via router delegation: lambda_1={l1}")
 
     # === ASSERT THE METADATA CONTRACT (exact keys for governor + oracle) ===
@@ -199,12 +199,12 @@ def test_prime_space_npu_router_integration():
 
     # Also exercise the quantized-ref path through router directly (already in other test, but joint)
     meta_with_ref = router.compute_laplacian_eigsh(delta=delta_for_space, quantized_model_ref=ref)
-    assert "salient_info" in meta_with_ref and meta_with_ref["salient_info"], "salient_info not passed through on ref path"
+    assert meta_with_ref.get("salient_info"), "salient_info not passed through on ref path"
     assert meta_with_ref.get("uma_compliant") is True
 
-    print(f"[HARNESS][PASS] PrimeTopologicalSpace + Router integration complete.")
+    print("[HARNESS][PASS] PrimeTopologicalSpace + Router integration complete.")
     print(f"  last_npu_result keys (governor contract): {list(meta.keys())}")
-    print(f"  space.lambda_1={space.lambda_1}, router last={repr(router)}")
+    print(f"  space.lambda_1={space.lambda_1}, router last={router!r}")
     print("=" * 70)
 
 

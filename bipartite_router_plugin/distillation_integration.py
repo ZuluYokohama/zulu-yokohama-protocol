@@ -11,8 +11,10 @@ This is the self-replication / continuous distillation engine.
 """
 
 from __future__ import annotations
+
+import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Dict, Any
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from bipartite_router_plugin.router_gateway import BipartiteRouter
@@ -20,9 +22,8 @@ if TYPE_CHECKING:
 # NOTE: Router import is lazy to break circular dependency with router_gateway
 # (router_gateway imports this module at top level for the capture handoff).
 # Path bootstrap + absolute (consistent with other Phase 11.2 modules)
-import sys
-from pathlib import Path as _P
-sys.path.insert(0, str(_P(__file__).resolve().parents[2]))
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from distillation.geometry_harvester import get_geometry_harvester
 
 
@@ -45,8 +46,8 @@ def attach_harvester_to_router(router: BipartiteRouter, seed_root: Path) -> None
 
 def capture_remote_resolution(
     router: BipartiteRouter,
-    problem_event: Dict[str, Any],
-    solution_event: Dict[str, Any],
+    problem_event: dict[str, Any],
+    solution_event: dict[str, Any],
     original_prompt: str,
     remote_summary: str,
     delta_lambda_1: float

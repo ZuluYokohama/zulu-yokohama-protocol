@@ -23,10 +23,10 @@ The system generates:
 """
 
 from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Dict, Any, List, Optional
-from datetime import datetime, date
-import json
+from datetime import date, datetime
+from typing import Any
 
 
 @dataclass
@@ -47,10 +47,10 @@ class MorningReportInput:
     afe_spent_usd: float
     events_summary: str           # Short narrative of last 24hr
     plan_next_24hr: str           # Short narrative of next 24hr
-    problems: List[str] = None    # Any active problems
-    k_s_current: Dict[str, Any] = None      # From WellboreCryptologicKey.to_dict()
-    k_s_prior: Dict[str, Any] = None        # Prior day's K(S)
-    lambda_1_history: List[float] = None    # Last 7 days of λ₁ values
+    problems: list[str] = None    # Any active problems
+    k_s_current: dict[str, Any] = None      # From WellboreCryptologicKey.to_dict()
+    k_s_prior: dict[str, Any] = None        # Prior day's K(S)
+    lambda_1_history: list[float] = None    # Last 7 days of λ₁ values
 
 
 def generate_morning_report(inp: MorningReportInput) -> str:
@@ -199,7 +199,7 @@ def quick_morning_report(
     afe_spent: float,
     ops_summary: str,
     next_plan: str,
-    problems: List[str] = None,
+    problems: list[str] | None = None,
 ) -> str:
     """
     Convenience wrapper — minimum input for a morning report.

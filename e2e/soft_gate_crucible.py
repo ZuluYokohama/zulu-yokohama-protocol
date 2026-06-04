@@ -10,11 +10,14 @@ the A4 Repair Protocol instead of the destructive output.
 """
 
 from __future__ import annotations
-from pathlib import Path
+
 import json
-from datetime import datetime, timezone
+import sys
+from datetime import UTC, datetime, timezone
+from pathlib import Path
 
 SEED_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(SEED_ROOT))
 
 
 def simulate_destructive_intent() -> str:
@@ -26,11 +29,11 @@ def run_soft_gate_test(destructive_intent: str) -> dict:
     In real Soft Gate this would be the actual TUI calling the live SurfaceEnclosure.
     Here we simulate the full topological evaluation of the bad proposal.
     """
-    from tui_layer.adapter.rich_prime_event_builder import RichPrimeEventBuilder
     from tui_layer.adapter.prime_topological_space import PrimeTopologicalSpace
+    from tui_layer.adapter.rich_prime_event_builder import RichPrimeEventBuilder
     from tui_layer.higher_cohomology.higher_cohomology import HigherCohomology
 
-    print(f"\n[Human Hallucination Test]")
+    print("\n[Human Hallucination Test]")
     print(f"Developer instruction: \"{destructive_intent}\"")
 
     # The solver evaluates what this change would do to the live geometry
@@ -52,7 +55,7 @@ def run_soft_gate_test(destructive_intent: str) -> dict:
 
     if catastrophic:
         print("\n[SEAMLESS OVERRIDE — HARD BLOCK]")
-        print(f"  Projected damage:")
+        print("  Projected damage:")
         print(f"    λ₁ would collapse to {lambda_1:.6f}")
         print(f"    H¹ (voids) would explode to {beta1}")
         print(f"    Holonomy: {holonomy}")
@@ -87,7 +90,7 @@ def main():
         "manifest": {
             "type": "PHASE_5_2_SOFT_GATE_CRUCIBLE",
             "version": "0.1",
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": datetime.now(UTC).isoformat(),
             "test_type": "human_hallucination_destructive_intent",
             "axioms": ["19.4", "5.2", "A4", "Forge_Law_5"]
         },
@@ -101,7 +104,7 @@ def main():
     with open(bundle_path, "w", encoding="utf-8") as f:
         json.dump(bundle, f, indent=2)
 
-    print(f"\nSoft Gate Crucible complete.")
+    print("\nSoft Gate Crucible complete.")
     print(f"Evidence: {bundle_path}")
     print("=" * 70)
 

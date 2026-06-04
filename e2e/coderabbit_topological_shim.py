@@ -12,23 +12,24 @@ Execution is strictly sequenced in TG_PostUpdateWork:
 """
 
 from __future__ import annotations
-import subprocess
+
 import json
-import sys
 import shutil
+import subprocess
+import sys
+from datetime import UTC, datetime, timezone
 from pathlib import Path
-from datetime import datetime, timezone
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 SEED_ROOT = Path(__file__).resolve().parents[1]
 
 
-def load_ks_evidence(bundle_path: Path) -> Dict[str, Any]:
-    with open(bundle_path, "r", encoding="utf-8") as f:
+def load_ks_evidence(bundle_path: Path) -> dict[str, Any]:
+    with open(bundle_path, encoding="utf-8") as f:
         return json.load(f)
 
 
-def build_coderabbit_context(ks: Dict[str, Any]) -> str:
+def build_coderabbit_context(ks: dict[str, Any]) -> str:
     """Forces CodeRabbit to act as a Prime Crystal topological reviewer."""
     return f"""
 You are a specialized topological reviewer for the Prime Crystal Engine (SHEAF-OS / WORMHOLE-PATH1).
@@ -62,7 +63,7 @@ def run_coderabbit_cli(
     diff_path: Path,
     context: str,
     config_path: Path | None = None
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Executes the real `coderabbit` production binary with topological context.
     """
@@ -104,7 +105,7 @@ def run_coderabbit_cli(
         return {"error": str(e), "blocking": True}
 
 
-def map_to_h1_voids(coderabbit_output: Dict[str, Any]) -> List[str]:
+def map_to_h1_voids(coderabbit_output: dict[str, Any]) -> list[str]:
     voids = []
     if coderabbit_output.get("blocking"):
         voids.append(f"CodeRabbit flagged coherence regression: {coderabbit_output.get('recommended_action', 'Unknown')}")
@@ -161,7 +162,7 @@ def main():
         "manifest": {
             "type": "PHASE_8_REAL_ORACLE_WIRING",
             "version": "0.1",
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": datetime.now(UTC).isoformat(),
             "axioms": ["19.4", "5.2", "20.3"],
             "crucible_precondition": "SATISFIED"
         },
