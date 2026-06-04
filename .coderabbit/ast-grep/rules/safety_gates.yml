@@ -1,0 +1,35 @@
+id: a4-gate-weakening
+language: Python
+severity: error
+message: |
+  [ZYP:SAFE-002] A4 gate threshold weakening detected.
+  The HALT_A4 condition must trigger at lambda_1 < 1e-6.
+  Raising this floor (e.g. to 1e-9) delays legitimate halts.
+  Lowering WARN threshold (e.g. 1e-3 → 1e-5) masks warnings.
+  Any change to these values is a safety regression.
+  Requires explicit sign-off comment: # ZYP-SAFETY-OVERRIDE: <reason>
+rule:
+  any:
+    - pattern: 'lambda_1 < 1e-$N'
+    - pattern: 'lam1 < 1e-$N'
+    - pattern: 'lam1_f < 1e-$N'
+note: "Flag for review if exponent N changes from baseline (6 for HALT, 3 for WARN)."
+
+---
+
+id: unsaved-ddr-harvest
+language: Python
+severity: error
+message: |
+  [ZYP:DATA-001] Shape pair harvested from un-persisted DDR.
+  Axiom A7: each DDR is an irreducible prime in well history.
+  harvest_shape_pair() must be called AFTER save_ddr() for the same DDR.
+  Harvesting without saving creates an orphaned shape pair:
+    • No evidence file on disk
+    • K(S) fingerprint unverifiable
+    • QLoRA training fuel with broken provenance chain
+  Fix: call harvester.save_ddr(ddr) before harvester.harvest_shape_pair(ddr, ...)
+rule:
+  pattern: |
+    $H.harvest_shape_pair($DDR, $$$ARGS)
+note: "Check that save_ddr($DDR) appears earlier in the same scope."

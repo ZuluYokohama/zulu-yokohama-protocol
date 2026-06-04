@@ -1,0 +1,20 @@
+id: zeta-zeros-mutation
+language: Python
+severity: error
+message: |
+  [ZYP:IP-001] ZETA_ZEROS_T is IMMUTABLE.
+  These are the first 30 non-trivial zeros of ζ(s) (LMFDB verified, 6dp).
+  Any modification invalidates:
+    • zeta_coherence() — spectral resonance metric
+    • zeta_embedding_vector() — 60-dim fingerprint
+    • prime_resonance() — GUE/Poisson classifier
+    • All K(S) cross-well comparability (embeddings become incommensurable)
+  If values must change, cite LMFDB source + bump ZETA_ZEROS_VERSION constant.
+  This is also an IP-protection boundary (ZYP provisional claim §2).
+rule:
+  any:
+    - pattern: "ZETA_ZEROS_T = $X"
+    - pattern: "ZETA_ZEROS_T[$I] = $X"
+    - pattern: "ZETA_ZEROS_T.append($X)"
+    - pattern: "ZETA_ZEROS_T.extend($X)"
+    - pattern: "np.append(ZETA_ZEROS_T, $X)"

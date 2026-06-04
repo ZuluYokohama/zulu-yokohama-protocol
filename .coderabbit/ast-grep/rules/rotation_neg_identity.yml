@@ -1,0 +1,16 @@
+id: wrong-rotation-neg-identity
+language: Python
+severity: error
+message: |
+  [ZYP:MATH-002] -np.eye(d) is NOT in SO(d) for odd d.
+  det(-I_d) = (-1)^d = -1 when d is odd (d=5 is default FIBER_DIM).
+  Anti-parallel case must return a π-rotation in plane(u_hat, e)
+  where e ⊥ u_hat:  R = I − 2·uu^T − 2·ee^T  →  det(R) = +1  ✓
+  Returning -I breaks ρ_{uv}^T ρ_{uv} = c²·I invariant for odd fibers.
+rule:
+  pattern: "return -np.eye($D)"
+fix: |
+  # TODO: replace with proper SO(d) π-rotation for anti-parallel vectors:
+  # e = canonical basis vector most orthogonal to u_hat
+  # return np.eye(d) - 2*np.outer(u_hat, u_hat) - 2*np.outer(e, e)
+note: "Affects: fiber_sheaf_engine.py rodrigues_rotation(). ZYP IP-MATH-002."
