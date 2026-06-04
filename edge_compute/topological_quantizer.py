@@ -28,7 +28,7 @@ import numpy as np
 from scipy.sparse import csr_matrix  # Re-export / type alignment for zero-copy doctrine in callers
 
 # Internal import (will be resolved via the same bootstrap used by e2e tests)
-from tui-layer.adapter.prime_topological_space import PrimeTopologicalSpace
+from tui_layer.adapter.prime_topological_space import PrimeTopologicalSpace
 
 
 class TopologicalQuantizer:

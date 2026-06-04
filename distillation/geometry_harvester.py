@@ -17,17 +17,19 @@ This module is the self-replication engine of the Prime Crystal Engine.
 
 from __future__ import annotations
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import TYPE_CHECKING, Dict, Any, Optional
 import json
 from datetime import datetime, timezone
 
-# Import the existing Bipartite Router and topological components (zero pollution)
+if TYPE_CHECKING:
+    from bipartite_router_plugin.router_gateway import BipartiteRouter
+
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 # Lazy import of BipartiteRouter to break circular dependency with distillation_integration / router_gateway
 # (the harvester is imported by the integration which is imported by the router at module load time).
-from tui-layer.adapter.prime_topological_space import PrimeTopologicalSpace
+from tui_layer.adapter.prime_topological_space import PrimeTopologicalSpace
 
 
 class GeometryHarvester:

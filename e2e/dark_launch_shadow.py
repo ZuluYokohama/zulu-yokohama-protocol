@@ -11,13 +11,15 @@ This is the data collection phase before any blocking is enabled.
 
 from __future__ import annotations
 from pathlib import Path
+import importlib
+import sys
 import json
 from datetime import datetime, timezone
 from typing import List, Dict, Any
 
 SCRIPT_PATH = Path(__file__).resolve()
 SEED_ROOT = SCRIPT_PATH.parents[1]
-LAYER_ROOT = SEED_ROOT / "tui-layer"
+LAYER_ROOT = SEED_ROOT / "tui_layer"
 
 def _load(name: str, p: Path):
     spec = importlib.util.spec_from_file_location(name, p)
@@ -49,8 +51,8 @@ def run_shadow_analysis(user_intent: str) -> Dict[str, Any]:
     # Simulate the topological solver running on the proposed change
     # (In production this would use the live RichPrimeEventBuilder + PrimeTopologicalSpace)
 
-    from tui-layer.adapter.rich_prime_event_builder import RichPrimeEventBuilder
-    from tui-layer.adapter.prime_topological_space import PrimeTopologicalSpace
+    from tui_layer.adapter.rich_prime_event_builder import RichPrimeEventBuilder
+    from tui_layer.adapter.prime_topological_space import PrimeTopologicalSpace
 
     builder = RichPrimeEventBuilder(max_files=80)
     event = builder.build_from_project(SEED_ROOT, trigger=f"shadow:{user_intent[:30]}")

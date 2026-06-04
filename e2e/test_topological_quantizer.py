@@ -84,7 +84,7 @@ def load_calibration_event() -> Dict[str, Any]:
 def test_4bit_quantization_preserves_lambda_1():
     """
     Exact test body from Phase 11 plan (with load_calibration_event resolved + bootstrap
-    to support the literal 'from tui-layer...' and 'from edge_compute...' imports).
+    to support the literal 'from tui_layer...' and 'from edge_compute...' imports).
     """
     # === Bootstrap for import compatibility (hyphen dir + root packages) ===
     # Matches patterns used in dark_launch_shadow.py and internal adapter path hacks.
@@ -92,52 +92,52 @@ def test_4bit_quantization_preserves_lambda_1():
     if str(SEED_ROOT) not in sys.path:
         sys.path.insert(0, str(SEED_ROOT))
 
-    LAYER_ROOT = SEED_ROOT / "tui-layer"
+    LAYER_ROOT = SEED_ROOT / "tui_layer"
 
-    # Create namespace package entries so "from tui-layer.adapter.xxx" resolves
+    # Create namespace package entries so "from tui_layer.adapter.xxx" resolves
     # using the on-disk hyphen dir (without renaming files or requiring editable install).
-    if "tui-layer" not in sys.modules:
-        grok_pkg = types.ModuleType("tui-layer")
+    if "tui_layer" not in sys.modules:
+        grok_pkg = types.ModuleType("tui_layer")
         grok_pkg.__path__ = [str(LAYER_ROOT)]
-        sys.modules["tui-layer"] = grok_pkg
+        sys.modules["tui_layer"] = grok_pkg
 
-    if "tui-layer.adapter" not in sys.modules:
-        adapter_pkg = types.ModuleType("tui-layer.adapter")
+    if "tui_layer.adapter" not in sys.modules:
+        adapter_pkg = types.ModuleType("tui_layer.adapter")
         adapter_pkg.__path__ = [str(LAYER_ROOT / "adapter")]
-        sys.modules["tui-layer.adapter"] = adapter_pkg
+        sys.modules["tui_layer.adapter"] = adapter_pkg
 
-    if "tui-layer.higher_cohomology" not in sys.modules:
-        hc_pkg = types.ModuleType("tui-layer.higher_cohomology")
+    if "tui_layer.higher_cohomology" not in sys.modules:
+        hc_pkg = types.ModuleType("tui_layer.higher_cohomology")
         hc_pkg.__path__ = [str(LAYER_ROOT / "higher_cohomology")]
-        sys.modules["tui-layer.higher_cohomology"] = hc_pkg
+        sys.modules["tui_layer.higher_cohomology"] = hc_pkg
 
-    if "tui-layer.persistence" not in sys.modules:
-        pers_pkg = types.ModuleType("tui-layer.persistence")
+    if "tui_layer.persistence" not in sys.modules:
+        pers_pkg = types.ModuleType("tui_layer.persistence")
         pers_pkg.__path__ = [str(LAYER_ROOT / "persistence")]
-        sys.modules["tui-layer.persistence"] = pers_pkg
+        sys.modules["tui_layer.persistence"] = pers_pkg
 
-    if "tui-layer.integration" not in sys.modules:
-        int_pkg = types.ModuleType("tui-layer.integration")
+    if "tui_layer.integration" not in sys.modules:
+        int_pkg = types.ModuleType("tui_layer.integration")
         int_pkg.__path__ = [str(LAYER_ROOT / "integration")]
-        sys.modules["tui-layer.integration"] = int_pkg
+        sys.modules["tui_layer.integration"] = int_pkg
 
-    if "tui-layer.state" not in sys.modules:
-        state_pkg = types.ModuleType("tui-layer.state")
+    if "tui_layer.state" not in sys.modules:
+        state_pkg = types.ModuleType("tui_layer.state")
         state_pkg.__path__ = [str(LAYER_ROOT / "state")]
-        sys.modules["tui-layer.state"] = state_pkg
+        sys.modules["tui_layer.state"] = state_pkg
 
-    if "tui-layer.enforcement" not in sys.modules:
-        enf_pkg = types.ModuleType("tui-layer.enforcement")
+    if "tui_layer.enforcement" not in sys.modules:
+        enf_pkg = types.ModuleType("tui_layer.enforcement")
         enf_pkg.__path__ = [str(LAYER_ROOT / "enforcement")]
-        sys.modules["tui-layer.enforcement"] = enf_pkg
+        sys.modules["tui_layer.enforcement"] = enf_pkg
 
     # The adapter .py files themselves insert their local dirs into sys.path for sibling imports
     # (e.g. prime_topological_space imports rich_prime_event_builder via its hack).
-    # Our namespace setup + root in path makes the top-level "from tui-layer..." succeed.
+    # Our namespace setup + root in path makes the top-level "from tui_layer..." succeed.
 
     # Now the literal imports from the plan:
     from edge_compute.topological_quantizer import TopologicalQuantizer
-    from tui-layer.adapter.prime_topological_space import PrimeTopologicalSpace
+    from tui_layer.adapter.prime_topological_space import PrimeTopologicalSpace
 
     # === Test body (per plan) ===
     # Use a small known-good event from previous evidence (synthetic calibration here)

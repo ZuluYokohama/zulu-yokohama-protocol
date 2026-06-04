@@ -12,11 +12,14 @@ Strictly sparse. No dense matrices on hot paths.
 """
 
 from __future__ import annotations
-from typing import Dict, Any, Tuple, Optional
+from typing import TYPE_CHECKING, Dict, Any, Tuple, Optional
 import numpy as np
 from scipy.sparse import csr_matrix, identity
 from scipy.sparse.linalg import eigsh, svds
 from scipy.sparse.csgraph import connected_components
+
+if TYPE_CHECKING:
+    from edge_compute.npu_kernel_router import NPUKernelRouter
 
 # Standalone execution support (Phase 4.3)
 import sys

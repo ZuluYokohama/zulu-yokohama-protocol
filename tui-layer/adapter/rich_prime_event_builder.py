@@ -165,7 +165,7 @@ class RichPrimeEventBuilder:
                     elif isinstance(node, ast.ImportFrom) and node.module:
                         imports.add(node.module.split(".")[0])
                 file_imports[str(f)] = imports
-                mod_name = f.stem
+                _mod_name = f.stem
                 for imp in imports:
                     reverse_imports[imp] = reverse_imports.get(imp, 0) + 1
             except Exception:

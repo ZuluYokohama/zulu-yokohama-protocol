@@ -1,0 +1,12 @@
+{
+  "timestamp": "2026-06-04T05:58:48Z",
+  "repo": "/data/data/com.termux/files/home/downloads/zulu-yokohama-protocol",
+  "verdict": "PASS",
+  "quality_label": "quality:high",
+  "counts": {
+    "HALT": 0,
+    "WARN": 0,
+    "INFO": 0
+  },
+  "findings": []
+}
