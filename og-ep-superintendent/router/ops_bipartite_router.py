@@ -181,7 +181,7 @@ class OpsbipartiteRouter:
             )
 
         # ── Negative Δλ₁ with weak λ₁ → REMOTE ───────────────────────────
-        if delta_lambda_1 < -0.5 or (lambda_1 is not None and lambda_1 < self.LOCAL_LAMBDA_MIN):
+        if delta_lambda_1 < -0.5 or (isinstance(lambda_1, (int, float)) and lambda_1 < self.LOCAL_LAMBDA_MIN):
             print(f"[OpsRouter] Decision: REMOTE (Δλ₁={delta_lambda_1:+.4f}, λ₁={self._fmt_float(lambda_1)})")
             return RoutingDecision(
                 route="REMOTE",
