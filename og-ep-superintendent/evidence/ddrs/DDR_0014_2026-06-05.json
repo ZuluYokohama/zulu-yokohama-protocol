@@ -11,11 +11,11 @@
   "mud_weight_ppg": 9.6,
   "ecd_ppg": 9.8,
   "operations_24hr": "Worked free at 0430. LCM pill pumped. POOH 6,500ft wiper, back to bottom. Resumed drilling to 7,480ft (240ft).",
-  "plan_next_24hr": "Drill to 8,000ft (9-5/8\" casing shoe). Pre-flush seat. Rig up to run casing.",
+  "next_24hr_plan": "Drill to 8,000ft (9-5/8\" casing shoe). Pre-flush seat. Rig up to run casing.",
   "problems": [],
   "day_cost_usd": 152000,
   "cumulative_cost_usd": 870000,
-  "afe_approved_usd": 2850000.0,
+
   "afe_burn_pct": 30.5,
   "k_s_snapshot": {
     "well_name": "Blackstone Federal 1-28H",
