@@ -96,11 +96,11 @@ class PersistentFabric:
     def _rewire_enclosure(self):
         graft = TransducerGraft(self.seed_root)
         build_stalks = make_grafted_stalk_builder(graft)
-        self.enclosure = SurfaceEnclosure(self.series)
+        self.enclosure = PersistentSurfaceEnclosure(self)
 
         # Monkey-patch the build_stalks inside the enclosure for persistence
         # (In a real TUI runtime this would be cleaner dependency injection)
-        original_enclose = self.enclosure.enclose_and_execute
+
 
         def persistent_enclose(trigger: str, **kwargs):
             # Force the persistent builder
