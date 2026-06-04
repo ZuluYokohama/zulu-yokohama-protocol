@@ -763,6 +763,7 @@ class FiberSheafEngine:
         Edges from COST_DEPENDENCIES; coherence = geometric mean of both nodes.
         """
         items = afe_state.line_items
+        _n = len(items)
         n     = len(items)
         max_usd = max((li.afe_approved_usd for li in items), default=1.0) or 1.0
 
@@ -821,6 +822,7 @@ class FiberSheafEngine:
         node_names = [iv.interval_id for iv in ivs]
         node_names += ["AFE_DRILLING", "CONTRACTOR_DIRECTIONAL",
                        "CONTRACTOR_MUD", "CONTRACTOR_MUDLOG"]
+        _n = len(node_names)
         n = len(node_names)
 
         active = next((iv for iv in ivs if iv.is_active), ivs[-1])

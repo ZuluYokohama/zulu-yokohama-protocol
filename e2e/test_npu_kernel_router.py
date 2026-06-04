@@ -151,7 +151,7 @@ def test_prime_space_npu_router_integration():
 
     # === Import Space via importlib (robust for e2e harness, mirrors live_enclosure_demo.py) ===
     import importlib.util
-    LAYER_ROOT = SEED_ROOT / "tui-layer"
+    LAYER_ROOT = SEED_ROOT / "tui_layer"
 
     def _load_space(p: Path):
         spec = importlib.util.spec_from_file_location("prime_topological_space_t3_harness", p)

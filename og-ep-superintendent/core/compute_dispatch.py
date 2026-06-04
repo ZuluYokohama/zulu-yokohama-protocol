@@ -358,6 +358,7 @@ class ComputeDispatch:
         if plan.run_markov_T:
             T = engine.sheaf_ops.build_markov_transition()
             # Cheap proxy for node importance: row L2 norms of T
+            _nd = T.shape[0]
             nd = T.shape[0]
             proxy_w = np.array([
                 float(np.linalg.norm(T[v*d:(v+1)*d, :]))
@@ -447,6 +448,7 @@ class ComputeDispatch:
         # Determine primary trigger for the gate decision
         lam1_is_trigger  = lam1 < 0.01
         hol_is_trigger   = hol > 8.0 or h_dim > d * 2
+        _zeta_is_trigger = z_gate in ("HALT_A4", "WARN")
         zeta_is_trigger  = z_gate in ("HALT_A4", "WARN")
 
         if gate == "HALT_A4":

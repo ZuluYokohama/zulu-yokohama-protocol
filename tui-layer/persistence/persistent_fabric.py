@@ -166,6 +166,22 @@ class PersistentFabric:
         }
 
 
+class PersistentSurfaceEnclosure(SurfaceEnclosure):
+    """
+    A SurfaceEnclosure wired to a PersistentFabric — carries K(S) state forward
+    across TUI sessions. Every enclose_and_execute call auto-saves the fabric.
+    """
+
+    def __init__(self, fabric: PersistentFabric):
+        super().__init__(fabric.series)
+        self._fabric = fabric
+
+    def enclose_and_execute(self, trigger: str, **kwargs):
+        result = super().enclose_and_execute(trigger, **kwargs)
+        self._fabric.save()
+        return result
+
+
 # Convenience factory for the Grok TUI
 def get_persistent_fabric_for_tui(seed_root: Path) -> PersistentFabric:
     """The function the real Grok TUI runtime would call at session start."""

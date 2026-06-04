@@ -35,8 +35,8 @@ from .npu_kernel_router import NPUKernelRouter, create_npu_router
 import sys
 from pathlib import Path as _Path
 sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
-from tui-layer.adapter.prime_topological_space import PrimeTopologicalSpace
-from tui-layer.higher_cohomology.higher_cohomology import HigherCohomology
+from tui_layer.adapter.prime_topological_space import PrimeTopologicalSpace
+from tui_layer.higher_cohomology.higher_cohomology import HigherCohomology
 
 
 class ClaudeCodePrimeCrystalOracle:
@@ -56,7 +56,7 @@ class ClaudeCodePrimeCrystalOracle:
         `/coderabbit:review` command via the plugin manifest.
         """
         proposed_diff = args.get("diff", args.get("changes", ""))
-        trigger = f"claude_code:/coderabbit:review:{datetime.now(timezone.utc).isoformat()}"
+        _trigger = f"claude_code:/coderabbit:review:{datetime.now(timezone.utc).isoformat()}"  # instrumentation stub
 
         # 1. Local topological pre-gate (using the live enclosure / space if available)
         print("[Claude Code Oracle] Local topological pre-check before dispatching to CodeRabbit...")
@@ -113,8 +113,8 @@ class ClaudeCodePrimeCrystalOracle:
                 from bipartite_router_plugin.router_gateway import get_bipartite_router
                 active_router = get_bipartite_router(self.seed_root)
                 active_router.capture_successful_remote_resolution(
-                    problem_event=event,  # would be the pre-resolution event in real flow
-                    solution_event=event, # post-resolution event
+                    problem_event={"prompt": proposed_diff[:200], "source": "pre-resolution"},
+                    solution_event={"prompt": proposed_diff[:200], "source": "post-resolution"},
                     original_prompt=proposed_diff[:200],
                     remote_summary="CodeRabbit agent-optimized resolution",
                     delta_lambda_1=0.034  # placeholder; real system measures this
@@ -161,7 +161,7 @@ class ClaudeCodePrimeCrystalOracle:
     # PreToolUse hook implementation (for any mutation)
     def pre_tool_topological_gate(self, tool_name: str, args: Dict[str, Any]) -> Dict[str, Any]:
         """Any Write/Edit/Terminal/etc. that mutates state must pass the local gate first."""
-        trigger = f"claude_code:pre_tool:{tool_name}"
+        _trigger = f"claude_code:pre_tool:{tool_name}"
         # Real implementation calls the live SurfaceEnclosure here
         print(f"[PreTool Gate] {tool_name} — local topological pre-check would run here.")
         return {"proceed": True}

@@ -12,7 +12,10 @@ This is the self-replication / continuous distillation engine.
 
 from __future__ import annotations
 from pathlib import Path
-from typing import Dict, Any
+from typing import TYPE_CHECKING, Dict, Any
+
+if TYPE_CHECKING:
+    from bipartite_router_plugin.router_gateway import BipartiteRouter
 
 # NOTE: Router import is lazy to break circular dependency with router_gateway
 # (router_gateway imports this module at top level for the capture handoff).

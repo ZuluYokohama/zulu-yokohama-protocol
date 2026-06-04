@@ -85,7 +85,7 @@ def main():
     dim_h0_1 = space1.compute_homology_dimension()
     hol1 = space1.detect_holonomy()
 
-    ks1 = session.evolve("user:prompt:analyze_architecture", "full_analysis", lambda_1_1, dim_h0_1, hol1)
+    _ks1 = session.evolve("user:prompt:analyze_architecture", "full_analysis", lambda_1_1, dim_h0_1, hol1)
     print(f"lambda_1: {lambda_1_1:.6f}   dim H0: {dim_h0_1}   Holonomy: {hol1}")
 
     hc1 = HigherCohomology(space1)
@@ -120,7 +120,7 @@ def main():
     dim_h0_3 = space3.compute_homology_dimension()
     hol3 = space3.detect_holonomy()
 
-    ks3 = session.evolve("user:tool:add_interfaces_for_voids", "close_h1_voids", lambda_1_3, dim_h0_3, hol3)
+    _ks3 = session.evolve("user:tool:add_interfaces_for_voids", "close_h1_voids", lambda_1_3, dim_h0_3, hol3)
     print(f"lambda_1: {lambda_1_3:.6f}   delta from previous valid state: {lambda_1_3 - lambda_1_1:+.6f}")
 
     hc3 = HigherCohomology(space3)

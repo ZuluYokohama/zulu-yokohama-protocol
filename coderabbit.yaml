@@ -1,3 +1,17 @@
+# coderabbit.yaml — GLOBAL MAX · ZuluYokohama Protocol AAA Studio Grade
+# Transposed from ZYP domain-specific → universal hardened review config
+# Every gate is at maximum. No advisory silencing. Full knowledge accumulation.
+# ─────────────────────────────────────────────────────────────────────────────
+
+language: "en-US"
+early_access: true
+enable_free_tier: true
+
+tone_instructions: |
+  You are a senior principal engineer at an AAA game studio / precision-engineering firm.
+  Be direct, specific, and mathematical. No vague praise. Every comment must cite
+  the exact line, the exact invariant violated, and the exact correct form.
+  Severity labels are mandatory on every inline comment.
 # coderabbit.yaml — ZuluYokohama Protocol  
 # Topological Oracle · Fiber Bundle Sheaf Engine · Max Cybernetic Config
 # ─────────────────────────────────────────────────────────────────────────────
@@ -8,11 +22,31 @@ reviews:
   profile: "assertive"
   request_changes_workflow: true
   high_level_summary: true
+  high_level_summary_in_walkthrough: true
   high_level_summary_in_walkthrough: false
   high_level_summary_placeholder: "@coderabbitai summary"
   auto_title_placeholder: "@coderabbitai"
   poem: false
   review_status: true
+  commit_status: true
+  collapse_walkthrough: false
+  changed_files_summary: true
+  sequence_diagrams: true
+  assess_linked_issues: true
+  suggested_labels: true
+  auto_apply_labels: true
+  finishing_touches: true
+
+  auto_review:
+    enabled: true
+    drafts: true
+    base_branches:
+      - "main"
+      - "SETUP-PHASE-.*"
+      - "FEAT-.*"
+      - "FIX-.*"
+      - "REFACTOR-.*"
+      - "RELEASE-.*"
   collapse_walkthrough: false
   changed_files_summary: true
   sequence_diagrams: false
@@ -31,6 +65,205 @@ reviews:
     - "!**/*.pyc"
     - "!**/*.pyo"
     - "!**/*.egg-info/**"
+    - "!**/node_modules/**"
+    - "!**/.git/**"
+    - "!**/dist/**"
+    - "!**/build/**"
+    - "!**/*.lock"
+
+  # ── GLOBAL SUMMARY FORMAT — AAA STUDIO GRADE ──────────────────────────────
+  instructions: |
+
+    ══════════════════════════════════════════════════════════════════
+    GLOBAL MAX CODE REVIEW — AAA STUDIO GRADE
+    ZuluYokohama Protocol · Transposed Universal Format
+    ══════════════════════════════════════════════════════════════════
+
+    § 1  PHASE : STATE
+    ─────────────────────────────────────────────────────────────────
+    Extract from branch name:
+      SETUP   → SCAFFOLDING      FEAT    → CAPABILITY_ADD
+      FIX     → COHERENCE_PATCH  REFACTOR→ TOPOLOGY_RESHAPE
+      DOCS    → KNOWLEDGE_SEAL   TEST    → EVIDENCE_FORGE
+      RELEASE → PHASE_COMPLETE   HOT     → PRODUCTION_HALT_REPAIR
+
+    Output: **Phase:** `X` · **Scope:** `Y` · **State:** `Z`
+    **One-line intent:** what coherence / invariant this PR targets.
+
+    § 2  CHANGE IMPACT TABLE
+    ─────────────────────────────────────────────────────────────────
+    | File | Change type | Risk | Invariant | Gate |
+    |------|:-----------:|:----:|:---------:|:----:|
+
+    Change type : ADD / MOD / DEL / MOVE / RENAME
+    Risk        : LOW / MED / HIGH / CRITICAL
+    Invariant   : the primary correctness property this file maintains
+    Gate        : ✅ PASS / ⚠️ WARN / 🔴 HALT
+
+    § 3  CORRECTNESS FINDINGS  (blocking issues first)
+    ─────────────────────────────────────────────────────────────────
+    Enumerate all findings. Format each:
+      [HALT|WARN|INFO] `file:line` — invariant violated — exact fix
+
+    § 4  PERFORMANCE ENVELOPE  (ARM64 / 6 GB UMA budget)
+    ─────────────────────────────────────────────────────────────────
+    Flag any change that:
+      • Adds O(n²) or worse in a hot path
+      • Allocates dense matrices where sparse suffices
+      • Increases peak RSS above 800 MB for any single operation
+      • Adds synchronous I/O in a latency-sensitive path
+      • Introduces a .copy() on an array that could be a view
+
+    § 5  SECURITY & MEMORY SAFETY
+    ─────────────────────────────────────────────────────────────────
+    Check for:
+      • Unvalidated external inputs entering computation
+      • Buffer/index bounds not enforced
+      • Secrets / credentials in code or config
+      • Arbitrary code execution via eval/exec/subprocess with user input
+      • Path traversal in file I/O
+
+    § 6  SHAPE PAIR HARVEST POTENTIAL  (distillation fuel)
+    ─────────────────────────────────────────────────────────────────
+    **Harvestable pairs:** N
+    Each bug-fix where K(S)_before → K(S)_after with Δλ₁ ≥ 0 is distillation fuel.
+
+    § 7  AXIOM COMPLIANCE MATRIX
+    ─────────────────────────────────────────────────────────────────
+    | Axiom | Description                              | Status |
+    |-------|------------------------------------------|:------:|
+    | A1    | Compute K(S) before any action           | ✅/⚠️/❌|
+    | A4    | HALT on Δλ₁ < −threshold                 | ✅/⚠️/❌|
+    | A5    | Gate before advancing phase               | ✅/⚠️/❌|
+    | A6    | Structured guess > no guess              | ✅/⚠️/❌|
+    | A7    | Evidence bundle before shape pair harvest| ✅/⚠️/❌|
+    | G2    | Value function governs decisions          | ✅/⚠️/❌|
+    | IP    | Core math primitives not in public API    | ✅/⚠️/❌|
+    | MEM   | Peak RSS ≤ 800 MB on ARM64               | ✅/⚠️/❌|
+    | SEC   | No unvalidated inputs in hot paths        | ✅/⚠️/❌|
+
+    § 8  LINES CHANGED
+    ─────────────────────────────────────────────────────────────────
+    | Author | Files | +Lines | −Lines | Net |
+    |--------|------:|-------:|-------:|----:|
+
+    ══════════════════════════════════════════════════════════════════
+    INLINE REVIEW RULES — UNIVERSAL
+    ══════════════════════════════════════════════════════════════════
+
+    Every inline comment MUST begin with severity label:
+      _⚠️ Potential issue_  _🔴 Critical_   _⚡ Quick win_
+      _💡 Suggestion_       _🟠 Major_      _🏗️ Heavy lift_
+      _ℹ️ Info_             _🟡 Minor_      _🔒 Security_
+      _🐎 Performance_      _🧮 Math_
+
+    UNIVERSAL BLOCKING CONDITIONS (always request changes):
+      1. ZETA_ZEROS_T / any spectral constant mutated without citation
+      2. Laplacian built as AᵀA instead of D − A
+      3. Rotation matrix with det ≠ +1 (reflection, not rotation)
+      4. A4 / safety gate threshold weakened without override comment
+      5. Optional[float] formatted without None guard (raises TypeError in prod)
+      6. harvest_shape_pair() before save_ddr() — orphaned evidence
+      7. Dense matrix allocation where sparse_matrix suffices (OOM on ARM64)
+      8. Secrets / API keys committed to any file
+      9. eval() / exec() on any external input
+      10. force=True bypass with empty authorized_by field
+
+    NON-BLOCKING — always flag:
+      • λ₁ threshold inconsistency between modules
+      • Missing word-boundary guard on short keyword matches
+      • Evidence JSONL with non-JSON trailing lines
+      • Any .copy() on a large array that could be a buffer view
+      • Daemon thread not set daemon=True (blocks clean process exit)
+      • TODO/FIXME in any file touching mathematical invariants
+
+    ══════════════════════════════════════════════════════════════════
+    PHASE-AWARE REVIEW DEPTH
+    ══════════════════════════════════════════════════════════════════
+
+    SETUP-*   → structure, imports, no circular deps, no baked-in wrong math
+    FEAT-*    → math correctness first; K(S) contribution in docstring; proof sketch
+    FIX-*     → fix must have Δλ₁ ≥ 0; new regression = worse than original bug
+    REFACTOR-*→ eigenvalues unchanged ±1e-8; stationary dist unchanged ±1e-6
+    DOCS-*    → notation correct; axiom numbers match master list; no agent names
+    TEST-*    → evidence valid JSON; K(S) in bounds; shape pairs have Δλ₁ ≥ 0
+    RELEASE-* → zero HALT from prior reviews; SEED_MANIFEST DELIVERED; no TODO in core
+    HOT-*     → full blast: performance + correctness + security all at CRITICAL depth
+
+  # ── PER-PATH SPECIALIST INSTRUCTIONS ──────────────────────────────────────
+  path_instructions:
+
+    - path: "**/core/fiber_sheaf_engine.py"
+      instructions: |
+        PRIMARY MATH KERNEL — IP BOUNDARY. Max depth on every review.
+        Verify: von_mangoldt, rodrigues_rotation, restriction_map,
+        FiberBundle.build (no double-counted edges), FiberSheafOps block
+        Laplacian (D−A, symmetric PSD), ZetaSpectralEmbedder (ZETA_ZEROS_T immutable).
+
+    - path: "**/core/**topology*.py"
+      instructions: |
+        L = D − A. Never AᵀA. D = diag(row_sums(A)).
+        H³ keyword matching: word-boundary only (r'\bkw\b').
+        λ₁ thresholds consistent across all classify_event / compute_delta calls.
+
+    - path: "**/core/afe_laplacian.py"
+      instructions: |
+        L = D − delta. coherence_score is @property — no parentheses on access.
+
+    - path: "**/core/topology_lite.py"
+      instructions: |
+        power_iteration_lambda1 returns SECOND SMALLEST eigenvalue.
+        Use shift: B = lam_max·I − L; λ₁ = lam_max − power_iter(B).
+
+    - path: "**/core/ddr_harvester.py"
+      instructions: |
+        delta_lambda_1 and k_s_snapshot are Optional — guard all f-string format.
+        harvest_shape_pair requires Δλ₁ ≥ 0 — no relaxation ever.
+        total_hours is @property — not in asdict() JSON output.
+
+    - path: "**/router/**bipartite*.py"
+      instructions: |
+        lambda_1 from topology_basis may be "N/A" string — isinstance(v, float) guard.
+        AFE variance: fraction (0.12) or percent (12.0) — enforce one contract.
+
+    - path: "**/*.sh"
+      instructions: |
+        All variable expansions double-quoted. set -euo pipefail on every script.
+        No bare $( ) without error handling. No curl | bash patterns.
+
+    - path: "**/.github/workflows/**"
+      instructions: |
+        JSON parsing via python3 json module only — no shell jq pipes on multiline.
+        Gate must sys.exit(1) on HALT_A4 — not just print.
+        Pin all action versions to SHA, not floating tags.
+
+    - path: "**/*.json"
+      instructions: |
+        Validate: python3 -c "import json; json.load(open('FILE'))"
+        DDR: report_date consistent across filename / top-level / k_s_snapshot.
+
+    - path: "**/*.jsonl"
+      instructions: |
+        Every line must parse: python3 -c "[json.loads(l) for l in open('FILE')]"
+        No trailing integers, empty lines, or partial records.
+
+    - path: "**/distillation/**"
+      instructions: |
+        Every new file carries WORMHOLE-PATH1 manifest header.
+        shape_pairs.jsonl: Δλ₁ ≥ 0 for every pair (no negative-delta training fuel).
+        No dense fallbacks — sparse throughout.
+
+    - path: "**/edge_compute/**"
+      instructions: |
+        Peak RSS ≤ 800 MB at all times. tracemalloc gates mandatory.
+        No .copy() on large arrays — use buffer views / references.
+        NPU paths CPU-simulated only — no physical NPU dependency in tests.
+
+    - path: "**/tui-layer/**"
+      instructions: |
+        Zero circular imports. All public APIs documented.
+        PersistentSurfaceEnclosure.enclose_and_execute must auto-save fabric.
+
 
   # ── HIGH-LEVEL SUMMARY INSTRUCTION ────────────────────────────────────────
   # This is the release-notes format injected into every PR description.
@@ -414,12 +647,79 @@ reviews:
       enabled: true
     ruff:
       enabled: true
+      config_file: "ruff.toml"
+    shellcheck:
+      enabled: true
+    markdownlint:
+      enabled: true
+    biome:
+      enabled: true
+    hadolint:
+      enabled: true
+
+code_generation:
+  docstrings:
+    enabled: true
+    language: "en-US"
+    path_instructions:
+      - path: "**/core/**"
+        instructions: |
+          Docstrings must state the mathematical invariant maintained,
+          the K(S) contribution (Δλ₁ direction), and the ARM64 memory bound.
     shellcheck:
       enabled: true
 
 chat:
   auto_reply: true
 
+knowledge_base:
+  opt_out: false
+  learnings:
+    scope: global
+  issues:
+    scope: global
+  jira:
+    usage: enabled
+  linear:
+    usage: enabled
+
+labels:
+  - name: "quality:halt"
+    color: "b60205"
+    description: "BLOCKING invariant violation — do not merge"
+  - name: "quality:warn"
+    color: "e4a000"
+    description: "WARN-level issues — merge with caution"
+  - name: "quality:high"
+    color: "0e8a16"
+    description: "All gates pass — clean merge"
+  - name: "perf:hot"
+    color: "f9d0c4"
+    description: "Performance-sensitive path changed"
+  - name: "security:review"
+    color: "d93f0b"
+    description: "Security-relevant change — needs human sign-off"
+  - name: "math:laplacian"
+    color: "cfd3d7"
+    description: "Touches L_F, restriction maps, or spectral operators"
+  - name: "ip:sensitive"
+    color: "e99695"
+    description: "Core mathematical primitives (IP boundary)"
+  - name: "arm64:memory"
+    color: "bfd4f2"
+    description: "ARM64 6GB UMA memory envelope change"
+  - name: "phase:setup"
+    color: "0075ca"
+    description: "SCAFFOLDING"
+  - name: "phase:feat"
+    color: "7057ff"
+    description: "CAPABILITY_ADD"
+  - name: "phase:fix"
+    color: "d73a4a"
+    description: "COHERENCE_PATCH"
+  - name: "phase:release"
+    color: "0e8a16"
+    description: "PHASE_COMPLETE"
 # [KNOWLEDGE] — CR learns from every review cycle (cybernetic accumulation)
 knowledge_base:
   opt_out: false

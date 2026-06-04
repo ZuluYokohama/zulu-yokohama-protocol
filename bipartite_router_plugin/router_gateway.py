@@ -105,7 +105,7 @@ class BipartiteRouter:
 
         This is the handoff into the Omega Feedback Loop (Wormhole-Path 2 Continuous Distillation).
         """
-        from .distillation_integration import capture_remote_resolution
+        from .distillation_integration import capture_remote_resolution  # noqa: F811 — lazy re-import to avoid circular at module load
         capture_remote_resolution(
             self,
             problem_event=problem_event,
