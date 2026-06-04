@@ -282,7 +282,7 @@ CONTACTS: See RoutingDecision.escalation_contacts
         lines += [
             "",
             "TOPOLOGICAL BASIS (K(S)):",
-            f"  λ₁:       {decision.topology_basis.get('lambda_1', 0.0) if isinstance(decision.topology_basis.get('lambda_1'), (int, float)) else 0.0:.4f}",
+            f"  λ₁:       {(lambda _v: f'{_v:.4f}' if isinstance(_v,(int,float)) else 'N/A')(decision.topology_basis.get('lambda_1'))}",
             f"  dim H⁰:   {decision.topology_basis.get('dim_H0', 'N/A')}",
             f"  Holonomy: {decision.topology_basis.get('holonomy_signature', 'N/A')}",
             "=" * 70,
