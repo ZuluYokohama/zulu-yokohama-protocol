@@ -50,9 +50,14 @@ class OpsbipartiteRouter:
     adapted for the rig floor instead of the LLM routing context.
     """
 
-    # Variance contract: 0–20–50 percentage scale (matches DDRHarvester.get_well_summary)
+    # AFE overrun threshold — 0-100 percentage scale (matches DDRHarvester.get_well_summary)
     OVERRUN_THRESHOLD_PCT = 20.0   # 20 % over AFE → REMOTE
     LOCAL_LAMBDA_MIN      = 0.01   # λ₁ below this → REMOTE
+
+    @staticmethod
+    def _fmt_float(v, spec: str = ".4f") -> str:
+        """Format a numeric value or return 'N/A' if absent/non-numeric."""
+        return format(v, spec) if isinstance(v, (int, float)) else "N/A"
 
     def __init__(self, well_name: str, afe_number: str, operator: str,
                  drilling_engineer_contact: str, rig_manager_contact: str):
@@ -78,14 +83,19 @@ class OpsbipartiteRouter:
             afe_variance_pct: AFE overrun as a PERCENTAGE (0–100 scale).
                               Ratio callers (0.0–1.0) are auto-normalised.
         """
-        # Normalise ratio-style callers (0.0–1.0) to percentage scale
-        if 0.0 < afe_variance_pct <= 1.0:
-            afe_variance_pct *= 100.0
-        lambda_1 = k_s_current.get("lambda_1", 0.0)
+        if k_s_current is None:
+            raise ValueError(
+                "k_s_current is required; cannot route without a topology basis. "
+                "Compute K(S) via WellboreTopologyEngine or FiberSheafEngine first."
+            )
+        # lambda_1: use None sentinel — missing K(S) must not silently trigger REMOTE
+        lambda_1 = k_s_current.get("lambda_1")
         holonomy = k_s_current.get("holonomy_signature", "trivial")
+        # afe_variance_pct: caller must pass percentage (0-100); no auto-normalise
+        # to avoid 0.5% being ambiguously converted to 50%
 
         print(f"\n[OpsRouter] Routing: β₀(H⁰)={k_s_current.get('dim_H0')}, "
-              f"λ₁={lambda_1:.4f}, Δλ₁={delta_lambda_1:+.4f}, "
+              f"λ₁={self._fmt_float(lambda_1)}, Δλ₁={delta_lambda_1:+.4f}, "
               f"holonomy={holonomy}, H-level={h_level}")
 
         # ── H³: WELL CONTROL — no routing, immediate ──────────────────────
@@ -171,7 +181,7 @@ class OpsbipartiteRouter:
             )
 
         # ── Negative Δλ₁ with weak λ₁ → REMOTE ───────────────────────────
-        if delta_lambda_1 < -0.5 or lambda_1 < self.LOCAL_LAMBDA_MIN:
+        if delta_lambda_1 < -0.5 or (lambda_1 is not None and lambda_1 < self.LOCAL_LAMBDA_MIN):
             print(f"[OpsRouter] Decision: REMOTE (Δλ₁={delta_lambda_1:+.4f}, λ₁={lambda_1:.4f})")
             return RoutingDecision(
                 route="REMOTE",
@@ -282,7 +292,7 @@ CONTACTS: See RoutingDecision.escalation_contacts
         lines += [
             "",
             "TOPOLOGICAL BASIS (K(S)):",
-            f"  λ₁:       {(lambda _v: f'{_v:.4f}' if isinstance(_v,(int,float)) else 'N/A')(decision.topology_basis.get('lambda_1'))}",
+            f"  λ₁:       {self._fmt_float(decision.topology_basis.get('lambda_1'))}",
             f"  dim H⁰:   {decision.topology_basis.get('dim_H0', 'N/A')}",
             f"  Holonomy: {decision.topology_basis.get('holonomy_signature', 'N/A')}",
             "=" * 70,
