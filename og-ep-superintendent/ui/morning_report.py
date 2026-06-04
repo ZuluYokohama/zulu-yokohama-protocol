@@ -72,16 +72,19 @@ def generate_morning_report(inp: MorningReportInput) -> str:
 
     # ── Determine overall status ─────────────────────────────────────────
     ks = inp.k_s_current or {}
-    lambda_1 = ks.get("lambda_1", 0.0)
+    lambda_1 = ks.get("lambda_1", None)   # None when K(S) not yet computed
     holonomy = ks.get("holonomy_signature", "trivial")
     afe_coherence = ks.get("afe_coherence", 1.0)
 
     delta_l1 = 0.0
     if inp.k_s_prior and inp.k_s_current:
-        delta_l1 = ks.get("lambda_1", 0.0) - inp.k_s_prior.get("lambda_1", 0.0)
+        delta_l1 = float(ks.get("lambda_1", 0.0)) - float(inp.k_s_prior.get("lambda_1", 0.0))
 
-    # Status emoji + word
-    if lambda_1 >= 0.10 and holonomy == "trivial" and afe_coherence >= 0.8:
+    # Only show RED on confirmed K(S) weakness, not on missing data
+    if lambda_1 is None:
+        status_icon = "⚪"
+        status_word = "NO K(S) — RUN TOPOLOGY ENGINE BEFORE REPORT"
+    elif lambda_1 >= 0.10 and holonomy == "trivial" and afe_coherence >= 0.8:
         status_icon = "🟢"
         status_word = "GREEN — DRILLING AHEAD"
     elif lambda_1 >= 0.01 and holonomy == "trivial":
@@ -90,6 +93,7 @@ def generate_morning_report(inp: MorningReportInput) -> str:
     else:
         status_icon = "🔴"
         status_word = "RED — A4 REVIEW REQUIRED"
+    lambda_1_disp = lambda_1 if lambda_1 is not None else 0.0
 
     # ── λ₁ sparkline (last 7 days) ───────────────────────────────────────
     sparkline = ""
@@ -167,7 +171,7 @@ PLAN — NEXT 24 HOURS
 WELLBORE COHERENCE [ZuluYokohama K(S)]
   {sparkline}
   dim H⁰:    {ks.get('dim_H0', 'N/A')}  (connected agreement sections)
-  λ₁:        {lambda_1:.4f}  {'✅ Strong' if lambda_1 >= 0.10 else '🟡 Moderate' if lambda_1 >= 0.01 else '🔴 Weak'}
+  λ₁:        {lambda_1_disp:.4f}  {'✅ Strong' if lambda_1 >= 0.10 else '🟡 Moderate' if lambda_1 >= 0.01 else '🔴 Weak'}
   Δλ₁ (24h): {delta_l1:+.4f}  {'📈 Improving' if delta_l1 >= 0 else '📉 Regressing'}
   Holonomy:  {holonomy}  {'✅' if holonomy == 'trivial' else '🔴 CONTRADICTION — RESOLVE BEFORE ADVANCING'}
   AFE coh:   {afe_coherence:.3f}  {'✅' if afe_coherence >= 0.85 else '⚠️' if afe_coherence >= 0.70 else '🔴'}

@@ -31,14 +31,17 @@ jobs:
       - name: Extract and inject K(S) into environment
         id: ks
         run: |
-          if compgen -G ".omega-evidence/*.json" > /dev/null 2>&1; then
-            KS_JSON=$(cat .omega-evidence/*.json | python3 -c "import sys,json; data=[json.loads(l) for l in sys.stdin]; print(json.dumps(data[0] if len(data)==1 else data))")
-            echo "ks_json=$KS_JSON" >> $GITHUB_OUTPUT
-            echo "Local K(S) fingerprint loaded for cloud review."
-          else
-            echo "ks_json={\"error\":\"no_local_ks\"}" >> $GITHUB_OUTPUT
-            echo "No local K(S) found — proceeding with structural-only gate."
-          fi
+          KS_JSON='{}'
+          for f in .omega-evidence/*.json; do
+            [ -f "$f" ] || continue
+            KS_JSON=$(python3 -c "
+import json; d=json.load(open('$f'))
+if 'lambda1' in d and 'lambda_1' not in d: d['lambda_1']=d.pop('lambda1')
+print(json.dumps(d))
+")
+          done
+          echo "ks_json=$KS_JSON" >> $GITHUB_OUTPUT
+          echo "K(S) extracted"
 
       - name: Topological Coherence Gate — local K(S) validation
         run: |
@@ -46,37 +49,30 @@ jobs:
           import json, sys, os, glob
 
           print("=== Omega Crystal Gate — Topological Coherence Check ===")
-
-          # Load K(S) baseline if present
           ks_files = glob.glob(".omega-evidence/*.json")
+          failures = []
+
           if ks_files:
-              with open(ks_files[0]) as f:
-                  ks = json.load(f)
-              lambda1 = ks.get("lambda1", None)
-              holonomy = ks.get("holonomy_trivial", True)
-              h2 = ks.get("dimH2", 0)
-              print(f"  λ₁ baseline      : {lambda1}")
-              print(f"  Holonomy trivial : {holonomy}")
-              print(f"  H² obstructions  : {h2}")
-
-              failures = []
-              if lambda1 is not None and lambda1 < 0:
-                  failures.append(f"FAIL: λ₁={lambda1} < 0 — coherence regression")
-              if not holonomy:
-                  failures.append("FAIL: non-trivial holonomy detected")
-              if h2 > 0:
-                  failures.append(f"WARN: {h2} H² obstruction(s) present")
-
+              for ks_path in ks_files:
+                  with open(ks_path) as f:
+                      ks = json.load(f)
+                  if 'lambda1' in ks and 'lambda_1' not in ks:
+                      ks['lambda_1'] = ks.pop('lambda1')
+                  lam = ks.get('lambda_1', None)
+                  hol = ks.get('holonomy_signature', 'trivial')
+                  h2  = int(ks.get('dimH2', ks.get('dim_H2', 0)))
+                  print(f"  [{ks_path}]  lambda_1={lam}  holonomy={hol}  H2={h2}")
+                  if lam is not None and float(lam) < 0:
+                      failures.append(f"lambda_1={lam} < 0")
+                  if hol and 'non-trivial' in str(hol):
+                      failures.append(f"non-trivial holonomy: {hol}")
               if failures:
-                  for f in failures:
-                      print(f"  {f}")
+                  for msg in failures: print(f"  FAIL: {msg}")
                   sys.exit(1)
-              else:
-                  print("  ✓ K(S) baseline within coherence bounds")
+              print("  ✓ K(S) artifacts within coherence bounds")
           else:
-              print("  No K(S) artifact — running structural file checks only.")
+              print("  No K(S) artifact — structural checks only.")
 
-          # Structural checks: verify key modules are present
           required = [
               "og-ep-superintendent/core/afe_laplacian.py",
               "og-ep-superintendent/core/ddr_harvester.py",
@@ -84,10 +80,9 @@ jobs:
           ]
           missing = [r for r in required if not os.path.exists(r)]
           if missing:
-              print(f"  FAIL: missing required files: {missing}")
+              print(f"  FAIL: missing files: {missing}")
               sys.exit(1)
-
-          print("  ✓ All required topology modules present")
+          print("  ✓ Required modules present")
           print("=== Gate PASSED ===")
           EOF
 

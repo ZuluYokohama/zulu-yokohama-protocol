@@ -19,7 +19,7 @@
   "afe_burn_pct": 30.5,
   "k_s_snapshot": {
     "well_name": "Blackstone Federal 1-28H",
-    "timestamp": "2026-06-03",
+    "timestamp": "2026-06-04",
     "dim_H0": 2,
     "lambda_1": 3.288354,
     "holonomy_signature": "trivial",

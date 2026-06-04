@@ -168,28 +168,26 @@ def von_mangoldt(n: int) -> float:
     """
     Λ(n) = log(p)  if n = p^k for some prime p and k ≥ 1,  else 0.
     The Von Mangoldt function — encodes the prime skeleton of ℕ.
+
+    Uses full trial division up to √n — correct for ALL n, not just
+    those whose prime factors appear in the pre-computed _PRIMES table.
     """
     if n < 2:
         return 0.0
-    for p in _PRIMES:
-        if p * p > n:
-            break
+    p = 2
+    while p * p <= n:
         if n % p == 0:
+            # n is divisible by p.  Check if n = p^k exactly.
             k = n
             while k % p == 0:
                 k //= p
-            if k == 1:          # n is a pure prime power p^j
+            if k == 1:          # n = p^j  → Λ(n) = log p
                 return math.log(p)
-    # n itself may be prime (not caught by the loop above if > 113²)
-    # simple primality check for large n
-    if n > 1:
-        for p in _PRIMES:
-            if p * p > n:
-                break
-            if n % p == 0:
+            else:               # n has at least two distinct prime factors
                 return 0.0
-        return math.log(n)      # n is prime
-    return 0.0
+        p += 1 if p == 2 else 2
+    # No factor found up to √n  →  n is prime itself
+    return math.log(n)
 
 
 def rodrigues_rotation(u: np.ndarray, v: np.ndarray) -> np.ndarray:
@@ -214,11 +212,29 @@ def rodrigues_rotation(u: np.ndarray, v: np.ndarray) -> np.ndarray:
 
     u_hat = u / nu
     v_hat = v / nv
-    cos_t = float(np.clip(u_hat @ v_hat, -1.0 + 1e-10, 1.0 - 1e-10))
-    sin_t = math.sqrt(max(0.0, 1.0 - cos_t * cos_t))
+    cos_t_raw = float(np.dot(u_hat, v_hat))
 
-    if sin_t < 1e-10:
-        return np.eye(d, dtype=np.float64) if cos_t > 0 else -np.eye(d, dtype=np.float64)
+    # Check parallel / anti-parallel BEFORE clipping (clipping hides the singularity)
+    if cos_t_raw >= 1.0 - 1e-7:                    # parallel  → identity
+        return np.eye(d, dtype=np.float64)
+    if cos_t_raw <= -1.0 + 1e-7:                   # anti-parallel
+        # -I ∈ SO(d) only when d is even; for odd d det(-I)=-1 (wrong sign).
+        # Use a π-rotation in the plane(u_hat, e) where e ⊥ u_hat:
+        #   R = I - 2·uu^T - 2·ee^T  →  det R = +1  for all d  ✓
+        e = np.zeros(d, dtype=np.float64)
+        e[int(np.argmin(np.abs(u_hat)))] = 1.0
+        e -= np.dot(e, u_hat) * u_hat
+        nrm = np.linalg.norm(e)
+        if nrm < 1e-12:
+            e = np.zeros(d, dtype=np.float64)
+            e[(int(np.argmin(np.abs(u_hat))) + 1) % d] = 1.0
+            e -= np.dot(e, u_hat) * u_hat
+            nrm = np.linalg.norm(e)
+        e /= max(nrm, 1e-12)
+        return np.eye(d, dtype=np.float64) - 2.0 * np.outer(u_hat, u_hat) - 2.0 * np.outer(e, e)
+
+    cos_t = cos_t_raw
+    sin_t = math.sqrt(max(0.0, 1.0 - cos_t * cos_t))
 
     S  = (np.outer(v_hat, u_hat) - np.outer(u_hat, v_hat)) / sin_t
     S2 = S @ S
@@ -272,32 +288,37 @@ class FiberBundle:
     def build(
         cls,
         node_names: List[str],
-        raw_sections: np.ndarray,
+        raw_sections,              # list of array-like, possibly ragged
         edges: List[Tuple[int, int, float]],
         d: int = FIBER_DIM,
         prime_weight: bool = True,
     ) -> "FiberBundle":
         """
-        Factory. Pads / truncates sections to d,
-        optionally applies Von Mangoldt prime weighting,
-        then builds all restriction maps.
+        Factory. Accepts ragged list of array-like sections — each entry
+        is independently converted, padded, or truncated to d.
+        Builds restriction maps for BOTH orientations of every edge so
+        build_block_laplacian() never has to fall back to rho_uv.T.
         """
         n = len(node_names)
-        # Pad or truncate to fiber_dim
+        # Pad or truncate each section to d independently (handles ragged input)
         secs = np.zeros((n, d), dtype=np.float64)
         for i, s in enumerate(raw_sections):
-            l = min(len(s), d)
-            secs[i, :l] = s[:l]
+            s_arr = np.asarray(s, dtype=np.float64).ravel()
+            l = min(len(s_arr), d)
+            secs[i, :l] = s_arr[:l]
 
         # Von Mangoldt prime weighting on sections
         if prime_weight:
             for i in range(n):
                 secs[i] *= (1.0 + von_mangoldt(i + 1))
 
-        # Build restriction maps
+        # Build restriction maps for BOTH orientations — no rho_uv.T fallback
         rho: Dict[Tuple[int, int], np.ndarray] = {}
-        for (u, v, c) in edges:
-            rho[(u, v)] = restriction_map(secs[u], secs[v], c)
+        for (u, v, _c) in edges:
+            if (u, v) not in rho:
+                rho[(u, v)] = restriction_map(secs[u], secs[v], _c)
+            if (v, u) not in rho:
+                rho[(v, u)] = restriction_map(secs[v], secs[u], _c)
 
         return cls(
             n=n, d=d,
@@ -704,15 +725,15 @@ class FiberSheafEngine:
     def from_raw(
         cls,
         node_names: List[str],
-        raw_sections: List[np.ndarray],
+        raw_sections,              # list of array-like, may be ragged
         edges: List[Tuple[int, int, float]],
         fiber_dim: int = FIBER_DIM,
         prime_weight: bool = True,
     ) -> "FiberSheafEngine":
-        """Build engine directly from node sections + edge list (no AFE/Well types)."""
+        """Build engine from node sections + edge list. Sections may be ragged."""
         bundle = FiberBundle.build(
             node_names=node_names,
-            raw_sections=np.array(raw_sections, dtype=np.float64),
+            raw_sections=raw_sections,   # passed as-is; build() handles ragged
             edges=edges,
             d=fiber_dim,
             prime_weight=prime_weight,
@@ -756,8 +777,9 @@ class FiberSheafEngine:
         for (ca, cb) in _AFE_COST_DEPS:
             if ca in code_to_idx and cb in code_to_idx:
                 u, v = code_to_idx[ca], code_to_idx[cb]
+                # coherence_score is a @property on AFELineItem
                 c = (items[u].coherence_score * items[v].coherence_score) ** 0.5
-                edges += [(u, v, c), (v, u, c)]
+                edges.append((u, v, c))   # undirected; build() creates (v,u) map
 
         bundle = FiberBundle.build(
             node_names=node_names,
@@ -831,7 +853,7 @@ class FiberSheafEngine:
         # Interval chain
         for i in range(n_iv - 1):
             agr = 1.0 if ivs[i].is_cased else 0.5
-            edges += [(i, i + 1, agr), (i + 1, i, agr)]
+            edges.append((i, i + 1, agr))   # undirected; build() creates reverse
 
         # Active interval → synthetic nodes
         afe_agr  = max(0.0, 1.0 - abs(1.0 - cost_eff))
@@ -841,7 +863,7 @@ class FiberSheafEngine:
 
         for (idx, agr) in [(afe_idx, afe_agr), (dir_idx, dir_agr),
                            (mud_idx, mud_agr), (mlog_idx, mlog_agr)]:
-            edges += [(act_idx, idx, agr), (idx, act_idx, agr)]
+            edges.append((act_idx, idx, agr))   # undirected; build() creates reverse
 
         bundle = FiberBundle.build(
             node_names=node_names,

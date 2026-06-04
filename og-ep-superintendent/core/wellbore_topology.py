@@ -285,10 +285,12 @@ class WellboreTopologyEngine:
         return delta, node_ids
 
     def _compute_laplacian(self, delta: csr_matrix) -> csr_matrix:
-        """L_F = δᵀδ (strictly sparse). Symmetric."""
-        L = (delta.T @ delta).tocsr()
-        L = (L + L.T) / 2
-        return L
+        """Proper graph Laplacian L = D − A from weighted adjacency.
+        D = diag(row sums).  NOT delta.T @ delta (that is AᵀA, not L)."""
+        diag_vals = np.array(delta.sum(axis=1)).flatten()
+        n = delta.shape[0]
+        D = csr_matrix((diag_vals, (np.arange(n), np.arange(n))), shape=delta.shape)
+        return (D - delta).tocsr()
 
     # ── K(S) computation ───────────────────────────────────────────────────
 
@@ -424,8 +426,19 @@ class WellboreTopologyEngine:
 
         # H³ — Well control / safety (irrecoverable)
         h3_keywords = ["kick", "well control", "blowout", "h2s", "fire", "evacuat",
-                       "shut in", "bop", "sis", "flow check"]
-        if any(kw in desc_lower for kw in h3_keywords):
+                       "shut in", "bop", "flow check"]
+        # Short abbreviations matched as whole words to avoid substring false-positives
+        # e.g. "sis" must not match "analysis", "basis", "casing shoe analysis"
+        h3_abbr = ["sis", "sicp", "sidpp", "bop"]
+        def _kw_hit(text: str) -> bool:
+            for kw in h3_keywords:
+                if kw in text:
+                    return True
+            for ab in h3_abbr:
+                if f" {ab} " in f" {text} " or text.startswith(ab + " ") or text.endswith(" " + ab):
+                    return True
+            return False
+        if _kw_hit(desc_lower):
             return {
                 "h_level": "H³",
                 "severity": "AXIOM_VIOLATION",

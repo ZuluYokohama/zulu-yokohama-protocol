@@ -177,7 +177,7 @@ class DDRHarvester:
         print(f"  Footage: {ddr.footage_drilled:.0f}ft | "
               f"NPT: {ddr.npt_pct*100:.1f}% | "
               f"CPF: ${ddr.cost_per_foot:,.0f}/ft")
-        if ddr.a4_triggered:
+        if ddr.a4_triggered and ddr.delta_lambda_1 is not None:
             print(f"  ⚠️  A4 TRIGGERED — Δλ₁={ddr.delta_lambda_1:+.4f}")
 
         return ddr_path
@@ -269,7 +269,15 @@ class DDRHarvester:
 
         total_footage = sum(d["depth_end_ft"] - d["depth_start_ft"] for d in ddrs)
         total_npt = sum(d["npt_hours"] for d in ddrs)
-        total_hours = sum(d.get("total_hours", 24.0) for d in ddrs)
+        total_hours = (
+            sum(
+                d.get("drilling_hours", 0.0) + d.get("tripping_hours", 0.0) +
+                d.get("reaming_hours", 0.0) + d.get("cementing_hours", 0.0) +
+                d.get("casing_hours", 0.0) + d.get("wait_hours", 0.0) +
+                d.get("npt_hours", 0.0)
+                for d in ddrs
+            ) or sum(d.get("total_hours", 24.0) for d in ddrs)
+        )
         total_cost = max(d["cumulative_cost_usd"] for d in ddrs) if ddrs else 0
         afe = ddrs[0]["afe_approved_usd"] if ddrs else 0
 
@@ -360,9 +368,9 @@ def format_ddr_text(ddr: DDREntry) -> str:
             "",
             "─" * 70,
             "WELLBORE COHERENCE SNAPSHOT [ZuluYokohama Protocol K(S)]",
-            f"  dim H⁰: {ks.get('dim_H0', 'N/A')}  |  λ₁: {ks.get('lambda_1', 'N/A'):.4f}  |  Holonomy: {ks.get('holonomy_signature', 'N/A')}",
+            f"  dim H⁰: {ks.get('dim_H0', 'N/A')}  |  λ₁: {float(ks.get('lambda_1', 0.0)):.4f}  |  Holonomy: {ks.get('holonomy_signature', 'N/A')}",
             f"  Δλ₁ (vs prior DDR): {ddr.delta_lambda_1:+.4f}" if ddr.delta_lambda_1 is not None else "",
-            f"  AFE coherence: {ks.get('afe_coherence', 'N/A'):.3f}  |  NPT density: {ks.get('npt_density', 'N/A'):.3f}",
+            f"  AFE coherence: {float(ks.get('afe_coherence', 0.0)):.3f}  |  NPT density: {float(ks.get('npt_density', 0.0)):.3f}",
             "  A4 STATUS: 🔴 TRIGGERED — See corrective actions" if ddr.a4_triggered else "  A4 STATUS: ✅ CLEAR",
             "─" * 70,
         ]

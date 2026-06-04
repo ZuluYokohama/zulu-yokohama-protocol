@@ -213,9 +213,13 @@ class AFELaplacian:
         Returns the cost topology fingerprint with λ₁, coherence, and variance flags.
         """
         delta, codes = self._build_cost_graph()
-        L = (delta.T @ delta).tocsr()
-        L = (L + L.T) / 2
-        self._laplacian = L
+        # Proper graph Laplacian: L = D − A  (NOT delta.T @ delta)
+        diag_vals = np.array(delta.sum(axis=1)).flatten()
+        n = delta.shape[0]
+        from scipy.sparse import diags as _sp_diags
+        D = _sp_diags(diag_vals, format='csr')
+        L = (D - delta).tocsr()
+        L = (L + L.T) / 2   # symmetrise for numerical cleanliness
         n = L.shape[0]
 
         try:

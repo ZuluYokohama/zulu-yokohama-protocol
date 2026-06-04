@@ -65,43 +65,55 @@ def _normalize(a: List[float]) -> List[float]:
 
 def power_iteration_lambda1(L: SparseMatrix, k: int = 80, tol: float = 1e-6) -> float:
     """
-    Approximate λ₁ (second smallest eigenvalue of Laplacian) via inverse power iteration.
-    Deflate the null space (constant vector) first.
-    Axiom A6: fast inverse square root spirit — good enough initial guess.
+    Approximate λ₁ (second smallest eigenvalue of Laplacian) via shift-invert
+    without matrix inversion:
+
+        1.  lam_max   = forward power iteration on L       (largest eigenvalue)
+        2.  B.matvec  = lam_max·v − L·v                   (shifted operator)
+        3.  lam_max_B = forward power iteration on B       (largest of B)
+        4.  λ₁        = lam_max − lam_max_B                (second smallest of L)
+
+    Forward power iteration on L converges to λ_MAX (largest eigenvalue).
+    Applying the same to (lam_max·I − L) gives lam_max − λ₁ as its largest
+    eigenvalue, so λ₁ = lam_max − result.  Axiom A6: correct answer > wrong answer.
     """
     n = L.shape[0]
     if n < 2:
         return 0.0
 
-    # Start with a random vector orthogonal to ones (deflate null space)
-    random.seed(42)
-    v = [random.gauss(0, 1) for _ in range(n)]
-    # Deflate: subtract projection onto ones vector
-    mean_v = sum(v) / n
-    v = [x - mean_v for x in v]
-    v = _normalize(v)
-
-    # Shift-invert approximation: use (L + σI)v iterations
-    # Since we can't easily invert, use Rayleigh quotient with power method on L
-    # This gives the *largest* eigenvalue; we shift to get the smallest non-zero.
-    # For field use: estimate via Rayleigh quotient of random orthogonal vector.
-
-    lam = 0.0
-    for _ in range(k):
-        Lv = L.matvec(v)
-        # Deflate again
-        mean_Lv = sum(Lv) / n
-        Lv = [x - mean_Lv for x in Lv]
-
-        lam_new = _dot(v, Lv) / max(1e-14, _dot(v, v))
-        v = _normalize(Lv)
-
-        if abs(lam_new - lam) < tol:
+    def _power_max(matvec_fn, seed: int = 42) -> float:
+        """Forward power iteration with nullspace deflation."""
+        random.seed(seed)
+        v = [random.gauss(0, 1) for _ in range(n)]
+        mean_v = sum(v) / n
+        v = _normalize([x - mean_v for x in v])
+        lam = 0.0
+        for _ in range(k):
+            Lv = matvec_fn(v)
+            mean_Lv = sum(Lv) / n
+            Lv = [x - mean_Lv for x in Lv]          # deflate nullspace
+            lam_new = _dot(v, Lv) / max(1e-14, _dot(v, v))
+            v = _normalize(Lv)
+            if abs(lam_new - lam) < tol:
+                lam = lam_new
+                break
             lam = lam_new
-            break
-        lam = lam_new
+        return max(0.0, lam)
 
-    return max(0.0, lam)
+    # Step 1: largest eigenvalue of L
+    lam_max = _power_max(L.matvec)
+    if lam_max < 1e-10:
+        return 0.0
+
+    # Step 2-3: largest eigenvalue of (lam_max·I − L)
+    def _shifted_matvec(v: List[float]) -> List[float]:
+        Lv = L.matvec(v)
+        return [lam_max * vi - Lvi for vi, Lvi in zip(v, Lv)]
+
+    lam_max_B = _power_max(_shifted_matvec, seed=137)
+
+    # Step 4: λ₁ = lam_max − lam_max_B
+    return max(0.0, lam_max - lam_max_B)
 
 
 def count_connected_components(adj: Dict[int, List[int]], n: int) -> int:

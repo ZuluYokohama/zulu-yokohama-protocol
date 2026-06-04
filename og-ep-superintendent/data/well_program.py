@@ -212,6 +212,14 @@ class WellProgram:
                 "advance": False,
             }
 
+        # Require non-empty authorizer for all advances, including force
+        if not authorized_by or not authorized_by.strip():
+            return {
+                "gate_status": "REJECTED",
+                "reason": "authorized_by cannot be empty. Written AFE authorization required.",
+                "advance": False,
+            }
+
         # Find next phase
         next_phase_idx = None
         for i, phase in enumerate(self.phases):
@@ -413,3 +421,12 @@ def build_standard_vertical_program(
         field_name=field_name,
         county_state=county_state,
     )
+
+
+def start_well_program(program: WellProgram) -> None:
+    """Activate the first phase so advance_to_next_phase() can progress.
+    A factory-built program has all phases PENDING; calling this sets
+    phase 0 to ACTIVE, making current_phase non-None.
+    """
+    if program.phases and program.phases[0].status == PhaseStatus.PENDING:
+        program.phases[0].status = PhaseStatus.ACTIVE
