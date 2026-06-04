@@ -1,0 +1,14 @@
+id: double-edge-undirected
+language: Python
+severity: error
+message: |
+  [ZYP:MATH-003] Double-counting undirected edges in sheaf Laplacian.
+  FiberSheafOps.build_block_laplacian() iterates edges and for each (u,v)
+  already accumulates BOTH diagonal blocks (L[uu] and L[vv]) and BOTH
+  off-diagonal blocks (L[uv] and L[vu]).
+  Adding (v,u,c) as a separate edge doubles every contribution → λ₁ doubled.
+  Fix: store only one orientation per undirected edge.
+  FiberBundle.build() will create ρ[(v,u)] automatically.
+rule:
+  pattern: "edges += [($U, $V, $C), ($V, $U, $C)]"
+fix: "edges.append(($U, $V, $C))  # FiberBundle.build() creates reverse map"

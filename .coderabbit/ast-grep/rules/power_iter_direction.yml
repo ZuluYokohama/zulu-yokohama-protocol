@@ -1,0 +1,25 @@
+id: power-iter-wrong-direction
+language: Python
+severity: error
+message: |
+  [ZYP:MATH-004] Forward power iteration on L returns λ_MAX, not λ₁.
+  Standard y = L·x iteration converges to the eigenvector of the LARGEST
+  eigenvalue. For the spectral gap we need the SECOND SMALLEST (λ₁ > 0).
+
+  Correct algorithm (shift-invert without inversion):
+    1. lam_max   = power_iter_forward(L)          # largest eigenvalue
+    2. B.matvec  = λ_max·v − L·v                  # shift operator
+    3. lam_max_B = power_iter_forward(B)           # largest of B
+    4. λ₁        = lam_max − lam_max_B            # second smallest of L
+
+  Using λ_MAX as λ₁ inverts the coherence signal:
+    — high λ_MAX reported as high coherence (false PASS)
+    — low  λ_MAX reported as low  coherence (false HALT_A4)
+rule:
+  pattern: |
+    def power_iteration_lambda1($$$ARGS):
+      $$$BODY
+      lam = $DOT
+      $$$REST
+      return max(0.0, lam)
+note: "Affects: topology_lite.py. Fix: implement shift-invert via ShiftedOp."

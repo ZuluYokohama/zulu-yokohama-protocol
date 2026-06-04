@@ -1,0 +1,12 @@
+id: wrong-laplacian-ata
+language: Python
+severity: error
+message: |
+  [ZYP:MATH-001] AᵀA is not the graph Laplacian.
+  Correct form: L = D − A  where D = diag(row_sums(A)).
+  AᵀA encodes singular values squared — not spectral gap, not connectivity.
+  This breaks λ₁ computation and all K(S) coherence gates.
+rule:
+  pattern: "$A.T @ $A"
+fix: "# TODO: replace with D - $A  (D = sparse diag of row sums)"
+note: "Affects: afe_laplacian.py, wellbore_topology.py. See ZYP axiom A1."

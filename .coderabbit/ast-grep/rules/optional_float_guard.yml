@@ -1,0 +1,14 @@
+id: unguarded-optional-float-format
+language: Python
+severity: warning
+message: |
+  [ZYP:SAFE-001] Formatting an Optional[float] field without None guard.
+  Pattern f"{x:+.4f}" raises TypeError when x is None.
+  K(S) fields delta_lambda_1, lambda_1, k_s_snapshot are all Optional.
+  Guard with:  f"{x:+.4f}" if x is not None else "N/A"
+  or wrap the entire block in:  if x is not None: ...
+rule:
+  any:
+    - pattern: 'f"$PRE{$X:+.4f}$POST"'
+    - pattern: 'f"$PRE{$X:.4f}$POST"'
+    - pattern: 'f"$PRE{$X:,.0f}$POST"'
