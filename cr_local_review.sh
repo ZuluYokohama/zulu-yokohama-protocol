@@ -123,7 +123,8 @@ fi
 # ── GATE 4: K(S) TOPOLOGICAL COHERENCE ──────────────────────────────────────
 echo ""
 echo "── GATE 4: K(S) topological coherence ─────────────────────────────"
-python3 - <<'PYGATE' 2>&1 | grep -E "✅|⚠️|🔴|PASS|WARN|HALT|lambda|holonomy" || true
+PY_EXIT=0
+PYOUT=$(python3 - <<'PYGATE' 2>&1) || PY_EXIT=$?
 import sys, json, glob
 from pathlib import Path
 
@@ -161,10 +162,14 @@ else:
     print("  🔴 K(S) GATE HALT — negative λ₁ in evidence")
     sys.exit(1)
 PYGATE
+echo "$PYOUT" | grep -E "✅|⚠️|🔴|PASS|WARN|HALT|lambda|holonomy" || true
+if [ "$PY_EXIT" -ne 0 ]; then
+  log_finding "HALT" "K(S)-gate" "K(S) GATE HALT — negative λ₁ detected in evidence"
+fi
 
 # ── GATE 5: JSON/JSONL INTEGRITY ─────────────────────────────────────────────
 echo ""
-echo "── GATE 5: JSON/JSONL integrity ────────────────────────────────────"
+
 JSON_FAILS=0
 while IFS= read -r -d '' f; do
   if ! python3 -c "import json; json.load(open('$f'))" 2>/dev/null; then
