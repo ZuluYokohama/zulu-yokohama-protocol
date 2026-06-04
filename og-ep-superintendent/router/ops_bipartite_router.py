@@ -50,11 +50,9 @@ class OpsbipartiteRouter:
     adapted for the rig floor instead of the LLM routing context.
     """
 
-    # λ₁ threshold for LOCAL routing confidence
-    LOCAL_LAMBDA_MIN = 0.01
-
-    # If projected cost overrun exceeds this → REMOTE regardless of λ₁
-    OVERRUN_THRESHOLD_PCT = 0.20
+    # Variance contract: 0–20–50 percentage scale (matches DDRHarvester.get_well_summary)
+    OVERRUN_THRESHOLD_PCT = 20.0   # 20 % over AFE → REMOTE
+    LOCAL_LAMBDA_MIN      = 0.01   # λ₁ below this → REMOTE
 
     def __init__(self, well_name: str, afe_number: str, operator: str,
                  drilling_engineer_contact: str, rig_manager_contact: str):
@@ -133,14 +131,14 @@ class OpsbipartiteRouter:
 
         # ── AFE overrun → REMOTE for new approval ─────────────────────────
         if afe_variance_pct > self.OVERRUN_THRESHOLD_PCT:
-            print(f"[OpsRouter] Decision: REMOTE (AFE overrun {afe_variance_pct*100:.1f}%)")
+            print(f"[OpsRouter] Decision: REMOTE (AFE overrun {afe_variance_pct:.1f}%)")
             return RoutingDecision(
                 route="REMOTE",
                 confidence="HIGH",
                 h_level="H¹",
                 action_required=(
                     f"AFE supplement required before continuing. "
-                    f"Variance: {afe_variance_pct*100:.1f}% over approved budget. "
+                    f"Variance: {afe_variance_pct:.1f}% over approved budget. "
                     f"File supplement, obtain management approval, then resume."
                 ),
                 escalation_contacts=[

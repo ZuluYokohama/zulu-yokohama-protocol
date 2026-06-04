@@ -1,0 +1,556 @@
+{
+  "pr": 1,
+  "repo": "ZuluYokohama/zulu-yokohama-protocol",
+  "branch": "SETUP-PHASE-0",
+  "generated_from_commits": [
+    "e3b708e",
+    "6fefc2d",
+    "e0a902f",
+    "5a68a0a",
+    "ba2526d",
+    "e47e723"
+  ],
+  "latest_fix_commit": "e47e723",
+  "summary": {
+    "total_annotations": 31,
+    "resolved": 31,
+    "open": 0,
+    "critical": 5,
+    "major": 26,
+    "resolve_rate_pct": 100.0,
+    "files_touched": 16,
+    "categories": 11,
+    "latest_fix_commit": "e47e724"
+  },
+  "by_file": {
+    ".github/workflows/omega_crystal_gate.yml": [
+      3352559019,
+      3352559034
+    ],
+    "og-ep-superintendent/core/afe_laplacian.py": [
+      3352559038
+    ],
+    "og-ep-superintendent/core/ddr_harvester.py": [
+      3352559041,
+      3352559052
+    ],
+    "og-ep-superintendent/core/topology_lite.py": [
+      3352559059,
+      3352559063
+    ],
+    "og-ep-superintendent/core/wellbore_topology.py": [
+      3352559067,
+      3352559071
+    ],
+    "og-ep-superintendent/data/well_program.py": [
+      3352559079,
+      3352559086
+    ],
+    "og-ep-superintendent/evidence/ddrs/DDR_0014_2026-06-04.json": [
+      3352559092
+    ],
+    "og-ep-superintendent/full_demo.py": [
+      3352559095
+    ],
+    "og-ep-superintendent/router/ops_bipartite_router.py": [
+      3352559098,
+      3352559099
+    ],
+    "og-ep-superintendent/run_demo_lite.py": [
+      3352559101,
+      3352559106
+    ],
+    "og-ep-superintendent/ui/morning_report.py": [
+      3352559107
+    ],
+    "og-ep-superintendent/core/fiber_sheaf_engine.py": [
+      3352611697,
+      3352611701,
+      3352611703,
+      3352611708,
+      3352611711
+    ],
+    ".coderabbit/ast-grep/rules/laplacian_ata.yml": [
+      3352812254
+    ],
+    ".coderabbit/ast-grep/rules/safety_gates.yml": [
+      3352812257,
+      3352812261
+    ],
+    ".coderabbit/ast-grep/rules/zeta_zeros_immutable.yml": [
+      3352812266
+    ],
+    "og-ep-superintendent/core/compute_dispatch.py": [
+      3352812270,
+      3352812273,
+      3352812288,
+      3352812294
+    ]
+  },
+  "by_category": {
+    "MATH:LAPLACIAN": [
+      3352559019,
+      3352559034,
+      3352559038,
+      3352559063,
+      3352559067,
+      3352559079,
+      3352559086,
+      3352611708,
+      3352611711,
+      3352812254,
+      3352812261,
+      3352812266,
+      3352812288
+    ],
+    "MATH:SPECTRAL": [
+      3352559041,
+      3352559059,
+      3352559099,
+      3352559101,
+      3352559107,
+      3352812257
+    ],
+    "DATA:PERSISTENCE": [
+      3352559052
+    ],
+    "CI:WORKFLOW": [
+      3352559071
+    ],
+    "DATA:INTEGRITY": [
+      3352559092,
+      3352559095,
+      3352559106
+    ],
+    "SAFE:GATE": [
+      3352559098
+    ],
+    "MATH:PRIME": [
+      3352611697
+    ],
+    "MATH:ROTATION": [
+      3352611701
+    ],
+    "SAFE:AUTH": [
+      3352611703
+    ],
+    "MATH:ZETA": [
+      3352812270,
+      3352812273
+    ],
+    "SAFE:NULL_GUARD": [
+      3352812294
+    ]
+  },
+  "by_severity": {
+    "MAJOR": [
+      3352559019,
+      3352559034,
+      3352559038,
+      3352559052,
+      3352559059,
+      3352559063,
+      3352559067,
+      3352559071,
+      3352559079,
+      3352559086,
+      3352559092,
+      3352559095,
+      3352559098,
+      3352559099,
+      3352559101,
+      3352559106,
+      3352559107,
+      3352611697,
+      3352611701,
+      3352611703,
+      3352611711,
+      3352812254,
+      3352812257,
+      3352812261,
+      3352812266,
+      3352812294
+    ],
+    "CRITICAL": [
+      3352559041,
+      3352611708,
+      3352812270,
+      3352812273,
+      3352812288
+    ]
+  },
+  "annotations": [
+    {
+      "id": 3352559019,
+      "commit": "6fefc2d",
+      "path": ".github/workflows/omega_crystal_gate.yml",
+      "line": null,
+      "severity": "MAJOR",
+      "category": "MATH:LAPLACIAN",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win",
+      "zyp_rule": "ZYP:MATH-001",
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352559034,
+      "commit": "6fefc2d",
+      "path": ".github/workflows/omega_crystal_gate.yml",
+      "line": null,
+      "severity": "MAJOR",
+      "category": "MATH:LAPLACIAN",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win",
+      "zyp_rule": "ZYP:MATH-001",
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352559038,
+      "commit": "6fefc2d",
+      "path": "og-ep-superintendent/core/afe_laplacian.py",
+      "line": 228,
+      "severity": "MAJOR",
+      "category": "MATH:LAPLACIAN",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\ud83c\udfd7\ufe0f Heavy lift",
+      "zyp_rule": "ZYP:MATH-001",
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352559041,
+      "commit": "6fefc2d",
+      "path": "og-ep-superintendent/core/ddr_harvester.py",
+      "line": null,
+      "severity": "CRITICAL",
+      "category": "MATH:SPECTRAL",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win",
+      "zyp_rule": "ZYP:SAFE-001",
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352559052,
+      "commit": "6fefc2d",
+      "path": "og-ep-superintendent/core/ddr_harvester.py",
+      "line": 292,
+      "severity": "MAJOR",
+      "category": "DATA:PERSISTENCE",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win",
+      "zyp_rule": "ZYP:DATA-001",
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352559059,
+      "commit": "6fefc2d",
+      "path": "og-ep-superintendent/core/topology_lite.py",
+      "line": null,
+      "severity": "MAJOR",
+      "category": "MATH:SPECTRAL",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\ud83c\udfd7\ufe0f Heavy lift",
+      "zyp_rule": "ZYP:MATH-004",
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352559063,
+      "commit": "6fefc2d",
+      "path": "og-ep-superintendent/core/topology_lite.py",
+      "line": 237,
+      "severity": "MAJOR",
+      "category": "MATH:LAPLACIAN",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win",
+      "zyp_rule": "ZYP:MATH-004",
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352559067,
+      "commit": "6fefc2d",
+      "path": "og-ep-superintendent/core/wellbore_topology.py",
+      "line": 283,
+      "severity": "MAJOR",
+      "category": "MATH:LAPLACIAN",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\ud83c\udfd7\ufe0f Heavy lift",
+      "zyp_rule": null,
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352559071,
+      "commit": "6fefc2d",
+      "path": "og-ep-superintendent/core/wellbore_topology.py",
+      "line": null,
+      "severity": "MAJOR",
+      "category": "CI:WORKFLOW",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win",
+      "zyp_rule": null,
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352559079,
+      "commit": "6fefc2d",
+      "path": "og-ep-superintendent/data/well_program.py",
+      "line": 253,
+      "severity": "MAJOR",
+      "category": "MATH:LAPLACIAN",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win",
+      "zyp_rule": "ZYP:MATH-001",
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352559086,
+      "commit": "6fefc2d",
+      "path": "og-ep-superintendent/data/well_program.py",
+      "line": 423,
+      "severity": "MAJOR",
+      "category": "MATH:LAPLACIAN",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win",
+      "zyp_rule": "ZYP:MATH-001",
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352559092,
+      "commit": "6fefc2d",
+      "path": "og-ep-superintendent/evidence/ddrs/DDR_0014_2026-06-04.json",
+      "line": null,
+      "severity": "MAJOR",
+      "category": "DATA:INTEGRITY",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win",
+      "zyp_rule": null,
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352559095,
+      "commit": "6fefc2d",
+      "path": "og-ep-superintendent/full_demo.py",
+      "line": 280,
+      "severity": "MAJOR",
+      "category": "DATA:INTEGRITY",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win",
+      "zyp_rule": "ZYP:DATA-001",
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352559098,
+      "commit": "6fefc2d",
+      "path": "og-ep-superintendent/router/ops_bipartite_router.py",
+      "line": 57,
+      "severity": "MAJOR",
+      "category": "SAFE:GATE",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win",
+      "zyp_rule": null,
+      "fix_commit": "e47e724"
+    },
+    {
+      "id": 3352559099,
+      "commit": "6fefc2d",
+      "path": "og-ep-superintendent/router/ops_bipartite_router.py",
+      "line": 289,
+      "severity": "MAJOR",
+      "category": "MATH:SPECTRAL",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win",
+      "zyp_rule": null,
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352559101,
+      "commit": "6fefc2d",
+      "path": "og-ep-superintendent/run_demo_lite.py",
+      "line": 62,
+      "severity": "MAJOR",
+      "category": "MATH:SPECTRAL",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win",
+      "zyp_rule": "ZYP:SAFE-002",
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352559106,
+      "commit": "6fefc2d",
+      "path": "og-ep-superintendent/run_demo_lite.py",
+      "line": 82,
+      "severity": "MAJOR",
+      "category": "DATA:INTEGRITY",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win",
+      "zyp_rule": "ZYP:DATA-001",
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352559107,
+      "commit": "6fefc2d",
+      "path": "og-ep-superintendent/ui/morning_report.py",
+      "line": 97,
+      "severity": "MAJOR",
+      "category": "MATH:SPECTRAL",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win",
+      "zyp_rule": null,
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352611697,
+      "commit": "e0a902f",
+      "path": "og-ep-superintendent/core/fiber_sheaf_engine.py",
+      "line": null,
+      "severity": "MAJOR",
+      "category": "MATH:PRIME",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win",
+      "zyp_rule": null,
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352611701,
+      "commit": "e0a902f",
+      "path": "og-ep-superintendent/core/fiber_sheaf_engine.py",
+      "line": null,
+      "severity": "MAJOR",
+      "category": "MATH:ROTATION",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win",
+      "zyp_rule": "ZYP:MATH-002",
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352611703,
+      "commit": "e0a902f",
+      "path": "og-ep-superintendent/core/fiber_sheaf_engine.py",
+      "line": 740,
+      "severity": "MAJOR",
+      "category": "SAFE:AUTH",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win",
+      "zyp_rule": null,
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352611708,
+      "commit": "e0a902f",
+      "path": "og-ep-superintendent/core/fiber_sheaf_engine.py",
+      "line": null,
+      "severity": "CRITICAL",
+      "category": "MATH:LAPLACIAN",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udd34 Critical_ | _\u26a1 Quick win",
+      "zyp_rule": null,
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352611711,
+      "commit": "e0a902f",
+      "path": "og-ep-superintendent/core/fiber_sheaf_engine.py",
+      "line": null,
+      "severity": "MAJOR",
+      "category": "MATH:LAPLACIAN",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win",
+      "zyp_rule": "ZYP:MATH-003",
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352812254,
+      "commit": "ba2526d",
+      "path": ".coderabbit/ast-grep/rules/laplacian_ata.yml",
+      "line": 11,
+      "severity": "MAJOR",
+      "category": "MATH:LAPLACIAN",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win",
+      "zyp_rule": "ZYP:MATH-001",
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352812257,
+      "commit": "ba2526d",
+      "path": ".coderabbit/ast-grep/rules/safety_gates.yml",
+      "line": 16,
+      "severity": "MAJOR",
+      "category": "MATH:SPECTRAL",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win",
+      "zyp_rule": "ZYP:SAFE-002",
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352812261,
+      "commit": "ba2526d",
+      "path": ".coderabbit/ast-grep/rules/safety_gates.yml",
+      "line": 35,
+      "severity": "MAJOR",
+      "category": "MATH:LAPLACIAN",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\ud83c\udfd7\ufe0f Heavy lift",
+      "zyp_rule": "ZYP:MATH-001",
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352812266,
+      "commit": "ba2526d",
+      "path": ".coderabbit/ast-grep/rules/zeta_zeros_immutable.yml",
+      "line": 20,
+      "severity": "MAJOR",
+      "category": "MATH:LAPLACIAN",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win",
+      "zyp_rule": "ZYP:MATH-001",
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352812270,
+      "commit": "ba2526d",
+      "path": "og-ep-superintendent/core/compute_dispatch.py",
+      "line": 262,
+      "severity": "CRITICAL",
+      "category": "MATH:ZETA",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udd34 Critical_ | _\u26a1 Quick win",
+      "zyp_rule": "ZYP:SAFE-002",
+      "fix_commit": "e47e724"
+    },
+    {
+      "id": 3352812273,
+      "commit": "ba2526d",
+      "path": "og-ep-superintendent/core/compute_dispatch.py",
+      "line": 447,
+      "severity": "CRITICAL",
+      "category": "MATH:ZETA",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udd34 Critical_ | _\u26a1 Quick win",
+      "zyp_rule": null,
+      "fix_commit": "e47e724"
+    },
+    {
+      "id": 3352812288,
+      "commit": "ba2526d",
+      "path": "og-ep-superintendent/core/compute_dispatch.py",
+      "line": 557,
+      "severity": "CRITICAL",
+      "category": "MATH:LAPLACIAN",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udd34 Critical_ | _\u26a1 Quick win",
+      "zyp_rule": "ZYP:MATH-001",
+      "fix_commit": "e47e723"
+    },
+    {
+      "id": 3352812294,
+      "commit": "ba2526d",
+      "path": "og-ep-superintendent/core/compute_dispatch.py",
+      "line": 566,
+      "severity": "MAJOR",
+      "category": "SAFE:NULL_GUARD",
+      "status": "RESOLVED",
+      "title": "\u26a0\ufe0f Potential issue_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win",
+      "zyp_rule": "ZYP:SAFE-001",
+      "fix_commit": "e47e723"
+    }
+  ]
+}

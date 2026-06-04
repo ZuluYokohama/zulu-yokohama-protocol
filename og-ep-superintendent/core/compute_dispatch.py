@@ -255,9 +255,10 @@ def _gate_from_ks(ks: Dict[str, Any]) -> str:
     h_dim   = ks.get("harmonic_dim", 0)
     d       = ks.get("fiber_dim", FIBER_DIM)
 
-    if lam1 < 1e-6 or z_gate == "HALT_A4" or score < 0.2:
+    # λ₁ gate thresholds aligned with the translation table (HALT<0.001, WARN<0.01)
+    if lam1 < 1e-3 or z_gate == "HALT_A4" or score < 0.2:
         return "HALT_A4"
-    if lam1 < 1e-3 or z_gate == "WARN" or hol > 8.0 or h_dim > d * 2:
+    if lam1 < 1e-2 or z_gate == "WARN" or hol > 8.0 or h_dim > d * 2:
         return "WARN"
     return "PASS"
 
@@ -429,6 +430,7 @@ class ComputeDispatch:
         h_dim   = ks.get("harmonic_dim", 0)
         d       = ks.get("fiber_dim", FIBER_DIM)
         gate    = ks.get("gate", "PASS")
+        z_gate  = ks.get("zeta_gate", "PASS")   # required: used in trigger logic below
         weights = ks.get("markov_node_weights", [])
         names   = ks.get("node_names", [])
         score   = ks.get("ks_fiber_score", 0.0)
