@@ -764,6 +764,7 @@ class FiberSheafEngine:
         """
         items = afe_state.line_items
         _n = len(items)
+        n     = len(items)
         max_usd = max((li.afe_approved_usd for li in items), default=1.0) or 1.0
 
         node_names   = [f"{li.cost_code}:{li.description[:18]}" for li in items]
@@ -822,6 +823,7 @@ class FiberSheafEngine:
         node_names += ["AFE_DRILLING", "CONTRACTOR_DIRECTIONAL",
                        "CONTRACTOR_MUD", "CONTRACTOR_MUDLOG"]
         _n = len(node_names)
+        n = len(node_names)
 
         active = next((iv for iv in ivs if iv.is_active), ivs[-1])
         ecd_delta = abs(well_state.ecd_ppg - active.mud_weight_ppg)
