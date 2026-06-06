@@ -11,7 +11,7 @@
   "mud_weight_ppg": 9.4,
   "ecd_ppg": 9.7,
   "operations_24hr": "Drilled 8-1/2\" from 5,200ft to 6,150ft (950ft). Tight hole at 5,840ft \u2014 reamed 3 stands. 4hrs NPT.",
-  "plan_next_24hr": "Continue to 7,500ft. Wiper trip at 7,000ft per program.",
+  "next_24hr_plan": "Continue to 7,500ft. Wiper trip at 7,000ft per program.",
   "problems": [
     "Tight hole 5,840ft \u2014 resolved, not recurring"
   ],

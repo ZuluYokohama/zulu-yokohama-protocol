@@ -11,7 +11,7 @@
   "mud_weight_ppg": 9.5,
   "ecd_ppg": 10.1,
   "operations_24hr": "Drilled to 7,240ft. Packoff encountered \u2014 pumps up on connections. 18 tons overpull. Work string operation initiated at 1630.",
-  "plan_next_24hr": "Work free. Spot LCM pill (20ppb mica/walnut). POOH wiper trip. Resume drilling.",
+  "next_24hr_plan": "Work free. Spot LCM pill (20ppb mica/walnut). POOH wiper trip. Resume drilling.",
   "problems": [
     "PACKOFF 7,240ft \u2014 18t overpull, ECD 10.1ppg (MW 9.5ppg)",
     "14hrs NPT"
