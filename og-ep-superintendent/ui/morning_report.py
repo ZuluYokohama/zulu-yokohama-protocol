@@ -47,14 +47,14 @@ class MorningReportInput:
     afe_spent_usd: float
     events_summary: str           # Short narrative of last 24hr
     plan_next_24hr: str           # Short narrative of next 24hr
-    problems: list[str] = None    # Any active problems
-    k_s_current: dict[str, Any] = None      # From WellboreCryptologicKey.to_dict()
-    k_s_prior: dict[str, Any] = None        # Prior day's K(S)
-    lambda_1_history: list[float] = None    # Last 7 days of λ₁ values
+    problems: list[str] | None = None    # Any active problems
+    k_s_current: dict[str, Any] | None = None      # From WellboreCryptologicKey.to_dict()
+    k_s_prior: dict[str, Any] | None = None        # Prior day's K(S)
+    lambda_1_history: list[float] | None = None    # Last 7 days of λ₁ values
 
 
 def generate_morning_report(inp: MorningReportInput) -> str:
-    """
+
     Generate the full morning report text.
     The format every operator morning call runs on.
     """
