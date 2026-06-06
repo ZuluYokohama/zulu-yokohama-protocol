@@ -23,6 +23,7 @@
   "problems": [],
   "day_cost_usd": 152000,
   "cumulative_cost_usd": 870000,
+  "afe_approved_usd": 2850000.0,
 
   "afe_burn_pct": 30.5,
   "k_s_snapshot": {
